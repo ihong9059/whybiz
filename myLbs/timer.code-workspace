@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "../timer"
+		},
+		{
+			"name": "myBattery",
+			"path": "../myBattery"
+		}
+	],
+	"settings": {
+		"nrf-connect.applications": []
+	}
+}
