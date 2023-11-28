@@ -225,6 +225,7 @@ void testI2c(void){
 	}
 	count++;
 	toggle = !toggle;
+	printf("---------------------\r\n");
 	readIn();
 	if(isSwitchOn_0()){
 		printf("Switch1_On\r\n");
