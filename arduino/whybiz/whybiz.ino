@@ -4,8 +4,11 @@
 
 #define USE_INTRANET
 
-#define LOCAL_SSID "ihong"
-#define LOCAL_PASS "hongks@6063"
+// #define LOCAL_SSID "ihong"
+// #define LOCAL_PASS "hongks@6063"
+
+#define LOCAL_SSID "uttec8"
+#define LOCAL_PASS "a123456789"
 
 #define AP_SSID "TestWebSite"
 #define AP_PASS "023456789"

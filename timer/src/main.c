@@ -31,7 +31,7 @@ int main(void)
 
 	while (1) {
 		k_msleep(SLEEP_TIME_MS);
-		printk("count: %d\r\n", count++);
+		printk("nrf52dk main: %d\r\n", count++);
 	}
 	return 0;
 }

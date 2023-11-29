@@ -1,163 +1,180 @@
+/*
+ * Copyright (c) 2018 Nordic Semiconductor ASA
+ *
+ * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+ */
+
+/** @file
+ *  @brief Nordic UART Bridge Service (NUS) sample
+#define BT_UUID_NUS_SERVICE   BT_UUID_DECLARE_128(BT_UUID_NUS_VAL)
+#define BT_UUID_NUS_RX        BT_UUID_DECLARE_128(BT_UUID_NUS_RX_VAL)
+#define BT_UUID_NUS_TX        BT_UUID_DECLARE_128(BT_UUID_NUS_TX_VAL)
+
+ * 
+ */
+// test0
+#include "uart_async_adapter.h"
+
+#include <zephyr/types.h>
 #include <zephyr/kernel.h>
-#include <zephyr/logging/log.h>
+#include <zephyr/drivers/uart.h>
+#include <zephyr/usb/usb_device.h>
 
-#include <zephyr/bluetooth/bluetooth.h>
-#include <zephyr/bluetooth/conn.h>
-#include <zephyr/bluetooth/uuid.h>
-#include <zephyr/bluetooth/gatt.h>
-#include <zephyr/bluetooth/services/bas.h>
+#include <zephyr/device.h>
+#include <zephyr/devicetree.h>
+#include <soc.h>
 
-#include <zephyr/sys/printk.h>
-// #include <zephyr/types.h>
-// #include <stddef.h>
-// #include <string.h>
-// #include <errno.h>
-// #include <zephyr/sys/byteorder.h>
-// #include <zephyr/kernel.h>
-// #include <zephyr/drivers/gpio.h>
-// #include <soc.h>
-
-// #include <zephyr/bluetooth/hci.h>
-// #include <zephyr/bluetooth/conn.h>
+// #include <zephyr/bluetooth/bluetooth.h>
 // #include <zephyr/bluetooth/uuid.h>
 // #include <zephyr/bluetooth/gatt.h>
+// #include <zephyr/bluetooth/hci.h>
+
+// #include <bluetooth/services/nus.h>
+
+#include <dk_buttons_and_leds.h>
+
+// #include <zephyr/settings/settings.h>
+
+#include <stdio.h>
+
+#include <zephyr/logging/log.h>
+
+#include "uttec.h"
+#include "myBle.h"
+#include "sx1509.h"
+
+#include <zephyr/drivers/gpio.h>
+#include <zephyr/drivers/adc.h>
 
 
-LOG_MODULE_REGISTER(ble_test);
+#define RUN_LED_BLINK_INTERVAL 1000
+#define RUN_STATUS_LED DK_LED1
 
-volatile bool ble_ready = false;
-uint16_t battery_level = 75;
-int16_t temperature = 3232;
+#define RED_LED_NODE DT_NODELABEL(led1)
+static const struct gpio_dt_spec redLed = GPIO_DT_SPEC_GET(RED_LED_NODE, gpios);
 
-static const struct bt_data ad[] = {
-	BT_DATA_BYTES(BT_DATA_FLAGS, (BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR)),
-	BT_DATA_BYTES(BT_DATA_UUID16_ALL, BT_UUID_16_ENCODE(BT_UUID_BAS_VAL), BT_UUID_16_ENCODE(BT_UUID_ESS_VAL)),
+#define RS485_EN_NODE DT_NODELABEL(led3)
+static const struct gpio_dt_spec rs485En = GPIO_DT_SPEC_GET(RS485_EN_NODE, gpios);
+
+#define BLUE_LED_NODE DT_NODELABEL(led4)
+static const struct gpio_dt_spec greenLed = GPIO_DT_SPEC_GET(BLUE_LED_NODE, gpios);
+
+#define SELECT1_NODE DT_NODELABEL(select1)
+static const struct gpio_dt_spec select1 = GPIO_DT_SPEC_GET(SELECT1_NODE, gpios);
+
+#define SELECT2_NODE DT_NODELABEL(select2)
+static const struct gpio_dt_spec select2 = GPIO_DT_SPEC_GET(SELECT2_NODE, gpios);
+
+#define PWR_CTL_NODE DT_NODELABEL(pwrctl)
+static const struct gpio_dt_spec pwrCtl = GPIO_DT_SPEC_GET(PWR_CTL_NODE, gpios);
+
+#define LORA_RESET_NODE DT_NODELABEL(lorarst)
+static const struct gpio_dt_spec loraRst = GPIO_DT_SPEC_GET(LORA_RESET_NODE, gpios);
+
+#define SX1509_RESET_NODE DT_NODELABEL(sx1509rst)
+static const struct gpio_dt_spec sx1509Rst = GPIO_DT_SPEC_GET(SX1509_RESET_NODE, gpios);
+
+#define ADC DT_NODELABEL(adc)
+static const struct device *adc_dev = DEVICE_DT_GET(ADC);
+
+#define ADC_RESOLUTION 	10
+#define ADC0_CHANNEL	0
+#define ADC1_CHANNEL	2
+#define ADC0_PORT		SAADC_CH_PSELN_PSELN_AnalogInput0
+#define ADC1_PORT		SAADC_CH_PSELN_PSELN_AnalogInput2
+#define ADC_REFERENCE	ADC_REF_INTERNAL
+#define ADC_GAIN		ADC_GAIN_1_6 
+
+struct adc_channel_cfg ch0_cfg = {
+	.gain = ADC_GAIN,
+	.reference = ADC_REFERENCE,
+	.acquisition_time = ADC_ACQ_TIME_DEFAULT,
+	.channel_id = ADC0_CHANNEL,
+#ifdef CONFIG_ADC_NRFX_SAADC
+	.input_positive = ADC0_PORT
+#endif 	
+}; 
+struct adc_channel_cfg ch1_cfg = {
+	.gain = ADC_GAIN,
+	.reference = ADC_REFERENCE,
+	.acquisition_time = ADC_ACQ_TIME_DEFAULT,
+	.channel_id = ADC1_CHANNEL,
+#ifdef CONFIG_ADC_NRFX_SAADC
+	.input_positive = ADC1_PORT
+#endif 	
+}; 
+
+int16_t sample_buffer[2];
+struct adc_sequence sequence = {
+	.channels = BIT(ADC0_CHANNEL) | BIT(ADC1_CHANNEL),
+	// .channels = BIT(ADC0_CHANNEL),
+	.buffer = sample_buffer,
+	.buffer_size = sizeof(sample_buffer),
+	.resolution = ADC_RESOLUTION
 };
-
-// void readTemperature(void){
-    
-// }
-
-void readHumidity(void){
-    
-}
-
-void readPressure(void){
-    
-}
-ssize_t readTemperature(struct bt_conn *conn,
-			       const struct bt_gatt_attr *attr, void *buf,
-			       uint16_t len, uint16_t offset)
-{
-	return bt_gatt_attr_read(conn, attr, buf, len, offset, &temperature,
-				 sizeof(temperature));
-}
-
-char userData[50] = "first";
-int userDataLenght = 6;
-// conn – Connection object.
-// attr – Attribute to read.
-// buf – Buffer to store the value.
-// buf_len – Buffer length.
-// offset – Start offset.
-// value – Attribute value.
-// value_len – Length of the attribute value.
-ssize_t readData(struct bt_conn *conn,
-			       const struct bt_gatt_attr *attr, void *buf,
-			       uint16_t len, uint16_t offset)
-{
-    // char temp[6] = "abcde";
-	return bt_gatt_attr_read(conn, attr, buf, len, offset, userData,userDataLenght);
-	// return bt_gatt_attr_read(conn, attr, buf, len, offset, value, value_len);
-}
-
-// void writeData(void){
-    
-// }
-static ssize_t writeData(struct bt_conn *conn,
-             const struct bt_gatt_attr *attr,
-             const void *buf,
-             uint16_t len, uint16_t offset, uint8_t flags)
-{
-
-    printk("---------------------- start writeData ------------");
-    LOG_INF("Attribute write, handle: %u, conn: %p", attr->handle,
-        (void *)conn);
-
-    LOG_INF("buf = %s", buf);
-    LOG_INF("len = %d", len);
-    LOG_INF("offset = %d", offset);
-    LOG_INF("flags = %d", flags);
-
-    LOG_INF("------------------- end writeData ---------->");
-    return len;
-}
-
-BT_GATT_SERVICE_DEFINE(whybiz_srv,
-    BT_GATT_PRIMARY_SERVICE(BT_UUID_UDS),
-    BT_GATT_CHARACTERISTIC(BT_UUID_GATT_USRIDX, BT_GATT_CHRC_WRITE, BT_GATT_PERM_WRITE, NULL, writeData, NULL),
-    BT_GATT_CHARACTERISTIC(BT_UUID_GATT_USRIDX, BT_GATT_CHRC_READ, BT_GATT_PERM_READ, readData, NULL, NULL),
-);
-
-void bt_ready(int err){
-    if(err){
-            LOG_ERR("bt enable return %d", err);
-    }
-    printk("bt_ready\n");
-    ble_ready = true;
-}
-
-int init_ble(void){
-    LOG_INF("Init BLE");
-    int err;
-
-    // bt_conn_cb_register(&conn_callback);
-
-    err = bt_enable(bt_ready);
-    if (err) {
-            printk("Bluetooth init failed (err %d)\n", err);
-            return 0;
-    }
-    return 0;
-}
-
-int bt_bas_set_battery_level(uint8_t level);
 
 int main(void)
 {
-    init_ble();
-    while (!ble_ready)
-    {
-        LOG_INF("BLE stack not ready yet");
-        k_msleep(100);
-    }
-    LOG_INF("BLE stack ready");
-
-    int err;
-    err = bt_le_adv_start(BT_LE_ADV_CONN_NAME, ad, ARRAY_SIZE(ad), NULL, 0);
-	if (err) {
-		printk("Advertising failed to start (err %d)\n", err);
-		return 0;
+	int blink_status = 0;
+// 	BT_UUID_128_ENCODE(0x6e400001, 0xb5a3, 0xf393, 0xe0a9, 0xe50e24dcca9e)
+// 	Service UUID: 			6e400001-b5a3-f393-e0a9-e50e24dcca9e
+// 	Tx Characteristic UUID: 6e400003-b5a3-f393-e0a9-e50e24dcca9e
+// 	Rx Characteristic UUID: 6e400002-b5a3-f393-e0a9-e50e24dcca9e
+// test2
+	// uttecTest();
+	initBle();
+	initSx1509();
+	if(!device_is_ready(adc_dev)){
+		printf("adc_dev is not ready.");
 	}
-    while (true)
-    {
-        static uint32_t count = 0;
-        k_msleep(2000);
-        if(battery_level < 25){
-            battery_level = 100;
-        }
-        else{
-            battery_level--;
-        }
-        // bt_bas_set_battery_level(battery_level);
-        /* code */
-        LOG_INF("whybiz-->: %d", count++);
-        userDataLenght = sprintf(userData, "count: %d", count);
-        // userData
-    }
-    
+	int err = adc_channel_setup(adc_dev, &ch0_cfg);
+	err = adc_channel_setup(adc_dev, &ch1_cfg);
 
-    printk("Hello World! %s\n", CONFIG_BOARD);
+	for (;;) {
+		static bool toggle = false;
+		dk_set_led(RUN_STATUS_LED, (++blink_status) % 2);
+		k_sleep(K_MSEC(RUN_LED_BLINK_INTERVAL));
+		callPrint();
+		uttecTest();
+		printf("pin num: %d\r\n", greenLed.pin);
+		if(toggle){
+			gpio_pin_set_dt(&greenLed, 0);
+			gpio_pin_set_dt(&redLed, 0);
+			gpio_pin_set_dt(&select1, 0);
+			gpio_pin_set_dt(&select2, 0);
 
-    return 0;
+			gpio_pin_set_dt(&rs485En, 0);
+			gpio_pin_set_dt(&pwrCtl, 0);
+			gpio_pin_set_dt(&loraRst, 0);
+			gpio_pin_set_dt(&sx1509Rst, 0);
+		}
+		else{
+			gpio_pin_set_dt(&greenLed, 1);
+			gpio_pin_set_dt(&redLed, 1);
+			gpio_pin_set_dt(&select1, 1);
+			gpio_pin_set_dt(&select2, 1);
+
+			gpio_pin_set_dt(&rs485En, 1);
+			gpio_pin_set_dt(&pwrCtl, 1);
+			gpio_pin_set_dt(&loraRst, 1);
+			gpio_pin_set_dt(&sx1509Rst, 1);
+		}
+		toggle = !toggle;
+		err = adc_read(adc_dev, &sequence);
+		if(err != 0){
+			printf("ADC reading failed with error %d\r\n", err);
+			return 0;
+		}
+		int32_t mv_value = sample_buffer[0];
+		int32_t adc_vref = adc_ref_internal(adc_dev);
+		adc_raw_to_millivolts(adc_vref, ADC_GAIN, ADC_RESOLUTION, &mv_value);
+		printf("ADC-spanning: %d mV\r\n", mv_value);
+
+		int32_t mv_value1 = sample_buffer[1];
+		adc_raw_to_millivolts(adc_vref, ADC_GAIN, ADC_RESOLUTION, &mv_value1);
+		printf("ADC-spanning: %d mV\r\n", mv_value1);
+		testI2c();
+	}
 }
+
+
