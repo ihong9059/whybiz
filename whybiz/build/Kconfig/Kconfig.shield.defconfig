@@ -1,0 +1,2 @@
+osource "c:/project/whybiz/whybiz/boards/shields/*/Kconfig.defconfig"
+osource "C:/ncs/v2.5.0/nrf/boards/shields/*/Kconfig.defconfig"

@@ -113,6 +113,8 @@ struct adc_sequence sequence = {
 	.resolution = ADC_RESOLUTION
 };
 
+#include "nvm.h"
+
 int main(void)
 {
 	int blink_status = 0;
@@ -123,12 +125,15 @@ int main(void)
 // test2
 	// uttecTest();
 	initBle();
-	initSx1509();
+	// initSx1509();
 	if(!device_is_ready(adc_dev)){
 		printf("adc_dev is not ready.");
 	}
 	int err = adc_channel_setup(adc_dev, &ch0_cfg);
 	err = adc_channel_setup(adc_dev, &ch1_cfg);
+	
+	initNvm();
+	nvmTest();
 
 	for (;;) {
 		static bool toggle = false;
@@ -173,7 +178,7 @@ int main(void)
 		int32_t mv_value1 = sample_buffer[1];
 		adc_raw_to_millivolts(adc_vref, ADC_GAIN, ADC_RESOLUTION, &mv_value1);
 		printf("ADC-spanning: %d mV\r\n", mv_value1);
-		testI2c();
+		// testI2c();
 	}
 }
 
