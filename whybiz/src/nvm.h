@@ -12,7 +12,8 @@ void initNvm(void);
 
 void nvmTest(void);
 
-
+uttec_t* getFactor(void);
+void writeFactor(void);
 
 
 #endif 

@@ -203,8 +203,6 @@ void writeOut(uint8_t bitNum, bool output){
 void testI2c(void){
 	static bool toggle = true;
 	static uint16_t count = 0;
-	uint8_t buf[2];
-	int err;
 	switch(count%16){
 		case 0: writeOut(count%8, true); break;
 		case 1: writeOut(count%8, true); break;

@@ -178,6 +178,7 @@ int main(void)
 		int32_t mv_value1 = sample_buffer[1];
 		adc_raw_to_millivolts(adc_vref, ADC_GAIN, ADC_RESOLUTION, &mv_value1);
 		printf("ADC-spanning: %d mV\r\n", mv_value1);
+		nvmTest();
 		// testI2c();
 	}
 }
