@@ -4,11 +4,11 @@
 
 #define USE_INTRANET
 
-#define LOCAL_SSID "ihong"
-#define LOCAL_PASS "hongks@6063"
+// #define LOCAL_SSID "ihong"
+// #define LOCAL_PASS "hongks@6063"
 
-// #define LOCAL_SSID "uttec8"
-// #define LOCAL_PASS "a123456789"
+#define LOCAL_SSID "uttec8"
+#define LOCAL_PASS "a123456789"
 
 #define AP_SSID "TestWebSite"
 #define AP_PASS "023456789"
@@ -39,6 +39,13 @@ IPAddress gateway(192, 168, 1, 1);
 IPAddress subnet(255, 255, 255, 0);
 IPAddress ip;
 
+IPAddress local_gw(192, 168, 8, 1);
+IPAddress primaryDNS(8, 8, 8, 8);   //optional
+IPAddress secondaryDNS(8, 8, 4, 4); //optional
+
+IPAddress local_IP(192, 168, 8, 111);
+
+
 WebServer server(80);
 
 #include "uttec.h"
@@ -63,6 +70,11 @@ void setup() {
   Serial.println("starting server");
 
 #ifdef USE_INTRANET
+  if (!WiFi.config(local_IP, local_gw, subnet, primaryDNS, secondaryDNS)) {
+    Serial.println("STA Failed to configure");
+  }
+  Serial.print("Connecting to ");
+  Serial.println(LOCAL_SSID);
   WiFi.begin(LOCAL_SSID, LOCAL_PASS);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
@@ -97,6 +109,8 @@ void setup() {
   server.begin();
   setPort();
   testSub();
+  initI2c();
+  testEeprom();
 }
 
 void loop() {
