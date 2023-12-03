@@ -15,7 +15,6 @@ void setPort(void);
 void testSub(void);
 void testPort(void);
 
-void initI2c(void);
 void testEeprom(void);
 
 

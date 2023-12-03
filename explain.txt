@@ -1,0 +1,61 @@
+#define PIN_OUTPUT 26 // connected to nothing but an example of a digital write from the web page
+#define PIN_FAN 27    // pin 27 and is a PWM signal to control a fan speed
+#define PIN_LED 2     //On board LED
+#define PIN_A0 34     // some analog input sensor
+#define PIN_A1 35     // some analog input sensor
+
+----------- setup -----------------
+server.on("/", SendWebsite);
+/를 받으면 web page 송신
+
+server.on("/xml", SendXML);
+/xml 를 받으면, XML을 만들고 보낸다.
+
+server.on("/UPDATE_SLIDER", UpdateSlider);
+/UPDATE_SLIDER 를 받으면, esp는 UpdateSlider 함수를 실행하고, 
+
+server.on("/BUTTON_0", ProcessButton_0);
+server.on("/BUTTON_1", ProcessButton_1);
+
+위의 방식으로, browser(Client)로부터 오는 명령을 추가 할수있당.
+
+
+------------ loop ---------------
+- update adc 
+
+server.handleClient();
+
+
+------------- UpdateSlider -----------
+get update value
+set update value
+send update value 
+
+------------- ProcessButton_0 ----------
+LED0 toggle
+set LED0 
+Button 0 ------> Serial out
+send OK
+
+------------- ProcessButton_1 ----------
+PIN_OUTPUT toggle 
+Button 1 ------> Serial out 
+send OK  
+
+------------- SendWebsite ----------
+send PAGE_MAIN 
+
+------------- SendXML ----------
+send all values to XML 
+
+------------- printWifiStatus ----------
+Serial out for all WiFi values 
+
+
+
+
+
+
+
+
+
