@@ -17,6 +17,8 @@ void ProcessButton_6();
 void ProcessButton_7();
 void SendWebsite();
 
+void ProcessSelect();
+void ProcessToggle();
 
 #endif 
 

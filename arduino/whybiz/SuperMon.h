@@ -160,7 +160,59 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
     table tr:last-child td:last-child {
       border-bottom-right-radius: 5px;
     }
-    
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 34px;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      -webkit-transition: .4s;
+      transition: .4s;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      -webkit-transition: .4s;
+      transition: .4s;
+    }
+
+    input:checked + .slider {
+      background-color: #2196F3;
+    }
+
+    input:focus + .slider {
+      box-shadow: 0 0 1px #2196F3;
+    }
+
+    input:checked + .slider:before {
+      -webkit-transform: translateX(26px);
+      -ms-transform: translateX(26px);
+      transform: translateX(26px);
+    }
+
+    .slider.round {
+      border-radius: 34px;
+    }
+
+    .slider.round:before {
+      border-radius: 50%;
+    }
   </style>
 
   <body style="background-color: #efefef" onload="process()">
@@ -240,18 +292,43 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
     <div class="category">Relays</div>
   
     <div class="bodytext">0 ~ 3</div>
-    <button type="button" class = "btn" id = "btn0" onclick="ButtonPress0()">Toggle</button>
-    <button type="button" class = "btn" id = "btn1" onclick="ButtonPress1()">Toggle</button>
-    <button type="button" class = "btn" id = "btn2" onclick="ButtonPress2()">Toggle</button>
-    <button type="button" class = "btn" id = "btn3" onclick="ButtonPress3()">Toggle</button>
+    <button type="button" class = "btn" id = "btn0" onclick="ButtonPress0()"></button>
+    <button type="button" class = "btn" id = "btn1" onclick="ButtonPress1()"></button>
+    <button type="button" class = "btn" id = "btn2" onclick="ButtonPress2()"></button>
+    <button type="button" class = "btn" id = "btn3" onclick="ButtonPress3()"></button>
     </div>
     <br>
     <div class="bodytext">4 ~ 7</div>
-    <button type="button" class = "btn" id = "btn4" onclick="ButtonPress4()">Toggle</button>
-    <button type="button" class = "btn" id = "btn5" onclick="ButtonPress5()">Toggle</button>
-    <button type="button" class = "btn" id = "btn6" onclick="ButtonPress6()">Toggle</button>
-    <button type="button" class = "btn" id = "btn7" onclick="ButtonPress7()">Toggle</button>
+    <button type="button" class = "btn" id = "btn4" onclick="ButtonPress4()"></button>
+    <button type="button" class = "btn" id = "btn5" onclick="ButtonPress5()"></button>
+    <button type="button" class = "btn" id = "btn6" onclick="ButtonPress6()"></button>
+    <button type="button" class = "btn" id = "btn7" onclick="ButtonPress7()"></button>
     </div>
+
+    <br>
+    <select class="category" id="select_value" onchange="ChangeValue()">
+      <option value="1">select1</option>
+      <option value="2">select2</option>
+      <option value="3">select3</option>
+      <option value="4">select4</option>
+    </select>
+
+    <div style="border-radius: 10px !important;">
+      <table style="width:50%">
+      <colgroup>
+        <col span="1" style="background-color:rgb(230,230,230); width: 10%; color:#000000 ;">
+        <col span="1" style="background-color:rgb(200,200,200); width: 10%; color:#000000 ;">
+      </colgroup>
+      <tr>
+        <th colspan="1"><label class="switch"><input type="checkbox" id="act1" onchange="Act1()">
+        <span class="slider round"></span></label><label for="">act1</label></th>
+        <th colspan="1"><label class="switch"><input type="checkbox" id="act2" onchange="Act2()">
+        <span class="slider round"></span></label><label for="">act2</label></th>
+      </tr>
+
+      </table>
+    </div>
+
   </main>
 
   <footer div class="foot" id = "temp" >Whybiz Test Web by UTTEC</div></footer>
@@ -314,13 +391,41 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       xhttp.open("PUT", "BUTTON_6", false);
       xhttp.send(); 
     }
-    
+
     function ButtonPress7() {
+      // var xmlResponse=xmlHttp.responseXML;
+      // xmldoc = xmlResponse.getElementsByTagName("LED7");
+      // message = xmldoc[0].firstChild.nodeValue;
+
       var xhttp = new XMLHttpRequest(); 
+      // xhttp.open("PUT", "BUTTON_7?VALUE="+message, false);
       xhttp.open("PUT", "BUTTON_7", false);
       xhttp.send(); 
     }
     
+    function ChangeValue(){
+      var xhttp = new XMLHttpRequest(); 
+      var value_str = document.getElementById('select_value');
+      xhttp.open("PUT", "UPDATE_SELECT?VALUE="+value_str.options[value_str.selectedIndex].value, false);
+      xhttp.send(); 
+    }
+
+    function Act1(){
+      var xhttp = new XMLHttpRequest(); 
+      var value_str = document.getElementById('act1');
+      var result = 0;
+      if(value_str.checked){result = 1;}
+      xhttp.open("PUT", "UPDATE_TOGGLE?VALUE="+result, false);
+      xhttp.send(); 
+    }
+    function Act2(){
+      var xhttp = new XMLHttpRequest(); 
+      var value_str = document.getElementById('act2');
+      var result = 0;
+      if(value_str.checked){result = 1;}
+      xhttp.open("PUT", "UPDATE_TOGGLE?VALUE="+result, false);
+      xhttp.send(); 
+    }
     // function to handle the response from the ESP
     function response(){
       var message;
@@ -470,6 +575,18 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       document.getElementById("sw8").style.backgroundColor="rgb(200,200,200)";
       if (message == 0){document.getElementById("sw8").innerHTML="OFF";}
       else {document.getElementById("sw8").innerHTML="ON";}
+
+      xmldoc = xmlResponse.getElementsByTagName("act1");
+      message = xmldoc[0].firstChild.nodeValue;
+      document.getElementById("act1").style.backgroundColor="rgb(200,200,200)";
+      if (message == 0){document.getElementById("act1").checked = 1;}
+      else {document.getElementById("act1").checked = 0;}
+
+      xmldoc = xmlResponse.getElementsByTagName("act2");
+      message = xmldoc[0].firstChild.nodeValue;
+      document.getElementById("act2").style.backgroundColor="rgb(200,200,200)";
+      if (message == 0){document.getElementById("act2").checked = 1;}
+      else {document.getElementById("act2").checked = 0;}
     }  
 
     function process(){     

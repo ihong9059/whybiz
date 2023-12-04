@@ -8,11 +8,11 @@
 
 #define USE_INTRANET
 
-#define LOCAL_SSID "ihong"
-#define LOCAL_PASS "hongks@6063"
+// #define LOCAL_SSID "ihong"
+// #define LOCAL_PASS "hongks@6063"
 
-// #define LOCAL_SSID "uttec8"
-// #define LOCAL_PASS "a123456789"
+#define LOCAL_SSID "uttec8"
+#define LOCAL_PASS "a123456789"
 
 #define AP_SSID "TestWebSite"
 #define AP_PASS "023456789"
@@ -43,10 +43,10 @@ IPAddress gateway(192, 168, 1, 1);
 IPAddress subnet(255, 255, 255, 0);
 IPAddress ip;
 
-// IPAddress local_IP(192, 168, 8, 111);
-// IPAddress local_gw(192, 168, 8, 1);
-IPAddress local_IP(192, 168, 0, 111);
-IPAddress local_gw(192, 168, 0, 1);
+IPAddress local_IP(192, 168, 8, 111);
+IPAddress local_gw(192, 168, 8, 1);
+// IPAddress local_IP(192, 168, 0, 111);
+// IPAddress local_gw(192, 168, 0, 1);
 IPAddress primaryDNS(8, 8, 8, 8);   //optional
 IPAddress secondaryDNS(8, 8, 4, 4); //optional
 
@@ -106,6 +106,9 @@ void initWifi(void){
   server.on("/BUTTON_6", ProcessButton_6);
   server.on("/BUTTON_7", ProcessButton_7);
 
+  server.on("/UPDATE_SELECT", ProcessSelect);
+  server.on("/UPDATE_TOGGLE", ProcessToggle);
+
   server.begin();
   setPort();
   testSub();
@@ -127,7 +130,23 @@ void loop_wifi(void){
   server.handleClient();
 }
 
+static uint8_t mySelect = 0;
 
+void ProcessToggle() {
+  String str_select = server.arg("VALUE");
+  // uint8_t select_num = str_select.toInt();
+  // mySelect = select_num;
+  Serial.printf("\r\nSelect: %s\r\n", str_select);
+  server.send(200, "text/plain", ""); //Send web page
+}
+
+void ProcessSelect() {
+  String str_select = server.arg("VALUE");
+  uint8_t select_num = str_select.toInt();
+  mySelect = select_num;
+  Serial.printf("\r\nSelect: %d\r\n", select_num);
+  server.send(200, "text/plain", ""); //Send web page
+}
 
 void ProcessButton_0() {
   Serial.println("Button 0 press");
@@ -175,7 +194,11 @@ void ProcessButton_6() {
 }
 
 void ProcessButton_7() {
-  Serial.println("Button 1 press");
+  String str_value = server.arg("VALUE");
+  uint8_t value = str_value.toInt();
+  Serial.print("LED7 value: "); Serial.println(value);  // LED0 = !LED0;
+
+  Serial.println("Button 7 press");
   relay[7] = !relay[7];
   server.send(200, "text/plain", ""); //Send web page
 }
@@ -186,9 +209,12 @@ void SendWebsite() {
 }
 
 void SendXML() {
-  int16_t lora_rssi = -110;
+  static uint32_t count = 0;
 
-  Serial.println("sending xml");
+  int16_t lora_rssi = -110;
+  if(count++ % 20 == 0)
+    Serial.println("sending xml");
+  else Serial.print(count % 20);
 
   strcpy(XML, "<?xml version = '1.0'?>\n<Data>\n");
 
@@ -247,6 +273,18 @@ void SendXML() {
   if (sw[7]) {strcat(XML, "<sw8>1</sw8>\n");}
   else {strcat(XML, "<sw8>0</sw8>\n");}
 
+  // switch(mySelect){
+  //   case 0: strcat(XML, "<select>0</select>\n"); break; 
+  //   case 1: strcat(XML, "<select>1</select>\n"); break; 
+  //   case 2: strcat(XML, "<select>2</select>\n"); break; 
+  //   case 3: strcat(XML, "<select>3</select>\n"); break; 
+  // }
+  // if(count % 2) {strcat(XML, "<act1>1</act1>\n");}
+  // else {strcat(XML, "<act1>0</act1>\n");}
+
+  // if(count % 2) {strcat(XML, "<act2>1</act2>\n");}
+  // else {strcat(XML, "<act2>0</act2>\n");}
+
   sprintf(buf, "<VERSION>%02f</VERSION>\n", 1.1);
   strcat(XML, buf);
 
@@ -255,7 +293,7 @@ void SendXML() {
 
 
   strcat(XML, "</Data>\n");
-  Serial.println(XML);
+  // Serial.println(XML);
   server.send(200, "text/xml", XML);
 }
 
