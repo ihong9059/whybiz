@@ -67,7 +67,7 @@ int main(void)
 		callPrint();
 		uttecTest();
 		// testI2c();
-		testSendBle();
+		procTxBle();
 	}
 }
 

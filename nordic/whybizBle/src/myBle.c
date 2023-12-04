@@ -464,13 +464,6 @@ static struct bt_conn_auth_cb conn_auth_callbacks;
 static struct bt_conn_auth_info_cb conn_auth_info_callbacks;
 #endif
 
-void procRxData(uint8_t* data, uint16_t len){
-	int err;
-	err = uart_tx(uart, data, len, SYS_FOREVER_MS);
-	if (err) {
-		LOG_INF("error in procRxData----------------");
-	}
-}
 
 static void bt_receive_cb(struct bt_conn *conn, const uint8_t *const data,
 			  uint16_t len)
@@ -511,7 +504,7 @@ static void bt_receive_cb(struct bt_conn *conn, const uint8_t *const data,
 			tx->data[tx->len] = '\n';
 			tx->len++;
 		}
-		procRxData((uint8_t *)tx->data, tx->len);
+		procRxBle((uint8_t *)tx->data, tx->len);
 		// err = uart_tx(uart, tx->data, tx->len, SYS_FOREVER_MS);
 		// if (err) {
 		// 	k_fifo_put(&fifo_uart_tx_data, tx);
@@ -635,10 +628,22 @@ void initBle(void){
 
 }
 
+
+void procRxBle(uint8_t* data, uint16_t len){
+	printk("procRxData\r\n");
+	for(int i = 0; i < len; i++) printk("data[%d]: %d\r\n", i, *data++);
+	// int err;
+	// err = uart_tx(uart, data, len, SYS_FOREVER_MS);
+	// // printf("procRxData\r\n");
+	// if (err) {
+	// 	LOG_INF("error in procRxData----------------");
+	// }
+}
+
 // 1: adc:1, switch:2, relay:3, lora:4
 // 2: number
 // 3: value(0, 1, value)
-void testSendBle(void){
+void procTxBle(void){
 	static uint8_t buf[3] = {0, };
 	static uint16_t count = 0;
 	static uint16_t sw = 0;

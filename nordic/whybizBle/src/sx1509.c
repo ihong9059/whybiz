@@ -13,51 +13,51 @@ void initSx1509(void){
 	uint8_t buf[2];
 
 	if(!device_is_ready(i2c0_dev)){
-		printf("i2c_dev is not ready ----------->\r\n");
+		printk("i2c_dev is not ready ----------->\r\n");
 	}
-	printf("<--------- pass i2c device\r\n");
+	printk("<--------- pass i2c device\r\n");
 
 	// buf[0] = 0x00; buf[1] = 0xff; //port b, input disable	
 	buf[0] = 0x00; buf[1] = 0x00; //port b, input enable	
 	err = i2c_write(i2c0_dev, buf, 2, SX1509_ADDRESS);
 	if(err < 0){
-		printf("i2c write fail------------\r\n");
+		printk("i2c write fail------------\r\n");
 		// return 0;
 	}
 	buf[0] = 0x01; buf[1] = 0x00; //port a, input enable
 	// buf[0] = 0x01; buf[1] = 0xff; //port a, input disable
 	err = i2c_write(i2c0_dev, buf, 2, SX1509_ADDRESS);
 	if(err < 0){
-		printf("i2c write fail------------\r\n");
+		printk("i2c write fail------------\r\n");
 		// return 0;
 	}
 
 	buf[0] = 0x06; buf[1] = 0xff; //port b, pull up
 	err = i2c_write(i2c0_dev, buf, 2, SX1509_ADDRESS);
 	if(err < 0){
-		printf("i2c write fail------------\r\n");
+		printk("i2c write fail------------\r\n");
 		// return 0;
 	}
 	buf[0] = 0x07; buf[1] = 0xff; //port a, pull up
 	err = i2c_write(i2c0_dev, buf, 2, SX1509_ADDRESS);
 	if(err < 0){
-		printf("i2c write fail------------\r\n");
+		printk("i2c write fail------------\r\n");
 		// return 0;
 	}
 
 	buf[0] = 0x0e; buf[1] = 0x00; //port b, output
 	err = i2c_write(i2c0_dev, buf, 2, SX1509_ADDRESS);
 	if(err < 0){
-		printf("i2c write fail------------\r\n");
+		printk("i2c write fail------------\r\n");
 		// return 0;
 	}
 	buf[0] = 0x0f; buf[1] = 0xff; //port a, input
 	err = i2c_write(i2c0_dev, buf, 2, SX1509_ADDRESS);
 	if(err < 0){
-		printf("i2c write fail------------\r\n");
+		printk("i2c write fail------------\r\n");
 		// return 0;
 	}
-	printf("end of initSx1509\r\n");
+	printk("end of initSx1509\r\n");
 
 }
 
@@ -126,11 +126,11 @@ void readIn(void){
 
 	err = i2c_write(i2c0_dev, &buf, 1, SX1509_ADDRESS);
 	if(err < 0){
-		printf("i2c write fail------------\r\n");
+		printk("i2c write fail------------\r\n");
 	}
 	err = i2c_read(i2c0_dev, &buf, 1, SX1509_ADDRESS);
 	if(err < 0){
-		printf("i2c write fail------------\r\n");
+		printk("i2c write fail------------\r\n");
 	}
 	sx1509_in = buf;
 }
@@ -141,13 +141,13 @@ uint8_t readOut(void){
 
 	err = i2c_write(i2c0_dev, &buf, 1, SX1509_ADDRESS);
 	if(err < 0){
-		printf("i2c write fail------------\r\n");
+		printk("i2c write fail------------\r\n");
 	}
 	err = i2c_read(i2c0_dev, &buf, 1, SX1509_ADDRESS);
 	if(err < 0){
-		printf("i2c write fail------------\r\n");
+		printk("i2c write fail------------\r\n");
 	}
-	printf("read buf: %x\r\n", buf);
+	printk("read buf: %x\r\n", buf);
 	return buf;
 }
 
@@ -155,7 +155,7 @@ void writeOut(uint8_t bitNum, bool output){
 	uint8_t regB = readOut();
 	// uint8_t regB = 0;
 	int err;
-	printf("~BIT_0: %x\r\n", (uint8_t)~BIT_0);
+	printk("~BIT_0: %x\r\n", (uint8_t)~BIT_0);
 
 	switch(bitNum){
 		case 0:
@@ -195,9 +195,9 @@ void writeOut(uint8_t bitNum, bool output){
 	buf[0] = 0x10; buf[1] = regB; //regB, all high
 	err = i2c_write(i2c0_dev, buf, 2, SX1509_ADDRESS);
 	if(err < 0){
-		printf("i2c write fail------------\r\n");
+		printk("i2c write fail------------\r\n");
 	}
-	printf("regB: %x\r\n", regB);
+	printk("regB: %x\r\n", regB);
 }
 
 void testI2c(void){
@@ -225,12 +225,12 @@ void testI2c(void){
 	}
 	count++;
 	toggle = !toggle;
-	printf("12345----------------\r\n");
+	printk("12345----------------\r\n");
 	readIn();
 	if(isSwitchOn_0()){
-		printf("Switch1_On\r\n");
+		printk("Switch1_On\r\n");
 	}
 	else{
-		printf("Switch1_Off\r\n");
+		printk("Switch1_Off\r\n");
 	}
 }
