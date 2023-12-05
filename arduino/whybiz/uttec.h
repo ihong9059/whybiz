@@ -11,11 +11,14 @@ typedef struct{
 } factor_t;
 
 typedef struct{
+  bool LED0;
   int adc0;
   int adc1;
   uint8_t relay[8];
   uint8_t sw[8];
 } device_t;
+
+void initUttec(void);
 
 device_t* getMyDevice(void);
 void setMyDevice(device_t data);

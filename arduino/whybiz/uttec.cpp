@@ -10,6 +10,11 @@
 #define PWR_CTL         27
 #define LORA_RST        18
 
+#define PIN_LED 2     //On board LED
+
+#define PIN_A0 34     // some analog input sensor
+#define PIN_A1 35     // some analog input sensor
+
 factor_t myFactor = {0,};
 device_t myDevice = {0,};
 
@@ -23,25 +28,33 @@ void setMyDevice(device_t data){
   myDevice = data;
 }
 
-void setPort(void){
+void loop_uttec(void){
+  static uint32_t SensorUpdate = 0;
+  uint32_t updateTime = 1000;
+  if ((millis() - SensorUpdate) >= updateTime) {
+    SensorUpdate = millis();
+    myDevice.adc0 = analogRead(PIN_A0);
+    myDevice.adc1 = analogRead(PIN_A1);
+    for(int i = 0; i < 8; i++){
+      myDevice.sw[i] = !myDevice.sw[i];
+    }
+    // testPort();
+  }
+}
+
+void initUttec(void){
   pinMode(SEL1, OUTPUT);
   pinMode(SEL2, OUTPUT);
   pinMode(SX_RESET, OUTPUT);
   pinMode(RS485_EN, OUTPUT);
   pinMode(PWR_CTL, OUTPUT);
   pinMode(LORA_RST, OUTPUT);
+  pinMode(PIN_LED, OUTPUT);
+  digitalWrite(PIN_LED, 1);
+  // digitalWrite(PIN_LED, myDevice.LED0);
 }
 
-void testPort(void){
-  static bool toggle = false;
-
-  // digitalWrite(SEL1, toggle);
-  // digitalWrite(SEL2, toggle);
-  // digitalWrite(SX_RESET, toggle);
-  // digitalWrite(RS485_EN, toggle);
-  // digitalWrite(PWR_CTL, toggle);
-  digitalWrite(LORA_RST, toggle);
-  toggle = !toggle;
+void setPort(void){
 }
 
 void initEeprom(void){
@@ -74,10 +87,17 @@ void procAdc(uttecJson_t data){
   Serial.printf("procAdc in uttec.c\r\n");
 }
 
-void loop_uttec(void){
+void testPort(void){
+  static bool toggle = false;
 
+  // digitalWrite(SEL1, toggle);
+  // digitalWrite(SEL2, toggle);
+  // digitalWrite(SX_RESET, toggle);
+  // digitalWrite(RS485_EN, toggle);
+  // digitalWrite(PWR_CTL, toggle);
+  digitalWrite(LORA_RST, toggle);
+  toggle = !toggle;
 }
-
 
 
 
