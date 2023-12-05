@@ -2,6 +2,7 @@
 #include <SparkFunSX1509.h> //Click here for the library: http://librarymanager/All#SparkFun_SX1509
 
 #include "sx1509Lib.h"
+#include "myJson.h"
 
 // SX1509 I2C address (set by ADDR1 and ADDR0 (00 by default):
 const byte SX1509_ADDRESS = 0x3E; // SX1509 I2C address
@@ -39,4 +40,12 @@ void initSx1509(void){
   // aren't 100% exact. The library will estimate to try to
   // get them as close as possible. Play with the clock
   // divider to maybe get more accurate timing.  
+}
+
+void procSwitch(uttecJson_t data){
+  Serial.printf("procSwitch in sx1509Lib\r\n");
+}
+
+void procRelay(uttecJson_t){
+  Serial.printf("procRelay in sx1509Lib\r\n");
 }
