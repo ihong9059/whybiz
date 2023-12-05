@@ -10,13 +10,21 @@ typedef struct{
   float     test;
 } factor_t;
 
+typedef struct{
+  int adc0;
+  int adc1;
+  uint8_t relay[8];
+  uint8_t sw[8];
+} device_t;
+
+device_t* getMyDevice(void);
+void setMyDevice(device_t data);
+
 void setPort(void);
-
-void testSub(void);
 void testPort(void);
-
 void testEeprom(void);
 
+void loop_uttec(void);
 
 #endif 
 

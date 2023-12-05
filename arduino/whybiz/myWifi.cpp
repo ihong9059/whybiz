@@ -17,21 +17,15 @@
 #define AP_SSID "TestWebSite"
 #define AP_PASS "023456789"
 
-#define PIN_OUTPUT 26 // connected to nothing but an example of a digital write from the web page
-#define PIN_FAN 27    // pin 27 and is a PWM signal to control a fan speed
 #define PIN_LED 2     //On board LED
 #define PIN_A0 34     // some analog input sensor
 #define PIN_A1 35     // some analog input sensor
 
 int BitsA0 = 0, BitsA1 = 0;
-int FanSpeed = 0;
-bool LED0 = false, SomeOutput = false;
-uint32_t SensorUpdate = 0;
-int FanRPM = 0;
+bool LED0 = false;
 
 char XML[2048];
 
-char buf[32];
 
 bool relay[8] = {0,};
 bool sw[8] = {0,};
@@ -54,16 +48,10 @@ WebServer server(80);
 
 void initWifi(void){
 
-  pinMode(PIN_FAN, OUTPUT);
   pinMode(PIN_LED, OUTPUT);
 
   LED0 = false;
   digitalWrite(PIN_LED, LED0);
-
-  // configure LED PWM functionalitites
-  ledcSetup(0, 10000, 8);
-  ledcAttachPin(PIN_FAN, 0);
-  ledcWrite(0, FanSpeed);
 
   disableCore0WDT();
 
@@ -111,12 +99,12 @@ void initWifi(void){
 
   server.begin();
   setPort();
-  testSub();
   testEeprom();
-  initSx1509();
+  // initSx1509();
 }
 
 void loop_wifi(void){
+  static uint32_t SensorUpdate = 0;
   uint32_t updateTime = 1000;
   if ((millis() - SensorUpdate) >= updateTime) {
     SensorUpdate = millis();
@@ -210,6 +198,7 @@ void SendWebsite() {
 
 void SendXML() {
   static uint32_t count = 0;
+  char buf[32];
 
   int16_t lora_rssi = -110;
   if(count++ % 20 == 0)

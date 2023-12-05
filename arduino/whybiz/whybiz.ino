@@ -10,8 +10,10 @@
 
 // #define BLE_MODE 1
 
-#define RXD2 16
-#define TXD2 17
+#define RXD2 4  //ok
+#define TXD2 5  //ok
+// #define RXD2 16 //ok
+// #define TXD2 17 //ok
 // #define RXD2 10
 // #define TXD2 9
 
@@ -34,7 +36,7 @@ void setup() {
   }
   Serial.printf("end----\r\n");
   generateJsonSerial();
-  initSx1509();
+  // initSx1509();
   randomSeed(analogRead(0));
 }
 
@@ -46,9 +48,10 @@ void loop() {
 #else
   loop_wifi();
 #endif  
-  testReceive();
+  testReceiveJson();
   // Serial.printf("Loop: %ld\r\n", count++);
   delay(200);
-  Serial2.printf("{\"device\":%d,\"value\":%d}\r\n", count++, value);
+  testSendJson();
+  // Serial2.printf("{\"device\":%d,\"value\":%d}\r\n", count++, value);
   // delay(200);
 }

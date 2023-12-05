@@ -1,6 +1,7 @@
 
 #include "uttec.h"
 #include "EEPROM.h"
+#include "myJson.h"
 
 #define SEL1            22 //SCL(32) 
 #define SEL2            21 //SDA(33)
@@ -9,8 +10,17 @@
 #define PWR_CTL         27
 #define LORA_RST        18
 
-void testSub(void){
-    Serial.printf("testUttec\r\n");
+factor_t myFactor = {0,};
+device_t myDevice = {0,};
+
+#define EEPROM_MAX  1024
+
+device_t* getMyDevice(void){
+  return &myDevice;
+}
+
+void setMyDevice(device_t data){
+  myDevice = data;
 }
 
 void setPort(void){
@@ -31,13 +41,8 @@ void testPort(void){
   // digitalWrite(RS485_EN, toggle);
   // digitalWrite(PWR_CTL, toggle);
   digitalWrite(LORA_RST, toggle);
-
   toggle = !toggle;
 }
-
-factor_t myFactor = {0,};
-
-#define EEPROM_MAX  1024
 
 void initEeprom(void){
   EEPROM.begin(EEPROM_MAX);
@@ -59,6 +64,18 @@ void testEeprom(void){
   Serial.printf("rssi: %d\r\n", newFactor.rssi);
   Serial.printf("temp: %d\r\n", newFactor.temp);
   Serial.printf("test: %0.2f\r\n", newFactor.test);
+}
+
+void procCmdLine(uttecJson_t data){
+  Serial.printf("procCmdLine in uttec.c\r\n");
+}
+
+void procAdc(uttecJson_t data){
+  Serial.printf("procAdc in uttec.c\r\n");
+}
+
+void loop_uttec(void){
+
 }
 
 
