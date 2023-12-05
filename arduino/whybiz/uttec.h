@@ -4,7 +4,7 @@
 #include <Arduino.h>
 
 typedef struct{
-  uint16_t  version;
+  float  version;
   int16_t   rssi;
   uint16_t  temp;
   float     test;
