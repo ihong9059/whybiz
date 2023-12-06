@@ -37,6 +37,7 @@ void initPort(void);
 void testPort(void);
 
 void loop_uttec(void);
+void signal(void);
 
 #endif 
 

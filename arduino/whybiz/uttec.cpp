@@ -11,7 +11,7 @@
 #define PWR_CTL         27
 #define LORA_RST        18
 
-#define PIN_LED 2     //On board LED
+#define SIGNAL_LED 2     //On board LED
 
 #define PIN_A0 34     // some analog input sensor
 #define PIN_A1 35     // some analog input sensor
@@ -48,8 +48,7 @@ void initPort(void){
   pinMode(RS485_EN, OUTPUT);
   pinMode(PWR_CTL, OUTPUT);
   pinMode(LORA_RST, OUTPUT);
-  pinMode(PIN_LED, OUTPUT);
-  digitalWrite(PIN_LED, 1);
+  pinMode(SIGNAL_LED, OUTPUT);
 }
 
 void dispFactor(void){
@@ -117,6 +116,10 @@ void testPort(void){
   toggle = !toggle;
 }
 
-
+void signal(void){
+  static bool toggle = false;
+  digitalWrite(SIGNAL_LED, toggle);
+  toggle = !toggle;
+}
 
 

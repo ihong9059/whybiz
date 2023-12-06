@@ -31,11 +31,24 @@ class MyServerCallbacks: public BLEServerCallbacks {
     }
 };
 
+void procRx(uint8_t device, uint8_t value){
+  uint8_t pin = device % 10;
+  device = device / 10;
+  Serial.printf("device: %d\r\n", device);
+  switch(device){
+    case 4:
+      relay(pin, value);
+    break;
+    default: Serial.printf("Error-------- %d\r\n", device); break;
+  }
+}
+
 class MyCallbacks: public BLECharacteristicCallbacks {
     void onWrite(BLECharacteristic *pCharacteristic) {
       std::string rxValue = pCharacteristic->getValue();
       Serial.printf("length: %d\r\n", rxValue.length());
       Serial.printf("first: %d, second: %d\r\n", rxValue[0], rxValue[1]);
+      procRx(rxValue[0], rxValue[1]);
       // if (rxValue.length() > 0) {
       //   Serial.println("*********");
       //   Serial.print("Received Value: ");

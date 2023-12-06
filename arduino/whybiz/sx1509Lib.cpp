@@ -4,42 +4,25 @@
 #include "sx1509Lib.h"
 #include "myJson.h"
 
+sx1509_t mySx1509 = {0, };
 // SX1509 I2C address (set by ADDR1 and ADDR0 (00 by default):
 const byte SX1509_ADDRESS = 0x3E; // SX1509 I2C address
 SX1509 io;                        // Create an SX1509 object to be used throughout
 
-// SX1509 Pin definition:
-const byte SX1509_LED_PIN = 15; // LED to SX1509's pin 15
-
 void initSx1509(void){
   Serial.println("SX1509 Example");
-
   Wire.begin();
-
-  // Call io.begin(<address>) to initialize the SX1509. If it
-  // successfully communicates, it'll return 1.
   if (io.begin(SX1509_ADDRESS) == false)
   {
     Serial.println("Failed to communicate. Check wiring and address of SX1509.");
-    while (1)
-      ; // If we fail to communicate, loop forever.
+    while (1);
   }
-
-  // Set up the SX1509's clock to use the internal 2MHz
-  // oscillator. The second parameter divides the oscillator
-  // clock to generate a slower LED clock. 4 divides the 2MHz
-  // clock by 2 ^ (4-1) (8, ie. 250kHz). The divider parameter
-  // can be anywhere between 1-7.
-  io.clock(INTERNAL_CLOCK_2MHZ, 4);
-
-  io.pinMode(SX1509_LED_PIN, OUTPUT); // Set LED pin to OUTPUT
-
-  // Blink the LED pin -- ~1000 ms LOW, ~500 ms HIGH:
-  io.blink(SX1509_LED_PIN, 1000, 500);
-  // The timing parameters are in milliseconds, but they
-  // aren't 100% exact. The library will estimate to try to
-  // get them as close as possible. Play with the clock
-  // divider to maybe get more accurate timing.  
+  for(uint8_t i = 0; i < 8; i++){
+    mySx1509.relayPin[i] = i + 8;
+    io.pinMode(mySx1509.relayPin[i], OUTPUT); // Set LED pin to OUTPUT
+    mySx1509.swPin[i] = i;
+    io.pinMode(mySx1509.swPin[i], INPUT_PULLUP); // Set LED pin to OUTPUT
+  }
 }
 
 void procSwitch(uttecJson_t data){
@@ -48,4 +31,32 @@ void procSwitch(uttecJson_t data){
 
 void procRelay(uttecJson_t){
   Serial.printf("procRelay in sx1509Lib\r\n");
+}
+
+void testRelay(void){
+  static uint16_t count = 0;
+  static bool toggle = false;
+  if(toggle){
+    relay(count % 8, 1);
+    count++;
+  }
+  else{
+    relay(count % 8, 0);
+  }
+  toggle = !toggle;
+}
+
+void testSwitch(void){
+  static uint16_t count = 0;
+  uint8_t i = count++ % 8;
+  if(io.digitalRead(mySx1509.swPin[i])){
+    Serial.printf("pin: %d, High\r\n", i);
+  }
+  else{
+    Serial.printf("pin: %d, Low\r\n", i);
+  }
+}
+
+void relay(uint8_t pin, uint8_t set){
+  io.digitalWrite(mySx1509.relayPin[pin], set);
 }

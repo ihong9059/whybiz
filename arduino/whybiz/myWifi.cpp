@@ -8,7 +8,7 @@
 
 #define USE_INTRANET
 
-// #define MYHOME 1
+#define MYHOME 1
 
 #ifdef MYHOME
 #define LOCAL_SSID "ihong"
@@ -84,6 +84,10 @@ void initWifi(void){
   server.on("/UPDATE_TOGGLE", ProcessToggle);
 
   server.begin();
+  device_t* pData = getMyDevice();
+  for(int i = 0; i < 8; i++){
+    pData->relay[i] = 1;
+  }
   // testEeprom();
   // initSx1509();
 }
@@ -111,6 +115,8 @@ void ProcessSelect() {
 
 void ProcessButton_0() {
   device_t* pData = getMyDevice();
+  if(pData->relay[0]) relay(0, 1);
+  else relay(0, 0);
   pData->relay[0] = !pData->relay[0];
   Serial.println("Button 0 press");
   server.send(200, "text/plain", ""); //Send web page
@@ -118,6 +124,8 @@ void ProcessButton_0() {
 
 void ProcessButton_1() {
   device_t* pData = getMyDevice();
+  if(pData->relay[1]) relay(1, 1);
+  else relay(1, 0);
   pData->relay[1] = !pData->relay[1];
   Serial.println("Button 1 press");
   server.send(200, "text/plain", ""); //Send web page
@@ -125,6 +133,8 @@ void ProcessButton_1() {
 
 void ProcessButton_2() {
   device_t* pData = getMyDevice();
+  if(pData->relay[2]) relay(2, 1);
+  else relay(2, 0);
   pData->relay[2] = !pData->relay[2];
   Serial.println("Button 2 press");
   server.send(200, "text/plain", ""); //Send web page
@@ -132,6 +142,8 @@ void ProcessButton_2() {
 
 void ProcessButton_3() {
   device_t* pData = getMyDevice();
+  if(pData->relay[3]) relay(3, 1);
+  else relay(3, 0);
   pData->relay[3] = !pData->relay[3];
   Serial.println("Button 3 press");
   server.send(200, "text/plain", ""); //Send web page
@@ -139,6 +151,8 @@ void ProcessButton_3() {
 
 void ProcessButton_4() {
   device_t* pData = getMyDevice();
+  if(pData->relay[4]) relay(4, 1);
+  else relay(4, 0);
   pData->relay[4] = !pData->relay[4];
   Serial.println("Button 4 press");
   server.send(200, "text/plain", ""); //Send web page
@@ -146,6 +160,8 @@ void ProcessButton_4() {
 
 void ProcessButton_5() {
   device_t* pData = getMyDevice();
+  if(pData->relay[5]) relay(5, 1);
+  else relay(5, 0);
   pData->relay[5] = !pData->relay[5];
   Serial.println("Button 5 press");
   server.send(200, "text/plain", ""); //Send web page
@@ -153,6 +169,8 @@ void ProcessButton_5() {
 
 void ProcessButton_6() {
   device_t* pData = getMyDevice();
+  if(pData->relay[6]) relay(6, 1);
+  else relay(6, 0);
   pData->relay[6] = !pData->relay[6];
   Serial.println("Button 6 press");
   server.send(200, "text/plain", ""); //Send web page
@@ -160,6 +178,8 @@ void ProcessButton_6() {
 
 void ProcessButton_7() {
   device_t* pData = getMyDevice();
+  if(pData->relay[7]) relay(7, 1);
+  else relay(7, 0);
   pData->relay[7] = !pData->relay[7];
   Serial.println("Button 7 press");
   server.send(200, "text/plain", ""); //Send web page
