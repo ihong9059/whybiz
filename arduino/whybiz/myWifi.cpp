@@ -8,7 +8,7 @@
 
 #define USE_INTRANET
 
-#define MYHOME 1
+// #define MYHOME 1
 
 #ifdef MYHOME
 #define LOCAL_SSID "ihong"
@@ -84,9 +84,8 @@ void initWifi(void){
   server.on("/UPDATE_TOGGLE", ProcessToggle);
 
   server.begin();
-  setPort();
-  testEeprom();
-  initSx1509();
+  // testEeprom();
+  // initSx1509();
 }
 
 void loop_wifi(void){

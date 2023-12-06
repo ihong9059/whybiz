@@ -8,7 +8,7 @@
 #include "sx1509Lib.h"
 #include "myJson.h"
 
-#define BLE_MODE 1
+// #define BLE_MODE 1
 
 #define RXD2 4  //ok
 #define TXD2 5  //ok

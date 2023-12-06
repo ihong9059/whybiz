@@ -2,6 +2,7 @@
 #include "uttec.h"
 #include "EEPROM.h"
 #include "myJson.h"
+#include "sx1509Lib.h"
 
 #define SEL1            22 //SCL(32) 
 #define SEL2            21 //SDA(33)
@@ -17,8 +18,6 @@
 
 factor_t myFactor = {0,};
 device_t myDevice = {0,};
-
-#define EEPROM_MAX  1024
 
 device_t* getMyDevice(void){
   return &myDevice;
@@ -42,7 +41,7 @@ void loop_uttec(void){
   }
 }
 
-void initUttec(void){
+void initPort(void){
   pinMode(SEL1, OUTPUT);
   pinMode(SEL2, OUTPUT);
   pinMode(SX_RESET, OUTPUT);
@@ -51,32 +50,51 @@ void initUttec(void){
   pinMode(LORA_RST, OUTPUT);
   pinMode(PIN_LED, OUTPUT);
   digitalWrite(PIN_LED, 1);
-  // digitalWrite(PIN_LED, myDevice.LED0);
 }
 
-void setPort(void){
+void dispFactor(void){
+    EEPROM.readBytes(0, &myFactor, sizeof(factor_t));
+    Serial.printf("flag: %x\r\n", myFactor.flag);
+    Serial.printf("version: %d\r\n", myFactor.version);
+    Serial.printf("mode: %0.2f\r\n", myFactor.mode);
+    Serial.printf("channel: %d\r\n", myFactor.channel);
+    Serial.printf("rssi: %d\r\n", myFactor.rssi);
+    delay(2000);
 }
 
 void initEeprom(void){
   EEPROM.begin(EEPROM_MAX);
   Serial.printf("EEPROM Size: %d\r\n", EEPROM.length());
-
+  EEPROM.readBytes(0, &myFactor, sizeof(factor_t));
+  
+  if(myFactor.flag != FLASH_FLAG){
+    Serial.printf("New software version---> 2023.12.06\r\n");
+    delay(2000);
+    myFactor.flag = FLASH_FLAG;
+    myFactor.version = VERSION;
+    myFactor.mode = 0;
+    myFactor.channel = 21; //lora channel
+    myFactor.rssi = -102;
+    myFactor.uChannel = 0; //uart channel
+    for(int i = 0; i < sizeof(myFactor.relay); i++){
+      myFactor.relay[i] = i;
+    }
+    myFactor.uiTest = 0x1234;
+    myFactor.fTest = 0.001;
+    EEPROM.writeBytes(0, &myFactor, sizeof(myFactor));
+    EEPROM.commit();
+  }
+  else{
+    Serial.printf("Already factor Ok.\r\n");
+    dispFactor();
+  }
+  // while(1);
 }
 
-void testEeprom(void){
+void initUttec(void){
   initEeprom();
-  myFactor.version = 1;
-  myFactor.rssi = -108;
-  myFactor.temp = 1234;
-  myFactor.test = 43.21;
-
-  EEPROM.writeBytes(0, &myFactor, sizeof(myFactor));
-  factor_t newFactor = {0, };
-  EEPROM.readBytes(0, &newFactor, sizeof(factor_t));
-  Serial.printf("version: %d\r\n", newFactor.version);
-  Serial.printf("rssi: %d\r\n", newFactor.rssi);
-  Serial.printf("temp: %d\r\n", newFactor.temp);
-  Serial.printf("test: %0.2f\r\n", newFactor.test);
+  initPort();
+  initSx1509();
 }
 
 void procCmdLine(uttecJson_t data){

@@ -3,11 +3,20 @@
 
 #include <Arduino.h>
 
+#define FLASH_FLAG  0xaaaa
+#define VERSION     0.1
+#define EEPROM_MAX  1024
+
 typedef struct{
-  float  version;
+  uint16_t  flag;
+  float     version;
+  uint8_t   mode;
+  uint8_t   channel;
   int16_t   rssi;
-  uint16_t  temp;
-  float     test;
+  uint8_t   uChannel;
+  uint8_t   relay[8];
+  uint16_t  uiTest;
+  float     fTest;
 } factor_t;
 
 typedef struct{
@@ -18,14 +27,14 @@ typedef struct{
   uint8_t sw[8];
 } device_t;
 
+/* initEeprom, initSx1509, initPort. 2023.12.06 */ 
 void initUttec(void);
 
 device_t* getMyDevice(void);
 void setMyDevice(device_t data);
 
-void setPort(void);
+void initPort(void);
 void testPort(void);
-void testEeprom(void);
 
 void loop_uttec(void);
 
