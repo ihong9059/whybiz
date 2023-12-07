@@ -8,7 +8,7 @@
 #include "sx1509Lib.h"
 #include "myJson.h"
 
-#define BLE_MODE 1
+// #define BLE_MODE 1
 
 #define RXD2 4  //ok
 #define TXD2 5  //ok
@@ -21,7 +21,6 @@ void setup() {
   Serial.begin(115200);
   Serial2.begin(115200, SERIAL_8N1, RXD2, TXD2);
   Serial.printf("Now start Whybiz project. 2023.12.03\r\n");
-  Serial2.printf("Now start Whybiz project. 2023.12.03\r\n");
   initUttec();
   
 #ifdef BLE_MODE  
@@ -40,10 +39,18 @@ void loop() {
   loop_wifi();
 #endif  
   loop_uttec();
-  testReceiveJson();
-  delay(500);
-  testSendJson();
+  // testReceiveJson();
+  delay(600);
+  // testSendJson();
   // testRelay();
   // testSwitch();
   signal();
+  // Serial2.printf("AT=U");
+  digitalWrite(RS485_EN, 1);
+  Serial2.printf("Lora test: %d\r\n", count);
+  delay(5);
+  digitalWrite(RS485_EN, 0);
+  Serial.printf("Lora test: %d\r\n", count);
+  testReceive();
+  count++;
 }

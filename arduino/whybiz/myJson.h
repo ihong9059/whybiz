@@ -11,6 +11,8 @@ typedef struct{
 
 #define MAX_DOC 100
 
+void testReceive(void);
+
 void testParse(void);
 void generateJsonSerial(void);
 void testReceiveJson(void);

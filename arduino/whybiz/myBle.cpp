@@ -37,7 +37,7 @@ void procRx(uint8_t device, uint8_t value){
   Serial.printf("device: %d\r\n", device);
   switch(device){
     case 4:
-      relay(pin, value);
+      setRelay(pin, value);
     break;
     default: Serial.printf("Error-------- %d\r\n", device); break;
   }

@@ -37,11 +37,11 @@ void testRelay(void){
   static uint16_t count = 0;
   static bool toggle = false;
   if(toggle){
-    relay(count % 8, 1);
+    setRelay(count % 8, 1);
     count++;
   }
   else{
-    relay(count % 8, 0);
+    setRelay(count % 8, 0);
   }
   toggle = !toggle;
 }
@@ -49,7 +49,8 @@ void testRelay(void){
 void testSwitch(void){
   static uint16_t count = 0;
   uint8_t i = count++ % 8;
-  if(io.digitalRead(mySx1509.swPin[i])){
+  // if(io.digitalRead(mySx1509.swPin[i])){
+  if(getSwitch(i)){
     Serial.printf("pin: %d, High\r\n", i);
   }
   else{
@@ -57,6 +58,10 @@ void testSwitch(void){
   }
 }
 
-void relay(uint8_t pin, uint8_t set){
+void setRelay(uint8_t pin, uint8_t set){
   io.digitalWrite(mySx1509.relayPin[pin], set);
+}
+
+uint8_t getSwitch(uint8_t pin){
+  return io.digitalRead(mySx1509.swPin[pin]);
 }

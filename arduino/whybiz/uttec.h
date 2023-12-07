@@ -7,6 +7,13 @@
 #define VERSION     0.1
 #define EEPROM_MAX  1024
 
+#define SEL1            32 //SCL(32) 
+#define SEL2            33 //SDA(33)
+#define SX_RESET        17
+#define RS485_EN        19
+#define PWR_CTL         27
+#define LORA_RST        18
+
 typedef struct{
   uint16_t  flag;
   float     version;
@@ -38,6 +45,7 @@ void testPort(void);
 
 void loop_uttec(void);
 void signal(void);
+void setUartChannel(uint8_t channel);
 
 #endif 
 

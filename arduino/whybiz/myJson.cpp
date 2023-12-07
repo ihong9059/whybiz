@@ -3,6 +3,17 @@
 #include "uttec.h"
 #include "myJson.h"
 
+void testReceive(void){
+  char temp[2000] = {0, };
+  uint8_t count = 0;
+  // send data only when you receive data:
+  while(Serial2.available() > 0){
+    // read the incoming byte:
+    temp[count++] = Serial2.read();
+  }
+  Serial.printf("%s", temp);
+}
+
 void testSendJson(void){
   StaticJsonDocument<MAX_DOC> doc;
   uint8_t rand = random(1, 100);

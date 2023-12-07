@@ -11,7 +11,8 @@ typedef struct{
 void initSx1509(void);
 void testRelay(void);
 void testSwitch(void);
-void relay(uint8_t pin, uint8_t set);
+void setRelay(uint8_t pin, uint8_t set);
+uint8_t getSwitch(uint8_t pin);
 
 #endif
 

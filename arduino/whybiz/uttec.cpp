@@ -4,17 +4,16 @@
 #include "myJson.h"
 #include "sx1509Lib.h"
 
-#define SEL1            22 //SCL(32) 
-#define SEL2            21 //SDA(33)
-#define SX_RESET        17
-#define RS485_EN        19
-#define PWR_CTL         27
-#define LORA_RST        18
 
 #define SIGNAL_LED 2     //On board LED
 
 #define PIN_A0 34     // some analog input sensor
 #define PIN_A1 35     // some analog input sensor
+
+#define ETHERNET_CHANNEL  0
+#define RS485_CHANNEL     1
+#define LORA_CHANNEL      2
+#define BLANK_CHANNEL     3    
 
 factor_t myFactor = {0,};
 device_t myDevice = {0,};
@@ -35,7 +34,7 @@ void loop_uttec(void){
     myDevice.adc0 = analogRead(PIN_A0);
     myDevice.adc1 = analogRead(PIN_A1);
     for(int i = 0; i < 8; i++){
-      myDevice.sw[i] = !myDevice.sw[i];
+      myDevice.sw[i] = getSwitch(i);
     }
     // testPort();
   }
@@ -49,6 +48,9 @@ void initPort(void){
   pinMode(PWR_CTL, OUTPUT);
   pinMode(LORA_RST, OUTPUT);
   pinMode(SIGNAL_LED, OUTPUT);
+  digitalWrite(LORA_RST, 1);
+
+  setUartChannel(RS485_CHANNEL);
 }
 
 void dispFactor(void){
@@ -122,4 +124,22 @@ void signal(void){
   toggle = !toggle;
 }
 
-
+void setUartChannel(uint8_t channel){
+  switch(channel){
+    case 0:
+      digitalWrite(SEL2, 0);  digitalWrite(SEL1, 0);
+    break;
+    case 1:
+      digitalWrite(SEL2, 0);  digitalWrite(SEL1, 1);
+    break;
+    case 2:
+      digitalWrite(SEL2, 1);  digitalWrite(SEL1, 0);
+    break;
+    case 3:
+      digitalWrite(SEL2, 1);  digitalWrite(SEL1, 1);
+    break;
+    default:
+    break;
+  }
+  Serial.printf("uart channel: %d\r\n", channel);
+}
