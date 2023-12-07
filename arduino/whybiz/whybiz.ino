@@ -50,7 +50,7 @@ void loop() {
   Serial2.printf("Lora test: %d\r\n", count);
   delay(5);
   digitalWrite(RS485_EN, 0);
-  Serial.printf("Lora test: %d\r\n", count);
+  // Serial.printf("Lora test: %d\r\n", count);
   testReceive();
   count++;
 }

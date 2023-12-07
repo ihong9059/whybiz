@@ -6,7 +6,7 @@
 #include "myWifi.h"
 #include "sx1509Lib.h"
 
-#define USE_INTRANET
+// #define USE_INTRANET
 
 // #define MYHOME 1
 
@@ -22,15 +22,15 @@ IPAddress local_IP(192, 168, 8, 111);
 IPAddress local_gw(192, 168, 8, 1);
 #endif
 
-#define AP_SSID "whybiz"
-#define AP_PASS "whybiz"
+#define AP_SSID "uttec_whybiz"
+#define AP_PASS "uttec_whybiz"
 
 char XML[2048];
 static uint8_t mySelect = 0;
 
 IPAddress Actual_IP;
 
-IPAddress PageIP(192, 168, 1, 1);
+IPAddress PageIP(192, 168, 1, 3);
 IPAddress gateway(192, 168, 1, 1);
 IPAddress subnet(255, 255, 255, 0);
 IPAddress ip;
@@ -92,8 +92,22 @@ void initWifi(void){
   // initSx1509();
 }
 
+// #include <WiFi.h>
+
+const uint16_t myPort = 8091;
+const char* myHost = "192.168.1.4";
+
 void loop_wifi(void){
+  static uint32_t count = 0;
+  char temp[100];
+  WiFiClient client;
   server.handleClient();
+  if(!client.connect(myHost, myPort)){
+    Serial.printf("Connection fail\r\n");
+    return;
+  }
+  client.printf("Hello from esp32: %d", count++);
+  client.stop();
 }
 
 
