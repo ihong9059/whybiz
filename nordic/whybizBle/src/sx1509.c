@@ -120,7 +120,7 @@ bool isSwitchOn_7(void){
 	return false;
 }
 
-void readIn(void){
+uint8_t readIn(void){
 	int err;
 	uint8_t buf = 0x11;
 
@@ -133,6 +133,24 @@ void readIn(void){
 		printk("i2c write fail------------\r\n");
 	}
 	sx1509_in = buf;
+	return sx1509_in;
+}
+
+bool checkSx1509In(uint8_t sw){
+	readIn();
+	bool result = false;
+	switch(sw){
+		case 0: result = isSwitchOn_0(); break;
+		case 1: result = isSwitchOn_1(); break;
+		case 2: result = isSwitchOn_2(); break;
+		case 3: result = isSwitchOn_3(); break;
+		case 4: result = isSwitchOn_4(); break;
+		case 5: result = isSwitchOn_5(); break;
+		case 6: result = isSwitchOn_6(); break;
+		case 7: result = isSwitchOn_7(); break;
+		default: printk("error switch------------> %d\r\n", sw);
+	}
+	return result;
 }
 
 uint8_t readOut(void){
@@ -153,7 +171,6 @@ uint8_t readOut(void){
 
 void writeOut(uint8_t bitNum, bool output){
 	uint8_t regB = readOut();
-	// uint8_t regB = 0;
 	int err;
 	printk("~BIT_0: %x\r\n", (uint8_t)~BIT_0);
 
@@ -201,10 +218,7 @@ void writeOut(uint8_t bitNum, bool output){
 }
 
 void testI2c(void){
-	static bool toggle = true;
 	static uint16_t count = 0;
-	uint8_t buf[2];
-	int err;
 	switch(count%16){
 		case 0: writeOut(count%8, true); break;
 		case 1: writeOut(count%8, true); break;
@@ -223,14 +237,12 @@ void testI2c(void){
 		case 14: writeOut(count%8, false); break;
 		case 15: writeOut(count%8, false); break;
 	}
-	count++;
-	toggle = !toggle;
-	printk("12345----------------\r\n");
-	readIn();
-	if(isSwitchOn_0()){
-		printk("Switch1_On\r\n");
+	printk("mySwitch_%d ", count % 8);
+	if(checkSx1509In(count % 8)){
+		printk("On\r\n");
 	}
 	else{
-		printk("Switch1_Off\r\n");
+		printk("Off\r\n");
 	}
+	count++;
 }

@@ -25,6 +25,7 @@
 
 #include <zephyr/logging/log.h>
 
+#include "myBle.h"
 
 #define LOG_MODULE_NAME peripheral_uart
 LOG_MODULE_REGISTER(LOG_MODULE_NAME);
@@ -468,7 +469,7 @@ static struct bt_conn_auth_info_cb conn_auth_info_callbacks;
 static void bt_receive_cb(struct bt_conn *conn, const uint8_t *const data,
 			  uint16_t len)
 {
-	int err;
+	// int err;
 	char addr[BT_ADDR_LE_STR_LEN] = {0};
 
 	bt_addr_le_to_str(bt_conn_get_dst(conn), addr, ARRAY_SIZE(addr));
@@ -580,11 +581,12 @@ void initBle(void){
 	int err = 0;
 
 	configure_gpio();
-
 	err = uart_init();
 	if (err) {
 		error();
 	}
+	printk("----------------\r\n");
+	printk("now start initBle. 2023.12.08. 15:13\r\n");
 
 	if (IS_ENABLED(CONFIG_BT_NUS_SECURITY_ENABLED)) {
 		err = bt_conn_auth_cb_register(&conn_auth_callbacks);
@@ -628,34 +630,36 @@ void initBle(void){
 
 }
 
-
 void procRxBle(uint8_t* data, uint16_t len){
 	printk("procRxData\r\n");
 	for(int i = 0; i < len; i++) printk("data[%d]: %d\r\n", i, *data++);
-	// int err;
-	// err = uart_tx(uart, data, len, SYS_FOREVER_MS);
-	// // printf("procRxData\r\n");
-	// if (err) {
-	// 	LOG_INF("error in procRxData----------------");
+}
+
+void procSwitchTxBle(void){
+	static uint8_t buf[3] = {0, };
+	static uint16_t count = 0;
+	// static uint16_t sw = 0;
+	// buf[0] = 2; buf[1] = sw % 8; buf[2] = count++ % 2;
+	buf[0] = 2; buf[1] = count % 8; buf[2] = checkSx1509In(count % 8);
+	// if(count % 2 == 1){
+	// 	sw++;
 	// }
+	count++;
+	if (bt_nus_send(NULL, buf, sizeof(buf))) {
+		LOG_WRN("Failed to send data over BLE connection");
+	}
+}
+
+void procAdcTxBle(void){
+
 }
 
 // 1: adc:1, switch:2, relay:3, lora:4
 // 2: number
 // 3: value(0, 1, value)
-void procTxBle(void){
-	static uint8_t buf[3] = {0, };
-	static uint16_t count = 0;
-	static uint16_t sw = 0;
-	buf[0] = 2;
-	buf[1] = sw % 8;
-	buf[2] = count++ % 2;
-	if(count % 2 == 1){
-		sw++;
-	}
-	if (bt_nus_send(NULL, buf, sizeof(buf))) {
-		LOG_WRN("Failed to send data over BLE connection");
-	}
+void procTxBle(void){//for switch, and adc
+	procSwitchTxBle();
+	procAdcTxBle();
 }
 
 void ble_write_thread(void)
