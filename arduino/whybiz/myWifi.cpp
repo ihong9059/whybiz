@@ -39,6 +39,7 @@ IPAddress primaryDNS(8, 8, 8, 8);   //optional
 IPAddress secondaryDNS(8, 8, 4, 4); //optional
 
 WebServer server(80);
+WiFiServer uttecServer(20000);
 
 void initWifi(void){
   disableCore0WDT();
@@ -84,6 +85,7 @@ void initWifi(void){
   server.on("/UPDATE_TOGGLE", ProcessToggle);
 
   server.begin();
+  uttecServer.begin();
   device_t* pData = getMyDevice();
   for(int i = 0; i < 8; i++){
     pData->relay[i] = 1;
@@ -97,17 +99,37 @@ void initWifi(void){
 const uint16_t myPort = 8091;
 const char* myHost = "192.168.1.4";
 
-void loop_wifi(void){
+void connectToServer(void){
   static uint32_t count = 0;
-  char temp[100];
   WiFiClient client;
-  server.handleClient();
   if(!client.connect(myHost, myPort)){
     Serial.printf("Connection fail\r\n");
     return;
   }
   client.printf("Hello from esp32: %d", count++);
   client.stop();
+}
+
+void serverForGeneral(void){
+  WiFiClient uttec_client = uttecServer.available();
+  if(!uttec_client){
+    return;
+  }
+  Serial.printf("new client");
+  while(uttec_client.connected()){
+    if(uttec_client.available()){
+      String data = uttec_client.readStringUntil('%');
+      Serial.println(data);
+    }
+  }
+  Serial.printf("connection end\r\n");
+}
+
+void loop_wifi(void){
+  char temp[100];
+  server.handleClient();
+  serverForGeneral(); //for uttec_client, port: 2000
+  connectToServer(); //for myPort: 8091, 192.168.1.4
 }
 
 
