@@ -26,6 +26,8 @@
 #include <zephyr/logging/log.h>
 
 #include "myBle.h"
+#include "uttec.h"
+#include "sx1509.h"
 
 #define LOG_MODULE_NAME peripheral_uart
 LOG_MODULE_REGISTER(LOG_MODULE_NAME);
@@ -44,7 +46,8 @@ LOG_MODULE_REGISTER(LOG_MODULE_NAME);
 #define KEY_PASSKEY_ACCEPT DK_BTN1_MSK
 #define KEY_PASSKEY_REJECT DK_BTN2_MSK
 
-#define UART_BUF_SIZE CONFIG_BT_NUS_UART_BUFFER_SIZE
+// #define UART_BUF_SIZE CONFIG_BT_NUS_UART_BUFFER_SIZE
+#define UART_BUF_SIZE 200
 #define UART_WAIT_FOR_BUF_DELAY K_MSEC(50)
 #define UART_WAIT_FOR_RX CONFIG_BT_NUS_UART_RX_WAIT_TIME
 
@@ -236,9 +239,9 @@ static bool uart_test_async_api(const struct device *dev)
 static int uart_init(void)
 {
 	int err;
-	int pos;
+	// int pos;
 	struct uart_data_t *rx;
-	struct uart_data_t *tx;
+	// struct uart_data_t *tx;
 
 	if (!device_is_ready(uart)) {
 		return -ENODEV;
@@ -298,33 +301,6 @@ static int uart_init(void)
 		}
 	}
 
-	tx = k_malloc(sizeof(*tx));
-
-	if (tx) {
-		pos = snprintf(tx->data, sizeof(tx->data),
-			       "Starting Nordic UART service example\r\n");
-
-		if ((pos < 0) || (pos >= sizeof(tx->data))) {
-			k_free(rx);
-			k_free(tx);
-			LOG_ERR("snprintf returned %d", pos);
-			return -ENOMEM;
-		}
-
-		tx->len = pos;
-	} else {
-		k_free(rx);
-		return -ENOMEM;
-	}
-
-	err = uart_tx(uart, tx->data, tx->len, SYS_FOREVER_MS);
-	if (err) {
-		k_free(rx);
-		k_free(tx);
-		LOG_ERR("Cannot display welcome message (err: %d)", err);
-		return err;
-	}
-
 	err = uart_rx_enable(uart, rx->data, sizeof(rx->data), 50);
 	if (err) {
 		LOG_ERR("Cannot enable uart reception (err: %d)", err);
@@ -343,6 +319,8 @@ static void connected(struct bt_conn *conn, uint8_t err)
 		LOG_ERR("Connection failed (err %u)", err);
 		return;
 	}
+	bool* pFlag = getConnectBleFlag();
+	*pFlag = true;
 
 	bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
 	LOG_INF("Connected %s", addr);
@@ -355,6 +333,9 @@ static void connected(struct bt_conn *conn, uint8_t err)
 static void disconnected(struct bt_conn *conn, uint8_t reason)
 {
 	char addr[BT_ADDR_LE_STR_LEN];
+	
+	bool* pFlag = getConnectBleFlag();
+	*pFlag = false;
 
 	bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
 
@@ -469,13 +450,11 @@ static struct bt_conn_auth_info_cb conn_auth_info_callbacks;
 static void bt_receive_cb(struct bt_conn *conn, const uint8_t *const data,
 			  uint16_t len)
 {
-	// int err;
 	char addr[BT_ADDR_LE_STR_LEN] = {0};
 
 	bt_addr_le_to_str(bt_conn_get_dst(conn), addr, ARRAY_SIZE(addr));
 
 	LOG_INF("Received from: %s, data: %s", addr, data);
-	// procRxData((uint8_t *)data, len);
 
 	for (uint16_t pos = 0; pos != len;) {
 		struct uart_data_t *tx = k_malloc(sizeof(*tx));
@@ -485,7 +464,6 @@ static void bt_receive_cb(struct bt_conn *conn, const uint8_t *const data,
 			return;
 		}
 
-		/* Keep the last byte of TX buffer for potential LF char. */
 		size_t tx_data_size = sizeof(tx->data) - 1;
 
 		if ((len - pos) > tx_data_size) {
@@ -498,18 +476,11 @@ static void bt_receive_cb(struct bt_conn *conn, const uint8_t *const data,
 
 		pos += tx->len;
 
-		/* Append the LF character when the CR character triggered
-		 * transmission from the peer.
-		 */
 		if ((pos == len) && (data[len - 1] == '\r')) {
 			tx->data[tx->len] = '\n';
 			tx->len++;
 		}
 		procRxBle((uint8_t *)tx->data, tx->len);
-		// err = uart_tx(uart, tx->data, tx->len, SYS_FOREVER_MS);
-		// if (err) {
-		// 	k_fifo_put(&fifo_uart_tx_data, tx);
-		// }
 	}
 }
 
@@ -517,74 +488,9 @@ static struct bt_nus_cb nus_cb = {
 	.received = bt_receive_cb,
 };
 
-void error(void)
-{
-	dk_set_leds_state(DK_ALL_LEDS_MSK, DK_NO_LEDS_MSK);
-
-	while (true) {
-		/* Spin for ever */
-		k_sleep(K_MSEC(1000));
-	}
-}
-
-#ifdef CONFIG_BT_NUS_SECURITY_ENABLED
-static void num_comp_reply(bool accept)
-{
-	if (accept) {
-		bt_conn_auth_passkey_confirm(auth_conn);
-		LOG_INF("Numeric Match, conn %p", (void *)auth_conn);
-	} else {
-		bt_conn_auth_cancel(auth_conn);
-		LOG_INF("Numeric Reject, conn %p", (void *)auth_conn);
-	}
-
-	bt_conn_unref(auth_conn);
-	auth_conn = NULL;
-}
-
-void button_changed(uint32_t button_state, uint32_t has_changed)
-{
-	uint32_t buttons = button_state & has_changed;
-
-	if (auth_conn) {
-		if (buttons & KEY_PASSKEY_ACCEPT) {
-			num_comp_reply(true);
-		}
-
-		if (buttons & KEY_PASSKEY_REJECT) {
-			num_comp_reply(false);
-		}
-	}
-}
-#endif /* CONFIG_BT_NUS_SECURITY_ENABLED */
-
-static void configure_gpio(void)
-{
-	int err;
-
-#ifdef CONFIG_BT_NUS_SECURITY_ENABLED
-	err = dk_buttons_init(button_changed);
-	if (err) {
-		LOG_ERR("Cannot init buttons (err: %d)", err);
-	}
-#endif /* CONFIG_BT_NUS_SECURITY_ENABLED */
-
-	err = dk_leds_init();
-	if (err) {
-		LOG_ERR("Cannot init LEDs (err: %d)", err);
-	}
-}
-
-
 void initBle(void){
-	// int blink_status = 0;
 	int err = 0;
-
-	configure_gpio();
 	err = uart_init();
-	if (err) {
-		error();
-	}
 	printk("----------------\r\n");
 	printk("now start initBle. 2023.12.08. 15:13\r\n");
 
@@ -603,9 +509,6 @@ void initBle(void){
 	}
 
 	err = bt_enable(NULL);
-	if (err) {
-		error();
-	}
 
 	LOG_INF("Bluetooth initialized");
 
@@ -631,35 +534,108 @@ void initBle(void){
 }
 
 void procRxBle(uint8_t* data, uint16_t len){
-	printk("procRxData\r\n");
-	for(int i = 0; i < len; i++) printk("data[%d]: %d\r\n", i, *data++);
+	printk("procRxData: %d \r\n", data[0]);
+	uint8_t num = data[0] % 10;
+	uint8_t value = data[1];
+	printk("num: %d, %d, value: %d\r\n", data[0], num, value);
+	// for(int i = 0; i < len; i++) printk("data[%d]: %d\r\n", i, *data++);
+	writeOutSx(num, value);
 }
 
-void procSwitchTxBle(void){
-	static uint8_t buf[3] = {0, };
-	static uint16_t count = 0;
-	// static uint16_t sw = 0;
-	// buf[0] = 2; buf[1] = sw % 8; buf[2] = count++ % 2;
-	buf[0] = 2; buf[1] = count % 8; buf[2] = checkSx1509In(count % 8);
-	// if(count % 2 == 1){
-	// 	sw++;
-	// }
-	count++;
-	if (bt_nus_send(NULL, buf, sizeof(buf))) {
-		LOG_WRN("Failed to send data over BLE connection");
+void procSwitchTxBle(uint8_t num, uint8_t value){
+	uint8_t buf[3] = {0, };
+	if(value) value = 0;
+	else value = 1;
+	buf[0] = SWITCH_DEVICE; buf[1] = num + 1; buf[2] = value;
+	bool* pFlag = getConnectBleFlag();
+	if(*pFlag){
+		if (bt_nus_send(NULL, buf, sizeof(buf))) {
+			LOG_WRN("Failed to send data over BLE connection");
+		}
 	}
 }
 
-void procAdcTxBle(void){
+void procRelayTxBle(uint8_t num, uint8_t value){
+	uint8_t buf[3] = {0, };
+	buf[0] = RELAY_DEVICE; buf[1] = num + 1; buf[2] = value;
+	bool* pFlag = getConnectBleFlag();
+	if(*pFlag){
+		if (bt_nus_send(NULL, buf, sizeof(buf))) {
+			LOG_WRN("Failed to send data over BLE connection");
+		}
+	}
+}
 
+void procAdcTxBle(uint8_t num, uint8_t value){
+	uint8_t buf[3] = {0, };
+	buf[0] = ADC_DEVICE; buf[1] = num; buf[2] = value;
+	bool* pFlag = getConnectBleFlag();
+	if(*pFlag){
+		if (bt_nus_send(NULL, buf, sizeof(buf))) {
+			LOG_WRN("Failed to send data over BLE connection");
+		}
+	}
 }
 
 // 1: adc:1, switch:2, relay:3, lora:4
 // 2: number
 // 3: value(0, 1, value)
 void procTxBle(void){//for switch, and adc
-	procSwitchTxBle();
-	procAdcTxBle();
+	static uint16_t count = 0;
+	whybizFrame_t* pJson = getWhybizFrame();
+	pJson->node = 1;
+	pJson->category = 2;
+
+	checkSx1509In();
+
+	sx1509_t* pBefore = getBeforeSxReg();
+	uint8_t sw = pBefore->sw;
+	uint8_t test = 0x01;
+	test = test << (count % 8);
+	test = test & sw;
+
+	uint8_t num = count++ % 8;
+	pJson->sensor = num;
+	if(test){
+		pJson->value = 1;
+		procSwitchTxBle(num, 1);
+		printk("num: %d, High\r\n", num);
+	}
+	else{
+		pJson->value = 0;
+		procSwitchTxBle(num, 0);
+		printk("num: %d, Low\r\n", num);
+	}
+	sendWhybizFrame();
+}
+
+jsonFrame_t myJson = {0, };
+
+void getJsonData(uint8_t* pBuf, uint8_t len){
+	for(int i = 0; i < len; i++){
+		myJson.frame[i] = *pBuf++;
+		if(myJson.frame[i] == '{') myJson.start = i;
+		else if(myJson.frame[i] == '}'){
+			myJson.end = i;
+			myJson.flag = 1;
+		} 
+	} 
+
+}
+
+void clearJsonData(void){
+	for(int i = 0; i < sizeof(myJson.frame); i++) myJson.frame[i] = 0;
+	myJson.flag = myJson.end = myJson.start = 0;
+}
+
+jsonFrame_t* getJsonFrame(void){
+	return &myJson;
+}
+
+void dispJsonFrame(void){
+
+	printk("start: %d, end: %d\r\n", myJson.start, myJson.end);
+	printk("result: %s\r\n", myJson.frame);
 }
 
 void ble_write_thread(void)
@@ -672,28 +648,13 @@ void ble_write_thread(void)
 		struct uart_data_t *buf = k_fifo_get(&fifo_uart_rx_data,
 						     K_FOREVER);
 
-		// putBuff(buf->data, buf->len);
-		buf->data[0] = buf->data[0] - '0';
-		buf->data[1] = buf->data[1] - '0';
-		buf->data[2] = buf->data[2] - '0';
-
-        if(buf->data[0] == 4){
-            for(int i = 0; i < 5; i++){
-                buf->data[3 + i] = 'a' + i;
-            }
-            buf->len += 5;
-        }
-
-		if (bt_nus_send(NULL, buf->data, buf->len)) {
-			LOG_WRN("Failed to send data over BLE connection");
-		}
 /*
 		LOG_INF("ble_write_thread: %d", buf->len);
-		printk("buf->data[0]: %d\r\n", buf->data[0]);
+		printk("buf: %s\r\n", buf->data);
 */
 		// printk("---->%s\r\n", buf->data);
 		// LOG_INF("---->%s", buf->data);
-
+		getJsonData(buf->data, buf->len);	
 		k_free(buf);
 	}
 	LOG_INF("ble_write_thread");

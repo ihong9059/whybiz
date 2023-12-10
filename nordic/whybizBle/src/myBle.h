@@ -9,4 +9,7 @@ void initBle(void);
 void procRxBle(uint8_t* data, uint16_t len);
 void procTxBle(void);
 
+void procSwitchTxBle(uint8_t num, uint8_t value);
+void procRelayTxBle(uint8_t num, uint8_t value);
+void procAdcTxBle(uint8_t num, uint8_t value);
 #endif 

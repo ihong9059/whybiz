@@ -1,60 +1,96 @@
+#include <zephyr/kernel.h>
+#include <zephyr/drivers/gpio.h>
+
 #include <zephyr/data/json.h>
 
 #include "uttec.h"
-
-// #include <zephyr/device.h>
-// #include <zephyr/devicetree.h>
-// #include <soc.h>
-
 #include <zephyr/logging/log.h>
 
+whybiz_t myWhybiz = {0, };
 
-// #define LOG_MODULE_NAME peripheral_uart
-// LOG_MODULE_REGISTER(LOG_MODULE_NAME);
+sx1509_t beforeSx1509 = {0, };
 
-#define MAX_END_POINT 	100
-#define MAX_LINE		20
-
-// #define printk LOG_INF 
-
-char uartData[MAX_LINE][MAX_END_POINT] = {0,};
-uint8_t positionFirst[MAX_LINE] = {0, };
-uint8_t positionLast[MAX_LINE] = {0, };
-
-uartBuf_t myUart = {0, }; 
-
-struct temperature {
-    int device;
-    int value;
-//   const char *unit;
-//   int value;
+struct whybiz{
+    uint8_t no;
+    uint8_t ca;
+    uint8_t se;
+    uint8_t va;
+    uint8_t crc;
 };
 
-static const struct json_obj_descr temperature_descr[] = {
-//   JSON_OBJ_DESCR_PRIM(struct temperature, unit, JSON_TOK_STRING),
-  JSON_OBJ_DESCR_PRIM(struct temperature, device, JSON_TOK_NUMBER),
-  JSON_OBJ_DESCR_PRIM(struct temperature, value, JSON_TOK_NUMBER),
+static const struct json_obj_descr whybiz_descr[] = {
+  JSON_OBJ_DESCR_PRIM(struct whybiz, no, JSON_TOK_NUMBER),
+  JSON_OBJ_DESCR_PRIM(struct whybiz, ca, JSON_TOK_NUMBER),
+  JSON_OBJ_DESCR_PRIM(struct whybiz, se, JSON_TOK_NUMBER),
+  JSON_OBJ_DESCR_PRIM(struct whybiz, va, JSON_TOK_NUMBER),
+  JSON_OBJ_DESCR_PRIM(struct whybiz, crc, JSON_TOK_NUMBER),
 };
 
-void uttecTest(void){
-    static int device = 0; 
-    static int value = 50; 
-    // uint8_t json_msg[] = "{\"unit\":\"c\",\"value\":30}";
+#define SELECT1_NODE DT_NODELABEL(select1)
+#define SELECT2_NODE DT_NODELABEL(select2)
+#define LORARST_NODE DT_NODELABEL(lorarst)
+#define PWR_CRL_NODE DT_NODELABEL(pwrctl)
+
+static const struct gpio_dt_spec select1 = GPIO_DT_SPEC_GET(SELECT1_NODE, gpios);
+static const struct gpio_dt_spec select2 = GPIO_DT_SPEC_GET(SELECT2_NODE, gpios);
+static const struct gpio_dt_spec loraRst = GPIO_DT_SPEC_GET(LORARST_NODE, gpios);
+static const struct gpio_dt_spec pwrCtl = GPIO_DT_SPEC_GET(PWR_CRL_NODE, gpios);
+
+whybiz_t* getWhybizFactor(void){
+    return &myWhybiz;    
+}
+
+void initPort(void){
+	gpio_pin_configure_dt(&select1, GPIO_OUTPUT_ACTIVE);
+	gpio_pin_configure_dt(&select2, GPIO_OUTPUT_ACTIVE);
+	gpio_pin_configure_dt(&loraRst, GPIO_OUTPUT_ACTIVE);
+	gpio_pin_configure_dt(&pwrCtl, GPIO_OUTPUT_ACTIVE);
+
+    gpio_pin_set_dt(&select1, 1);//set low
+    gpio_pin_set_dt(&select2, 1);//set low
+    gpio_pin_set_dt(&loraRst, 0);//set high
+    gpio_pin_set_dt(&pwrCtl, 1);//set low
+    // setUartChannel(0);
+}
+
+void setUartChannel(uint8_t channel){
+    switch(channel){
+        case 0: 
+            gpio_pin_set_dt(&select2, 1); gpio_pin_set_dt(&select1, 1); 
+            printf("Ethernet channel\r\n");
+        break;
+        case 1:
+            gpio_pin_set_dt(&select2, 1); gpio_pin_set_dt(&select1, 0); 
+            printf("rs485 channel\r\n");
+        break;
+        case 2:
+            gpio_pin_set_dt(&select2, 0); gpio_pin_set_dt(&select1, 1); 
+            printf("lora channel\r\n");
+        break;
+        case 3:
+            gpio_pin_set_dt(&select2, 0); gpio_pin_set_dt(&select1, 0); 
+            printf("tbd channel\r\n");
+        break;
+        default: printf("error channel: %d\r\n", channel);
+    }
+}
+
+sx1509_t* getBeforeSxReg(void){
+    return &beforeSx1509;
+}
+
+#include "sx1509.h"
+void uttecJsonTest(uint8_t* pData, uint8_t len){
     uint8_t test_msg[100] = {0,};
-    uint16_t length = sprintf(test_msg, 
-        "{\"device\":%d, \"value\": %d}", device++, value++);
+    for(int i = 0; i < len; i++) test_msg[i] = *pData++;
 
-    struct temperature temp_results;
-    
-    // int64_t ret = json_obj_parse(json_msg, sizeof(json_msg),
-    //                 temperature_descr,
-    //                 ARRAY_SIZE(temperature_descr),
-    //                 &temp_results);
+    uint16_t length = len;
+    struct whybiz ctr;
     
     int16_t ret = json_obj_parse(test_msg, length,
-                    temperature_descr,
-                    ARRAY_SIZE(temperature_descr),
-                    &temp_results);
+                    whybiz_descr,
+                    ARRAY_SIZE(whybiz_descr),
+                    &ctr);
     
     if (ret < 0)
     {
@@ -63,124 +99,33 @@ void uttecTest(void){
     }
     else
     {
-        printk("json_obj_parse return code: %d\r\n", ret);
-        printk("Unit: %d\r\n", temp_results.device);
-        printk("Value: %d\r\n", temp_results.value);
+        printk("no:%d, ca:%d, se:%d, va:%d, crc:%d\r\n",
+        ctr.no, ctr.ca, ctr.se, ctr.va, ctr.crc);
+    	writeOutSx(ctr.se, ctr.va);
     }
 }
 
-void putBuff(uint8_t* pData, uint8_t len){
-    for(int i = 0; i < len; i++){
-        static bool newLineFlag = false;
-        char temp = pData[i];
-        putchar(temp);
-        if((temp >= 32) && (temp <= 127)){
-            uartData[myUart.lines][myUart.endPoint] = temp;
-            if(temp == ':'){
-                positionFirst[myUart.lines] = myUart.endPoint;
-            }
-            myUart.endPoint++;
-            newLineFlag = false;
-        }
-        else if((temp == '\r') || (temp == '\n')){
-            if(!newLineFlag){
-                positionLast[myUart.lines] = myUart.endPoint;
-                myUart.lines++;
-                myUart.endPoint = 0;
-            }
-            newLineFlag = true;
-            myUart.isReady = true;
-        }
-    }					 
+whybizFrame_t myWhybizFrame = {0, };
+
+void sendWhybizFrame(void){
+    whybizFrame_t* pJson = getWhybizFrame();
+    pJson->crc = pJson->node + pJson->category + pJson->sensor + pJson->sensor;
+    printf("{\"no\":%d,\"ca\":%d,\"se\":%d,\"va\":%d,\"crc\":%d}\r\n",
+    pJson->node, pJson->category, pJson->sensor, pJson->value, pJson->crc);
 }
 
-void clearUart(void){
-    myUart.isReady = false;
-    myUart.endPoint = 0;
-    myUart.lines = 0;
+whybizFrame_t* getWhybizFrame(void){
+    return &myWhybizFrame;
 }
 
-bool isRxReady(void){
-    return myUart.isReady;
-}
-
-void clearUartBuf(void){
-    for(int i = 0; i < MAX_LINE; i++){
-        for(int k = 0; k < MAX_END_POINT; k++){
-            uartData[i][k] = 0;
-        }
-    }
-    clearUart();
-}
-
-#include <stdlib.h>
-void checkFrame(void){
-    uint8_t test[7] = "SRC PID";
-    myUart.isValid = false;
-    for(int i = 0; i < myUart.lines; i++){
-        bool result = true;
-        for(int k = 0; k < 6; k++){
-            if(uartData[i][k] != test[k]){
-                result = false;
-            } 
-        }
-        
-        if(result){
-            printk("------> first SRC PID: %d\r\n", i);
-            myUart.isValid = true;
-            myUart.startLine = i - 1;
-            printk("------> start line: %d\r\n", myUart.startLine);
-        } 
-    }
-}
-
-factor_t myFactor = {0,};
-
-void callPrint(void){
-    char temp[10] = {0,};
-    if(isRxReady()){
-        printk("---->callPrint, line: %d\r\n", myUart.lines);
-        checkFrame();
-        if(!myUart.isValid){
-            printk("--------- not valid frame --------\r\n");
-            return;
-        }
-        for(int i = 0; i < myUart.lines; i++){
-            printk("line: %d, first: %d, last: %d\r\n"
-                , i, positionFirst[i], positionLast[i]);
-            printk("%s\r\n", uartData[i]);
-
-            uint8_t tempPoint = 0;
-            switch(i - myUart.startLine){
-                case PID_line:
-                    for(int k = PID_first; k < PID_last+1; k++){
-                        temp[tempPoint++] = uartData[i][k];
-                    }
-                    myFactor.src_pid = (uint16_t)strtol(temp, NULL, 16);
-                break;
-                case ADR_line:
-                    for(int k = ADR_first; k < ADR_last+1; k++){
-                        temp[tempPoint++] = uartData[i][k];
-                    }
-                    myFactor.src_addr = (uint16_t)strtol(temp, NULL, 16);
-                case RSSI_line:
-                    for(int k = RSSI_fist; k < RSSI_last+1; k++){
-                        temp[tempPoint++] = uartData[i][k];
-                    }
-                    myFactor.rssi = atoi(temp);
-                break;
-                case DATA_line:
-                    for(int k = DATA_first; k < DATA_last+1; k++){
-                        temp[tempPoint++] = uartData[i][k];
-                    }
-                    printk("Data: %d\r\n", atoi(temp));
-                break;
-            }
-        }
-        printk("pid: %x, addr: %x, rssi: %d\r\n",
-            myFactor.src_pid, myFactor.src_addr, myFactor.rssi);
-        clearUartBuf();
-    }
+void testJsonOut(void){
+    static uint8_t count = 0;
+    myWhybizFrame.node = 1;
+    myWhybizFrame.category = 2;
+    myWhybizFrame.sensor = count % 8;
+    myWhybizFrame.value = count;
+    count++;
+    getWhybizFrame();
 }
 
 

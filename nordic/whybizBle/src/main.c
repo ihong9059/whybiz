@@ -9,16 +9,7 @@
 #include <zephyr/devicetree.h>
 #include <soc.h>
 
-// #include <zephyr/bluetooth/bluetooth.h>
-// #include <zephyr/bluetooth/uuid.h>
-// #include <zephyr/bluetooth/gatt.h>
-// #include <zephyr/bluetooth/hci.h>
-
-// #include <bluetooth/services/nus.h>
-
 #include <dk_buttons_and_leds.h>
-
-// #include <zephyr/settings/settings.h>
 
 #include <stdio.h>
 
@@ -27,26 +18,53 @@
 #include "uttec.h"
 #include "myBle.h"
 #include "sx1509.h"
+#include "adc.h"
 
 #define RUN_LED_BLINK_INTERVAL 500
 #define RUN_STATUS_LED DK_LED1
 
+uint8_t bleTimeout = 0;
+bool connectBleFlag = false;
+
+bool* getConnectBleFlag(void){
+	return &connectBleFlag;
+}
+// // GEN_ABSOLUTE_SYM_KCONFIG(CONFIG_BT_NUS_UART_BUFFER_SIZE, 40);
+// GEN_ABSOLUTE_SYM_KCONFIG(CONFIG_BT_NUS_UART_BUFFER_SIZE, 200);
+
 int main(void)
 {
 	int blink_status = 0;
-	uint32_t mainCount = 0;
-	// uttecTest();
+	printf("nordic for whybiz.\r\n");
+	
 	initBle();
 	initSx1509();
+	initAdc();
+	initPort();
 
 	for (;;) {
+		static uint32_t count = 0;
+		static bool toggle = false;
+
 		dk_set_led(RUN_STATUS_LED, (++blink_status) % 2);
 		k_sleep(K_MSEC(RUN_LED_BLINK_INTERVAL));
-		printk("----------> mainCount: %d\r\n", mainCount++);
-		callPrint();
-		uttecTest();
-		testI2c();
-		procTxBle();
+		// printf("----------> mainCount: %d\r\n", mainCount++);
+		// testRelay();//relay, switch test
+		if(toggle){
+			procTxBle();// switch and adc tx test
+		}
+		else
+			sendAdcValue();
+		toggle = !toggle;
+		count++;
+		// testJsonOut();
+		jsonFrame_t* pFrame = getJsonFrame();
+		if(pFrame->flag){
+			uttecJsonTest(pFrame->frame, pFrame->end+1);// json test
+			dispJsonFrame();
+			k_sleep(K_MSEC(20));
+			clearJsonData();
+		}
 	}
 }
 
