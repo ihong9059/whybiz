@@ -4,6 +4,7 @@
 
 void initAdc(void);
 void sendAdcValue(void);
+void readAdcValue(void);
 
 void testAdc(void);
 

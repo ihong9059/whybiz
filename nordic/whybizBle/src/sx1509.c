@@ -4,9 +4,22 @@
 #include <zephyr/devicetree.h> 
 #include <zephyr/drivers/i2c.h>
 
+#include "uttec.h"
+#include "myBle.h"
+#include "sx1509.h"
+
 #define SX1509_ADDRESS		0x3e
 #define I2C_NODE DT_NODELABEL(arduino_i2c)
+
 static const struct device *i2c0_dev = DEVICE_DT_GET(I2C_NODE);
+// static uint8_t sx1509_in = 0;
+
+void initSxRelay(void){
+	for(int i = 0; i < 8; i++){
+		writeOutSx(i, 0);
+		k_sleep(K_MSEC(100));
+	}
+}
 
 void initSx1509(void){
 	int err;
@@ -34,23 +47,17 @@ void initSx1509(void){
 		printk("i2c write fail------------\r\n");		// return 0;
 		while(1);
 	}
+	initSxRelay();
+	printk("relay status: %x, sw status: %x\r\n", 
+		readSxRelay(), readSxSw());
+
 	printk("------> end of initSx1509\r\n");
 }
 
-static uint8_t sx1509_in = 0;
-#define BIT_0 0B11111110
-#define BIT_1 0B11111101
-#define BIT_2 0B11111011
-#define BIT_3 0B11110111
-#define BIT_4 0B11101111
-#define BIT_5 0B11011111
-#define BIT_6 0B10111111
-#define BIT_7 0B01111111
-
-
-uint8_t getSx1509(void){
+uint8_t readSxRelay(void){
 	int err;
-	uint8_t buf = 0x11;
+	uint8_t buf = 0x10;
+	whybiz_t* pWhybiz = getWhybizFactor();
 
 	err = i2c_write(i2c0_dev, &buf, 1, SX1509_ADDRESS);
 	if(err < 0){
@@ -60,16 +67,30 @@ uint8_t getSx1509(void){
 	if(err < 0){
 		printk("i2c write fail------------\r\n");
 	}
-	sx1509_in = buf;
-	return sx1509_in;
+	pWhybiz->relay = buf;
+	return pWhybiz->relay;
 }
 
-#include "uttec.h"
-#include "myBle.h"
+uint8_t readSxSw(void){
+	int err;
+	uint8_t buf = 0x11;
+	whybiz_t* pWhybiz = getWhybizFactor();
+
+	err = i2c_write(i2c0_dev, &buf, 1, SX1509_ADDRESS);
+	if(err < 0){
+		printk("i2c write fail------------\r\n");
+	}
+	err = i2c_read(i2c0_dev, &buf, 1, SX1509_ADDRESS);
+	if(err < 0){
+		printk("i2c write fail------------\r\n");
+	}
+	pWhybiz->sw = buf;
+	return pWhybiz->sw;
+}
 
 bool checkSx1509In(void){
 	static uint16_t testCount = 0;
-	uint8_t swNow = getSx1509();
+	uint8_t swNow = readSxSw();
 	sx1509_t* pBefore = getBeforeSxReg();
 
 	if(pBefore->sw == swNow){
@@ -100,7 +121,7 @@ bool checkSx1509In(void){
 	return true;
 }
 
-uint8_t readOut(void){
+uint8_t readOutSxRelay(void){
 	int err;
 	uint8_t buf = 0x10;
 
@@ -117,7 +138,7 @@ uint8_t readOut(void){
 }
 
 void writeOutSx(uint8_t bitNum, bool output){
-	uint8_t regB = readOut();
+	uint8_t regB = readOutSxRelay();
 	int err;
 	printk("~BIT_0: %x\r\n", (uint8_t)~BIT_0);
 
@@ -163,6 +184,7 @@ void writeOutSx(uint8_t bitNum, bool output){
 	}
 	printk("regB: %x\r\n", regB);
 }
+
 // void setRelay()
 void testRelay(void){
 	static uint16_t count = 0;

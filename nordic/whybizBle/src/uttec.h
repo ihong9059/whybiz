@@ -9,18 +9,21 @@
 #define SWITCH_DEVICE 	2
 #define RELAY_DEVICE	3
 
+#define FLASH_FLAG      0xaaaa 
+
 typedef struct{
+    uint16_t flashFlag;
     uint8_t version;
-    int8_t  rssi;
-    int8_t  adc1;
-    int8_t  adc2;
     uint8_t node;
-    uint8_t sw[8];
-    uint8_t relay[8];
+    uint8_t channel;
     uint8_t ssid;
     uint8_t ble;
-    uint8_t channel;
+    int8_t  adc1;
+    int8_t  adc2;
+    uint8_t sw;
+    uint8_t relay;
     uint8_t power;
+    int8_t  rssi;
 } whybiz_t;
 
 typedef struct{

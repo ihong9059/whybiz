@@ -15,6 +15,7 @@ target_sources(app PRIVATE
   src/myBle.c 
   src/sx1509.c 
   src/adc.c 
+  src/nvm.c
 )
 
 # Include UART ASYNC API adapter

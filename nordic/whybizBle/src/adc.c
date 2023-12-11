@@ -88,21 +88,26 @@ void testAdc(void){
 
 void sendAdcValue(void){
     static bool toggle = false;
+    whybiz_t* pWhybiz = getWhybizFactor();
+    if(toggle){
+        procAdcTxBle(1, pWhybiz->adc1);
+    }
+    else{
+        procAdcTxBle(2, pWhybiz->adc2);
+    }
+    toggle = !toggle;
+}
+
+void readAdcValue(void){
     int err;
+    whybiz_t* pWhybiz = getWhybizFactor();
     err = adc_read(adc_dev, &sequence);
     if(err != 0){
         printk("ADC reading failed with error %d\r\n", err);
         return;
     }
-    if(toggle){
-        uint8_t uiAdc1 = sample_buffer[0]/10;
-        procAdcTxBle(1, uiAdc1);
-        printk("Adc1: %d\r\n", uiAdc1);
-    }
-    else{
-        uint8_t uiAdc2 = sample_buffer[1]/10;
-        procAdcTxBle(2, uiAdc2);
-        printk("Adc2: %d\r\n", uiAdc2);
-    }
-    toggle = !toggle;
+    pWhybiz->adc1 = sample_buffer[0]/10;
+    pWhybiz->adc2 = sample_buffer[1]/10;
+    printk("Adc1: %d, Adc2: %d\r\n", 
+        pWhybiz->adc1, pWhybiz->adc2);
 }

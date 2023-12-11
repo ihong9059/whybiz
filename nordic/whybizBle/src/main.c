@@ -20,6 +20,9 @@
 #include "sx1509.h"
 #include "adc.h"
 
+#include <zephyr/drivers/flash.h>
+#include <zephyr/storage/flash_map.h>
+
 #define RUN_LED_BLINK_INTERVAL 500
 #define RUN_STATUS_LED DK_LED1
 
@@ -31,6 +34,7 @@ bool* getConnectBleFlag(void){
 }
 // // GEN_ABSOLUTE_SYM_KCONFIG(CONFIG_BT_NUS_UART_BUFFER_SIZE, 40);
 // GEN_ABSOLUTE_SYM_KCONFIG(CONFIG_BT_NUS_UART_BUFFER_SIZE, 200);
+#include "nvm.h"
 
 int main(void)
 {
@@ -41,6 +45,7 @@ int main(void)
 	initSx1509();
 	initAdc();
 	initPort();
+	initNvm();
 
 	for (;;) {
 		static uint32_t count = 0;
@@ -65,7 +70,16 @@ int main(void)
 			k_sleep(K_MSEC(20));
 			clearJsonData();
 		}
+		readAdcValue();
+		printk("relay status: %x, sw status: %x\r\n", 
+			readSxRelay(), readSxSw());
+		testNvm();	
 	}
 }
+
+
+
+
+
 
 

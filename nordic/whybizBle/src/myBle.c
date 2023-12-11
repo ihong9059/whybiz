@@ -241,7 +241,7 @@ static int uart_init(void)
 	int err;
 	// int pos;
 	struct uart_data_t *rx;
-	// struct uart_data_t *tx;
+	struct uart_data_t *tx;
 
 	if (!device_is_ready(uart)) {
 		return -ENODEV;
@@ -481,6 +481,7 @@ static void bt_receive_cb(struct bt_conn *conn, const uint8_t *const data,
 			tx->len++;
 		}
 		procRxBle((uint8_t *)tx->data, tx->len);
+		k_free(tx);	
 	}
 }
 
