@@ -319,8 +319,9 @@ static void connected(struct bt_conn *conn, uint8_t err)
 		LOG_ERR("Connection failed (err %u)", err);
 		return;
 	}
-	bool* pFlag = getConnectBleFlag();
-	*pFlag = true;
+	connectFlag_t* pFlags = getConnectFlag();
+	pFlags->ble = true;
+	pFlags->first = false;
 
 	bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
 	LOG_INF("Connected %s", addr);
@@ -334,8 +335,8 @@ static void disconnected(struct bt_conn *conn, uint8_t reason)
 {
 	char addr[BT_ADDR_LE_STR_LEN];
 	
-	bool* pFlag = getConnectBleFlag();
-	*pFlag = false;
+	connectFlag_t* pFlags = getConnectFlag();
+	pFlags->ble = false;
 
 	bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
 
@@ -499,13 +500,11 @@ void initBle(void){
 		err = bt_conn_auth_cb_register(&conn_auth_callbacks);
 		if (err) {
 			printk("Failed to register authorization callbacks.\n");
-			// return 0;
 		}
 
 		err = bt_conn_auth_info_cb_register(&conn_auth_info_callbacks);
 		if (err) {
 			printk("Failed to register authorization info callbacks.\n");
-			// return 0;
 		}
 	}
 
@@ -522,14 +521,12 @@ void initBle(void){
 	err = bt_nus_init(&nus_cb);
 	if (err) {
 		LOG_ERR("Failed to initialize UART service (err: %d)", err);
-		// return 0;
 	}
 
 	err = bt_le_adv_start(BT_LE_ADV_CONN, ad, ARRAY_SIZE(ad), sd,
 			      ARRAY_SIZE(sd));
 	if (err) {
 		LOG_ERR("Advertising failed to start (err %d)", err);
-		// return 0;
 	}
 
 }
@@ -539,76 +536,69 @@ void procRxBle(uint8_t* data, uint16_t len){
 	uint8_t num = data[0] % 10;
 	uint8_t value = data[1];
 	printk("num: %d, %d, value: %d\r\n", data[0], num, value);
-	// for(int i = 0; i < len; i++) printk("data[%d]: %d\r\n", i, *data++);
 	writeOutSx(num, value);
 }
 
-void procSwitchTxBle(uint8_t num, uint8_t value){
+void sendToMobile(uint8_t* buf, uint8_t len){
+	if (bt_nus_send(NULL, buf, len)) {
+		LOG_WRN("Failed to send data over BLE connection");
+	}
+}
+
+void procChannel(void){
 	uint8_t buf[3] = {0, };
-	if(value) value = 0;
-	else value = 1;
-	buf[0] = SWITCH_DEVICE; buf[1] = num + 1; buf[2] = value;
-	bool* pFlag = getConnectBleFlag();
-	if(*pFlag){
-		if (bt_nus_send(NULL, buf, sizeof(buf))) {
-			LOG_WRN("Failed to send data over BLE connection");
-		}
-	}
+    whybiz_t* pFactor = getWhybizFactor();
+
+	buf[0] = CHANNEL_DEVICE; buf[1] = pFactor->channel; buf[2] = pFactor->lora_ch;
+	sendToMobile(buf, sizeof(buf));
 }
 
-void procRelayTxBle(uint8_t num, uint8_t value){
+void procAdcTxBle(void){
+	readAdcValue();
 	uint8_t buf[3] = {0, };
-	buf[0] = RELAY_DEVICE; buf[1] = num + 1; buf[2] = value;
-	bool* pFlag = getConnectBleFlag();
-	if(*pFlag){
-		if (bt_nus_send(NULL, buf, sizeof(buf))) {
-			LOG_WRN("Failed to send data over BLE connection");
-		}
-	}
+    whybiz_t* pFactor = getWhybizFactor();
+
+	buf[0] = ADC_DEVICE; buf[1] = pFactor->adc1; buf[2] = pFactor->adc2;
+	sendToMobile(buf, sizeof(buf));
 }
 
-void procAdcTxBle(uint8_t num, uint8_t value){
+void procSwitchTxBle(void){
+	readSxSw();
 	uint8_t buf[3] = {0, };
-	buf[0] = ADC_DEVICE; buf[1] = num; buf[2] = value;
-	bool* pFlag = getConnectBleFlag();
-	if(*pFlag){
-		if (bt_nus_send(NULL, buf, sizeof(buf))) {
-			LOG_WRN("Failed to send data over BLE connection");
-		}
-	}
+    whybiz_t* pFactor = getWhybizFactor();
+
+	buf[0] = SWITCH_DEVICE; buf[1] = pFactor->sw; buf[2] = pFactor->sw;
+	sendToMobile(buf, sizeof(buf));
 }
 
-// 1: adc:1, switch:2, relay:3, lora:4
-// 2: number
-// 3: value(0, 1, value)
-void procTxBle(void){//for switch, and adc
-	static uint16_t count = 0;
-	whybizFrame_t* pJson = getWhybizFrame();
-	pJson->node = 1;
-	pJson->category = 2;
+// void procRelayTxBle(uint8_t num, uint8_t value){
+void procRelayTxBle(void){
+	readSxRelay();
+	uint8_t buf[3] = {0, };
+    whybiz_t* pFactor = getWhybizFactor();
 
-	checkSx1509In();
-
-	sx1509_t* pBefore = getBeforeSxReg();
-	uint8_t sw = pBefore->sw;
-	uint8_t test = 0x01;
-	test = test << (count % 8);
-	test = test & sw;
-
-	uint8_t num = count++ % 8;
-	pJson->sensor = num;
-	if(test){
-		pJson->value = 1;
-		procSwitchTxBle(num, 1);
-		printk("num: %d, High\r\n", num);
-	}
-	else{
-		pJson->value = 0;
-		procSwitchTxBle(num, 0);
-		printk("num: %d, Low\r\n", num);
-	}
-	sendWhybizFrame();
+	buf[0] = RELAY_DEVICE; buf[1] = pFactor->relay; buf[2] = pFactor->relay;
+	sendToMobile(buf, sizeof(buf));
 }
+
+void procLora(void){
+	uint8_t buf[3] = {0, };
+    whybiz_t* pFactor = getWhybizFactor();
+
+	buf[0] = LORA_DEVICE; buf[1] = pFactor->power; buf[2] = pFactor->rssi;
+	sendToMobile(buf, sizeof(buf));
+}
+
+void procVersion(void){
+	uint8_t buf[3] = {0, };
+    whybiz_t* pFactor = getWhybizFactor();
+
+	buf[0] = VERSION_DEVICE; buf[1] = pFactor->version; buf[2] = pFactor->ble;
+	sendToMobile(buf, sizeof(buf));
+}
+
+
+
 
 jsonFrame_t myJson = {0, };
 

@@ -57,21 +57,21 @@ void setUartChannel(uint8_t channel){
     switch(channel){
         case 0: 
             gpio_pin_set_dt(&select2, 1); gpio_pin_set_dt(&select1, 1); 
-            printf("Ethernet channel\r\n");
+            printk("Ethernet channel\r\n");
         break;
         case 1:
             gpio_pin_set_dt(&select2, 1); gpio_pin_set_dt(&select1, 0); 
-            printf("rs485 channel\r\n");
+            printk("rs485 channel\r\n");
         break;
         case 2:
             gpio_pin_set_dt(&select2, 0); gpio_pin_set_dt(&select1, 1); 
-            printf("lora channel\r\n");
+            printk("lora channel\r\n");
         break;
         case 3:
             gpio_pin_set_dt(&select2, 0); gpio_pin_set_dt(&select1, 0); 
-            printf("tbd channel\r\n");
+            printk("tbd channel\r\n");
         break;
-        default: printf("error channel: %d\r\n", channel);
+        default: printk("error channel: %d\r\n", channel);
     }
 }
 
@@ -110,7 +110,7 @@ whybizFrame_t myWhybizFrame = {0, };
 void sendWhybizFrame(void){
     whybizFrame_t* pJson = getWhybizFrame();
     pJson->crc = pJson->node + pJson->category + pJson->sensor + pJson->sensor;
-    printf("{\"no\":%d,\"ca\":%d,\"se\":%d,\"va\":%d,\"crc\":%d}\r\n",
+    printk("{\"no\":%d,\"ca\":%d,\"se\":%d,\"va\":%d,\"crc\":%d}\r\n",
     pJson->node, pJson->category, pJson->sensor, pJson->value, pJson->crc);
 }
 
@@ -128,5 +128,96 @@ void testJsonOut(void){
     getWhybizFrame();
 }
 
+
+void sendFactorAtConnection(void){
+    whybiz_t* pFactor = getWhybizFactor();
+    printf("------> sendFactorAtConnection\r\n");
+    for(int i = 0; i < MAX_CATEGORY; i++){
+        switch(i){
+            case CHANNEL_DEVICE:
+                procChannel();
+                printf("channel: %d, lora ch: \r\n", 
+                    pFactor->channel, pFactor->lora_ch);
+            break;
+            case ADC_DEVICE:
+                procAdcTxBle();
+                printf("sw: %d\r\n", pFactor->sw);
+            break;
+            case SWITCH_DEVICE: 
+                procSwitchTxBle();
+                printf("relay: %d\r\n", pFactor->relay);
+            break;
+            case RELAY_DEVICE: 
+                procRelayTxBle();
+                printf("adc1: %d, adc2: %d\r\n", pFactor->adc1, pFactor->adc2);
+            break;
+            case LORA_DEVICE: 
+                procLora();
+                printf("power: %d, rssi: %d\r\n", 
+                    pFactor->power, pFactor->rssi);
+            break;
+            case VERSION_DEVICE:
+                procVersion();
+                printf("version: %d, ble num: %d\r\n", 
+                    pFactor->version, pFactor->ble);
+            break;
+        }
+        k_sleep(K_MSEC(20));
+    }
+}
+
+void sendFactorRepeat(void){
+    static uint32_t count = 0;
+
+    connectFlag_t* pFlags = getConnectFlag();
+    whybiz_t* pFactor = getWhybizFactor();
+
+    if(!pFlags->first){
+        sendFactorAtConnection();
+        pFlags->first = true;
+        return;
+    }
+    
+    if(pFlags->ble) printf("Ble connected---->\r\n");
+    else return;
+
+    switch(count % MAX_CATEGORY){
+        case CHANNEL_DEVICE:
+            static uint8_t ch = 0;
+            pFactor->channel = ch % 4;
+            pFactor->lora_ch = ch++ % 4;
+            procChannel();
+            printf("channel: %d, lora ch: %d\r\n", 
+                pFactor->channel, pFactor->lora_ch);
+        break;
+        case ADC_DEVICE:
+            procAdcTxBle();
+            printf("sw: %d\r\n", pFactor->sw);
+        break;
+        case SWITCH_DEVICE: 
+            procSwitchTxBle();
+            printf("relay: %d\r\n", pFactor->relay);
+        break;
+        case RELAY_DEVICE: 
+            procRelayTxBle();
+            printf("adc1: %d, adc2: %d\r\n", pFactor->adc1, pFactor->adc2);
+        break;
+        case LORA_DEVICE: 
+            procLora();
+            printf("power: %d, rssi: %d\r\n", 
+                pFactor->power, pFactor->rssi);
+        break;
+        case VERSION_DEVICE:
+            procVersion();
+            printf("version: %d, ble num: %d\r\n", 
+                pFactor->version, pFactor->ble);
+        break;
+    }
+    printf(".");
+    // checkSx1509In()
+	// sendWhybizFrame();
+       // printf("send: %d\r\n", count);
+    count++;
+}
 
 

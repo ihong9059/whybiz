@@ -14,7 +14,7 @@ static struct nvs_fs fs;
 #define NVS_PARTITION_DEVICE	FIXED_PARTITION_DEVICE(NVS_PARTITION)
 #define NVS_PARTITION_OFFSET	FIXED_PARTITION_OFFSET(NVS_PARTITION)
 
-#define UTTEC_ID 1 
+#define UTTEC_ID 2 
 
 // static uttec_t myUttec = {0, };
 #include "uttec.h"
@@ -31,36 +31,55 @@ void initNvm(void){
 	 */
 	fs.flash_device = NVS_PARTITION_DEVICE;
 	if (!device_is_ready(fs.flash_device)) {
-		printf("Flash device %s is not ready\n", fs.flash_device->name);
+		printk("Flash device %s is not ready\n", fs.flash_device->name);
 	}
 	fs.offset = NVS_PARTITION_OFFSET;
 	rc = flash_get_page_info_by_offs(fs.flash_device, fs.offset, &info);
 	if (rc) {
-		printf("Unable to get page info\n");
+		printk("Unable to get page info\n");
 	}
 	fs.sector_size = info.size;
 	fs.sector_count = 3U;
 
 	rc = nvs_mount(&fs);
 	if (rc) {
-		printf("Flash Init failed\n");
+		printk("Flash Init failed\n");
 	}
 
 	rc = nvs_read(&fs, UTTEC_ID, pWhybiz, sizeof(whybiz_t));
-	if (rc > 0) { /* item was found, show it */
-		if(pWhybiz->flashFlag == FLASH_FLAG){
-			printf("Already written to flash factors\r\n");
-			printf("version: %d\r\n", pWhybiz->version);			
-		}
-		else{
-			printf("New Program. now set first factors\r\n");
-			pWhybiz->flashFlag = FLASH_FLAG;
-			pWhybiz->version = 123;
-			pWhybiz->node = 111;
-			(void)nvs_write(&fs, UTTEC_ID, pWhybiz, sizeof(whybiz_t)+1);
-		}
-	} else   {/* item was not found, add it */
-		printf("error in read flash memory, check flash driver\r\n");
+
+	if(pWhybiz->flashFlag == FLASH_FLAG){
+		printf("Already written to flash factors\r\n");
+		printf("version: %d\r\n", pWhybiz->version);			
+		pWhybiz->version = 123;
+		pWhybiz->node = 111;
+		pWhybiz->channel = 2;
+		pWhybiz->ble = 44;
+		pWhybiz->adc1 = 55;
+		pWhybiz->adc2 = 66;
+		pWhybiz->sw = 77;
+		pWhybiz->relay = 88;
+		pWhybiz->lora_ch = 20;
+		pWhybiz->power = 12;
+		pWhybiz->relay = 123;
+		pWhybiz->rssi = 123;
+	}
+	else{
+		printf("New Program. now set first factors\r\n");
+		pWhybiz->flashFlag = FLASH_FLAG;
+		pWhybiz->version = 123;
+		pWhybiz->node = 111;
+		pWhybiz->channel = 2;
+		pWhybiz->ble = 44;
+		pWhybiz->adc1 = 55;
+		pWhybiz->adc2 = 66;
+		pWhybiz->sw = 77;
+		pWhybiz->relay = 88;
+		pWhybiz->lora_ch = 20;
+		pWhybiz->power = 12;
+		pWhybiz->relay = 123;
+		pWhybiz->rssi = 123;
+		(void)nvs_write(&fs, UTTEC_ID, pWhybiz, sizeof(whybiz_t)+1);
 	}
 }
 
@@ -70,11 +89,11 @@ void testNvm(void){
 
 	rc = nvs_read(&fs, UTTEC_ID, pWhybiz, sizeof(whybiz_t));
 	if (rc > 0) { /* item was found, show it */
-		printf("version: %d, node: %d\n", pWhybiz->version, pWhybiz->node);
+		printk("version: %d, node: %d\n", pWhybiz->version, pWhybiz->node);
 		pWhybiz->version++;
 		(void)nvs_write(&fs, UTTEC_ID, pWhybiz, sizeof(whybiz_t)+1);
 	} else   {/* item was not found, add it */
-		printf("flash write read error\r\n");
+		printk("flash write read error\r\n");
 	}
 }
 

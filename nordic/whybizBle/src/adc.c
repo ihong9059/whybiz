@@ -86,18 +86,6 @@ void testAdc(void){
     printk("ADC-spanning: %d mV, %d\r\n", mv_value1, sample_buffer[1]);    
 }
 
-void sendAdcValue(void){
-    static bool toggle = false;
-    whybiz_t* pWhybiz = getWhybizFactor();
-    if(toggle){
-        procAdcTxBle(1, pWhybiz->adc1);
-    }
-    else{
-        procAdcTxBle(2, pWhybiz->adc2);
-    }
-    toggle = !toggle;
-}
-
 void readAdcValue(void){
     int err;
     whybiz_t* pWhybiz = getWhybizFactor();

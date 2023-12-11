@@ -100,23 +100,26 @@ bool checkSx1509In(void){
 	printk("now: %x, reg: %x\r\n", swNow, pBefore->sw);
 	whybizFrame_t* pJson = getWhybizFrame();
 	pJson->node = 1;
-	pJson->category = 2;
+	pJson->category = SWITCH_DEVICE;
+	pJson->sensor = swNow;
+	pJson->value = swNow;
+	procSwitchTxBle();
 
-	for(int i = 0; i < 8; i++){
-		uint8_t test = 0x01;
-		test = test << i;
-		uint8_t tempNow = swNow & test;
-		uint8_t tempBefore = pBefore->sw & test; 
-		if(tempBefore != tempNow){
-			pJson->sensor = i;
-			pJson->value = tempNow;
+	// for(int i = 0; i < 8; i++){
+	// 	uint8_t test = 0x01;
+	// 	test = test << i;
+	// 	uint8_t tempNow = swNow & test;
+	// 	uint8_t tempBefore = pBefore->sw & test; 
+	// 	if(tempBefore != tempNow){
+	// 		pJson->sensor = i;
+	// 		pJson->value = tempNow;
 
-			printk("send Change report: %d, %x\r\n", i, tempNow);
-			k_sleep(K_MSEC(100));
-			procSwitchTxBle(i, tempNow);
-			sendWhybizFrame();
-		}
-	}
+	// 		printk("send Change report: %d, %x\r\n", i, tempNow);
+	// 		k_sleep(K_MSEC(100));
+	// 		procSwitchTxBle(i, tempNow);
+	// 		sendWhybizFrame();
+	// 	}
+	// }
 	pBefore->sw = swNow;
 	return true;
 }
@@ -210,6 +213,4 @@ void testRelay(void){
 }
 
 void testSw(void){
-	// static uint16_t count = 0;
-	checkSx1509In();
 }
