@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-
+// for status
 #define ADC_DEVICE		    1
 #define SWITCH_DEVICE 	    2
 #define RELAY_DEVICE	    3
@@ -14,14 +14,19 @@
 // #define BLE_NUM_DEVICE	    6
 #define MAX_CATEGORY        CHANNEL_DEVICE + 1
 #define MAX_BLE_CATEGORY    4
+// end
 
+// for control
 #define CTR_RELAY           13
-#define CTR_LORA            13
+#define CTR_LORA            14
 #define CTR_CHANNEL         16
+// end
 
+// for control
 #define SET_LORA            24
 #define SET_VERSION         25
 #define SET_CHANNEL         26
+// end
 
 #define FLASH_FLAG      0xaaaa 
 
@@ -80,7 +85,6 @@ void setUartChannel(uint8_t channel);
 void uttecJsonTest(uint8_t* pData, uint8_t len);
 
 sx1509_t* getBeforeSxReg(void);
-
 whybiz_t* getWhybizFactor(void);
 
 void sendWhybizFrame(void);
@@ -100,6 +104,10 @@ void sendFactorRepeat(void);
 void procChannel(void);
 void procLora(void);
 void procVersion(void);
+
+void sendJsonForStatus(void);
+
+
 
 #endif 
 

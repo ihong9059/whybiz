@@ -50,7 +50,8 @@ int main(void)
 			k_sleep(K_MSEC(20));
 			clearJsonData();
 		}
-		sendFactorRepeat();	
+		sendJsonForStatus();
+		// sendFactorRepeat();	
 		printk("main: %d\r\n", count);
 		// procSwitchTxBle();
 		// procRelayTxBle();

@@ -228,4 +228,30 @@ void sendFactorRepeat(void){
     count++;
 }
 
+void sendJsonForStatus(void){
+    static uint32_t count = 0;
+    whybiz_t* pFactor = getWhybizFactor();
+    whybizFrame_t* pFrame = getWhybizFrame();
+    if(!(count++ % 2)){
+        static uint32_t sendCount = 0;
+        uint8_t who = (sendCount++ % MAX_CATEGORY);
+        // printf("who: %d\r\n", who);
+        switch(who){
+            case ADC_DEVICE: printf("ADC_DEVICE: %d\r\n", who); 
+            break;
+            case SWITCH_DEVICE: printf("SWITCH_DEVICE: %d\r\n", who); 
+            break;
+            case RELAY_DEVICE: printf("RELAY_DEVICE: %d\r\n", who); 
+            break;
+            case LORA_DEVICE: printf("LORA_DEVICE: %d\r\n", who); 
+            break;
+            case VERSION_DEVICE: printf("VERSION_DEVICE: %d\r\n", who); 
+            break;
+            case CHANNEL_DEVICE: printf("CHANNEL_DEVICE: %d\r\n", who); 
+            break;
+        }        
+    }
+    // printf("{\"no\":%d,\"ca\":%d,\"se\":%d\"va\":%d,\"crc\":%d}\r\n",
+    // pFrame->node, pFrame->);
+}
 
