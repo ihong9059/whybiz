@@ -639,9 +639,10 @@ void ble_write_thread(void)
 		struct uart_data_t *buf = k_fifo_get(&fifo_uart_rx_data,
 						     K_FOREVER);
 
+		// LOG_INF("ble_write_thread: %d", buf->len);
 /*
-		LOG_INF("ble_write_thread: %d", buf->len);
-		printk("buf: %s\r\n", buf->data);
+		printf("ble_write_thread: %d\r\n", buf->len);
+		printf("buf: %s\r\n", buf->data);
 */
 		// printk("---->%s\r\n", buf->data);
 		// LOG_INF("---->%s", buf->data);

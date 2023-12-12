@@ -35,18 +35,13 @@ int main(void)
 	initNvm();
 	// connectFlag_t* pFlags = getConnectFlag();
 	whybizConnect.first = true;
-    whybiz_t* pFactor = getWhybizFactor();
+    // whybiz_t* pFactor = getWhybizFactor();
 
 	for (;;) {
 		static uint32_t count = 0;
 		static bool toggle = false;
 
 		k_sleep(K_MSEC(RUN_LED_BLINK_INTERVAL));
-		// if(toggle){
-		// 	procTxBle();// switch and adc tx test
-		// }
-		// else
-		// 	sendAdcValue();
 		// testJsonOut();
 		jsonFrame_t* pFrame = getJsonFrame();
 		if(pFrame->flag){
@@ -55,10 +50,6 @@ int main(void)
 			k_sleep(K_MSEC(20));
 			clearJsonData();
 		}
-		// readAdcValue();
-		// printk("relay status: %x, sw status: %x\r\n", 
-		// 	readSxRelay(), readSxSw());
-
 		sendFactorRepeat();	
 		printk("main: %d\r\n", count);
 		// procSwitchTxBle();

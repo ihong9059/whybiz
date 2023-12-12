@@ -19,16 +19,29 @@ static struct nvs_fs fs;
 // static uttec_t myUttec = {0, };
 #include "uttec.h"
 
+void dispFactors(void){
+	whybiz_t* pWhybiz = getWhybizFactor();
+	printf("============= whybiz factors ==========\r\n");
+	printf("version: %d\r\n", pWhybiz->version);
+	printf("node: %d\r\n", pWhybiz->node);
+	printf("uart: %d\r\n", pWhybiz->channel);
+	printf("ble: %d\r\n", pWhybiz->ble);
+	printf("adc1: %d\r\n", pWhybiz->adc1);
+	printf("adc2: %d\r\n", pWhybiz->adc2);
+	printf("sw: %d\r\n", pWhybiz->sw);
+	printf("relay: %d\r\n", pWhybiz->relay);
+	printf("lora_ch: %d\r\n", pWhybiz->lora_ch);
+	printf("power: %d\r\n", pWhybiz->power);
+	printf("rssi: %d\r\n", pWhybiz->rssi);
+	printf("============= whybiz factors ==========\r\n");
+	k_sleep(K_MSEC(1000));
+}
+
 void initNvm(void){
     int rc = 0;
 	struct flash_pages_info info;
 	whybiz_t* pWhybiz = getWhybizFactor();
 
-	/* define the nvs file system by settings with:
-	 *	sector_size equal to the pagesize,
-	 *	3 sectors
-	 *	starting at NVS_PARTITION_OFFSET
-	 */
 	fs.flash_device = NVS_PARTITION_DEVICE;
 	if (!device_is_ready(fs.flash_device)) {
 		printk("Flash device %s is not ready\n", fs.flash_device->name);
@@ -44,43 +57,31 @@ void initNvm(void){
 	rc = nvs_mount(&fs);
 	if (rc) {
 		printk("Flash Init failed\n");
-	}
+	}                    
 
 	rc = nvs_read(&fs, UTTEC_ID, pWhybiz, sizeof(whybiz_t));
 
 	if(pWhybiz->flashFlag == FLASH_FLAG){
 		printf("Already written to flash factors\r\n");
 		printf("version: %d\r\n", pWhybiz->version);			
-		pWhybiz->version = 123;
-		pWhybiz->node = 111;
-		pWhybiz->channel = 2;
-		pWhybiz->ble = 44;
-		pWhybiz->adc1 = 55;
-		pWhybiz->adc2 = 66;
-		pWhybiz->sw = 77;
-		pWhybiz->relay = 88;
-		pWhybiz->lora_ch = 20;
-		pWhybiz->power = 12;
-		pWhybiz->relay = 123;
-		pWhybiz->rssi = 123;
 	}
 	else{
 		printf("New Program. now set first factors\r\n");
 		pWhybiz->flashFlag = FLASH_FLAG;
-		pWhybiz->version = 123;
+		pWhybiz->version = 1;
 		pWhybiz->node = 111;
-		pWhybiz->channel = 2;
-		pWhybiz->ble = 44;
-		pWhybiz->adc1 = 55;
-		pWhybiz->adc2 = 66;
-		pWhybiz->sw = 77;
-		pWhybiz->relay = 88;
+		pWhybiz->channel = 0;
+		pWhybiz->ble = 123;
+		pWhybiz->adc1 = 0;
+		pWhybiz->adc2 = 0;
+		pWhybiz->sw = 0;
+		pWhybiz->relay = 0xff;
 		pWhybiz->lora_ch = 20;
-		pWhybiz->power = 12;
-		pWhybiz->relay = 123;
-		pWhybiz->rssi = 123;
+		pWhybiz->power = 16;
+		pWhybiz->rssi = 0;
 		(void)nvs_write(&fs, UTTEC_ID, pWhybiz, sizeof(whybiz_t)+1);
 	}
+	dispFactors();
 }
 
 void testNvm(void){

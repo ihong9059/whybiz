@@ -15,6 +15,13 @@
 #define MAX_CATEGORY        CHANNEL_DEVICE + 1
 #define MAX_BLE_CATEGORY    4
 
+#define CTR_RELAY           13
+#define CTR_LORA            13
+#define CTR_CHANNEL         16
+
+#define SET_LORA            24
+#define SET_VERSION         25
+#define SET_CHANNEL         26
 
 #define FLASH_FLAG      0xaaaa 
 

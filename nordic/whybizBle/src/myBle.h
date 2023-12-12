@@ -11,6 +11,6 @@ void procTxBle(void);
 
 void procSwitchTxBle(void);
 // void procRelayTxBle(uint8_t num, uint8_t value);
-void procRelayTxBle(voie);
+void procRelayTxBle(void);
 void procAdcTxBle(void);
 #endif 
