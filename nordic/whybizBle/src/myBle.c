@@ -532,11 +532,24 @@ void initBle(void){
 }
 
 void procRxBle(uint8_t* data, uint16_t len){
-	printk("procRxData: %d \r\n", data[0]);
-	uint8_t num = data[0] % 10;
-	uint8_t value = data[1];
-	printk("num: %d, %d, value: %d\r\n", data[0], num, value);
-	writeOutSx(num, value);
+	printk("procRxData len: %d \r\n", len);
+	uint8_t category = data[0];
+	uint8_t sensor = data[1];
+	uint8_t value = data[2];
+	printk("ca: %d, se: %d, value: %d\r\n", category, sensor, value);
+	switch(category){
+		case CTR_RELAY:
+			printf("relay setting\r\n");
+			writeOutSx(sensor, value);
+		break;
+		case CTR_LORA:
+			printf("lora setting by ble. tbd(2023.12.14)\r\n");
+			// writeOutSx(sensor, value);
+		break;
+		case CTR_CHANNEL:
+			printf("channel setting by ble. tbd(2023.12.14)\r\n");
+		break;
+	}
 }
 
 void sendToMobile(uint8_t* buf, uint8_t len){
@@ -597,8 +610,6 @@ void procVersion(void){
 	buf[0] = VERSION_DEVICE; buf[1] = pFactor->version; buf[2] = pFactor->ble;
 	sendToMobile(buf, sizeof(buf));
 }
-
-
 
 
 jsonFrame_t myJson = {0, };

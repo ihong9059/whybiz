@@ -86,8 +86,10 @@ void initWifi(void){
 
   server.begin();
   uttecServer.begin();
-  whybiz_t* pData = getWhybizFactor();
-  pData->relay = 0xff;
+  device_t* pData = getMyDevice();
+  for(int i = 0; i < 8; i++){
+    pData->relay[i] = 1;
+  }
   // testEeprom();
   // initSx1509();
 }
@@ -148,65 +150,73 @@ void ProcessSelect() {
 }
 
 void ProcessButton_0() {
-  whybiz_t* pData = getWhybizFactor();
-  if(pData->relay & 0x01) setRelay(0, 1);
+  device_t* pData = getMyDevice();
+  if(pData->relay[0]) setRelay(0, 1);
   else setRelay(0, 0);
+  pData->relay[0] = !pData->relay[0];
   Serial.println("Button 0 press");
   server.send(200, "text/plain", ""); //Send web page
 }
 
 void ProcessButton_1() {
-  whybiz_t* pData = getWhybizFactor();
-  if(pData->relay & 0x02) setRelay(1, 1);
+  device_t* pData = getMyDevice();
+  if(pData->relay[1]) setRelay(1, 1);
   else setRelay(1, 0);
+  pData->relay[1] = !pData->relay[1];
   Serial.println("Button 1 press");
   server.send(200, "text/plain", ""); //Send web page
 }
 
 void ProcessButton_2() {
-  whybiz_t* pData = getWhybizFactor();
-  if(pData->relay & 0x04) setRelay(2, 1);
+  device_t* pData = getMyDevice();
+  if(pData->relay[2]) setRelay(2, 1);
   else setRelay(2, 0);
+  pData->relay[2] = !pData->relay[2];
   Serial.println("Button 2 press");
   server.send(200, "text/plain", ""); //Send web page
 }
 
 void ProcessButton_3() {
-  whybiz_t* pData = getWhybizFactor();
-  if(pData->relay & 0x08) setRelay(3, 1);
+  device_t* pData = getMyDevice();
+  if(pData->relay[3]) setRelay(3, 1);
   else setRelay(3, 0);
+  pData->relay[3] = !pData->relay[3];
   Serial.println("Button 3 press");
   server.send(200, "text/plain", ""); //Send web page
 }
 
 void ProcessButton_4() {
-  whybiz_t* pData = getWhybizFactor();
-  if(pData->relay & 0x10) setRelay(4, 1);
+  device_t* pData = getMyDevice();
+  if(pData->relay[4]) setRelay(4, 1);
   else setRelay(4, 0);
+  pData->relay[4] = !pData->relay[4];
   Serial.println("Button 4 press");
   server.send(200, "text/plain", ""); //Send web page
 }
 
 void ProcessButton_5() {
-  whybiz_t* pData = getWhybizFactor();
-  if(pData->relay & 0x20) setRelay(5, 1);
+  device_t* pData = getMyDevice();
+  if(pData->relay[5]) setRelay(5, 1);
   else setRelay(5, 0);
+  pData->relay[5] = !pData->relay[5];
   Serial.println("Button 5 press");
   server.send(200, "text/plain", ""); //Send web page
 }
 
 void ProcessButton_6() {
-  whybiz_t* pData = getWhybizFactor();
-  if(pData->relay & 0x40) setRelay(6, 1);
+  device_t* pData = getMyDevice();
+  if(pData->relay[6]) setRelay(6, 1);
   else setRelay(6, 0);
+  pData->relay[6] = !pData->relay[6];
   Serial.println("Button 6 press");
   server.send(200, "text/plain", ""); //Send web page
 }
 
 void ProcessButton_7() {
-  whybiz_t* pData = getWhybizFactor();
-  if(pData->relay & 0x80) setRelay(7, 1);
+  device_t* pData = getMyDevice();
+  if(pData->relay[7]) setRelay(7, 1);
   else setRelay(7, 0);
+  pData->relay[7] = !pData->relay[7];
   Serial.println("Button 7 press");
   server.send(200, "text/plain", ""); //Send web page
 }
@@ -219,7 +229,7 @@ void SendWebsite() {
 void SendXML() {
   static uint32_t count = 0;
   char buf[32];
-  whybiz_t* pData = getWhybizFactor();
+  device_t* pData = getMyDevice();
 
   int16_t lora_rssi = -110;
   if(count++ % 20 == 0)
@@ -228,59 +238,59 @@ void SendXML() {
 
   strcpy(XML, "<?xml version = '1.0'?>\n<Data>\n");
 
-  sprintf(buf, "<B0>%d</B0>\n", pData->adc1);
+  sprintf(buf, "<B0>%d</B0>\n", pData->adc0);
   strcat(XML, buf);
 
-  sprintf(buf, "<B1>%d</B1>\n", pData->adc2);
+  sprintf(buf, "<B1>%d</B1>\n", pData->adc1);
   strcat(XML, buf);
 
-  if (pData->relay & 0x01) {strcat(XML, "<LED>1</LED>\n");}
+  if (pData->relay[0]) {strcat(XML, "<LED>1</LED>\n");}
   else {strcat(XML, "<LED>0</LED>\n");}
 
-  if (pData->relay & 0x02) {strcat(XML, "<LED1>1</LED1>\n");}
+  if (pData->relay[1]) {strcat(XML, "<LED1>1</LED1>\n");}
   else {strcat(XML, "<LED1>0</LED1>\n");}
 
-  if (pData->relay & 0x04) {strcat(XML, "<LED2>1</LED2>\n");}
+  if (pData->relay[2]) {strcat(XML, "<LED2>1</LED2>\n");}
   else {strcat(XML, "<LED2>0</LED2>\n");}
 
-  if (pData->relay & 0x08) {strcat(XML, "<LED3>1</LED3>\n");}
+  if (pData->relay[3]) {strcat(XML, "<LED3>1</LED3>\n");}
   else {strcat(XML, "<LED3>0</LED3>\n");}
 
-  if (pData->relay & 0x10) {strcat(XML, "<LED4>1</LED4>\n");}
+  if (pData->relay[4]) {strcat(XML, "<LED4>1</LED4>\n");}
   else {strcat(XML, "<LED4>0</LED4>\n");}
 
-  if (pData->relay & 0x20) {strcat(XML, "<LED5>1</LED5>\n");}
+  if (pData->relay[5]) {strcat(XML, "<LED5>1</LED5>\n");}
   else {strcat(XML, "<LED5>0</LED5>\n");}
 
-  if (pData->relay & 0x40) {strcat(XML, "<LED6>1</LED6>\n");}
+  if (pData->relay[6]) {strcat(XML, "<LED6>1</LED6>\n");}
   else {strcat(XML, "<LED6>0</LED6>\n");}
 
-  if (pData->relay & 0x80) {strcat(XML, "<LED7>1</LED7>\n");}
+  if (pData->relay[7]) {strcat(XML, "<LED7>1</LED7>\n");}
   else {strcat(XML, "<LED7>0</LED7>\n");}
 
 // --------------------------------------------------------
-  if (pData->sw & 0x01) {strcat(XML, "<sw1>1</sw1>\n");}
+  if (pData->sw[0]) {strcat(XML, "<sw1>1</sw1>\n");}
   else {strcat(XML, "<sw1>0</sw1>\n");}
 
-  if (pData->sw & 0x02) {strcat(XML, "<sw2>1</sw2>\n");}
+  if (pData->sw[1]) {strcat(XML, "<sw2>1</sw2>\n");}
   else {strcat(XML, "<sw2>0</sw2>\n");}
 
-  if (pData->sw & 0x04) {strcat(XML, "<sw3>1</sw3>\n");}
+  if (pData->sw[2]) {strcat(XML, "<sw3>1</sw3>\n");}
   else {strcat(XML, "<sw3>0</sw3>\n");}
 
-  if (pData->sw & 0x08) {strcat(XML, "<sw4>1</sw4>\n");}
+  if (pData->sw[3]) {strcat(XML, "<sw4>1</sw4>\n");}
   else {strcat(XML, "<sw4>0</sw4>\n");}
 
-  if (pData->sw & 0x10) {strcat(XML, "<sw5>1</sw5>\n");}
+  if (pData->sw[4]) {strcat(XML, "<sw5>1</sw5>\n");}
   else {strcat(XML, "<sw5>0</sw5>\n");}
 
-  if (pData->sw & 0x20) {strcat(XML, "<sw6>1</sw6>\n");}
+  if (pData->sw[5]) {strcat(XML, "<sw6>1</sw6>\n");}
   else {strcat(XML, "<sw6>0</sw6>\n");}
 
-  if (pData->sw & 0x40) {strcat(XML, "<sw7>1</sw7>\n");}
+  if (pData->sw[6]) {strcat(XML, "<sw7>1</sw7>\n");}
   else {strcat(XML, "<sw7>0</sw7>\n");}
 
-  if (pData->sw & 0x80) {strcat(XML, "<sw8>1</sw8>\n");}
+  if (pData->sw[7]) {strcat(XML, "<sw8>1</sw8>\n");}
   else {strcat(XML, "<sw8>0</sw8>\n");}
 
   // switch(mySelect){

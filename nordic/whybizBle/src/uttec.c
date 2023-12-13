@@ -35,6 +35,7 @@ static const struct json_obj_descr whybiz_descr[] = {
 #define PWR_CRL_NODE DT_NODELABEL(pwrctl)
 #define RS485TX_NODE DT_NODELABEL(rs485tx)
 
+
 static const struct gpio_dt_spec select1 = GPIO_DT_SPEC_GET(SELECT1_NODE, gpios);
 static const struct gpio_dt_spec select2 = GPIO_DT_SPEC_GET(SELECT2_NODE, gpios);
 static const struct gpio_dt_spec loraRst = GPIO_DT_SPEC_GET(LORARST_NODE, gpios);
@@ -270,32 +271,35 @@ void sendJsonForStatus(void){
         // printf("who: %d\r\n", who);
         switch(who){
             case ADC_DEVICE: 
-                procAdcTxBle();
                 printf("ADC_DEVICE: %d\r\n", who); 
                 pFrame->category = ADC_DEVICE; 
                 pFrame->sensor = pFactor->adc1; pFrame->value = pFactor->adc2; 
+                procAdcTxBle();
             break;
             case SWITCH_DEVICE: printf("SWITCH_DEVICE: %d\r\n", who); 
-                procSwitchTxBle();
                 pFrame->category = SWITCH_DEVICE; 
                 pFrame->sensor = pFactor->sw; pFrame->value = pFactor->sw; 
+                procSwitchTxBle();
             break;
             case RELAY_DEVICE: printf("RELAY_DEVICE: %d\r\n", who); 
-                procRelayTxBle();
                 pFrame->category = RELAY_DEVICE; 
                 pFrame->sensor = pFactor->relay; pFrame->value = pFactor->relay; 
+                procRelayTxBle();
             break;
             case LORA_DEVICE: printf("LORA_DEVICE: %d\r\n", who); 
                 pFrame->category = LORA_DEVICE; 
                 pFrame->sensor = pFactor->power; pFrame->value = pFactor->rssi++; 
+                procLora();
             break;
             case VERSION_DEVICE: printf("VERSION_DEVICE: %d\r\n", who); 
                 pFrame->category = VERSION_DEVICE; 
                 pFrame->sensor = pFactor->version; pFrame->value = pFactor->ble; 
+                procVersion();
             break;
             case CHANNEL_DEVICE: printf("CHANNEL_DEVICE: %d\r\n", who); 
                 pFrame->category = CHANNEL_DEVICE; 
                 pFrame->sensor = pFactor->channel; pFrame->value = pFactor->lora_ch; 
+                procChannel();
             break;
         }
         pFrame->crc = pFrame->node + pFrame->category + pFrame->sensor + pFrame->value;  

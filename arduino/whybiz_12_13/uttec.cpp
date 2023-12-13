@@ -15,11 +15,15 @@
 #define LORA_CHANNEL      2
 #define BLANK_CHANNEL     3    
 
-whybiz_t myWhybiz = {0, };
-sx1509_t beforeSx1509 = {0, };
+factor_t myFactor = {0,};
+device_t myDevice = {0,};
 
-whybiz_t* getWhybizFactor(void){
-    return &myWhybiz;    
+device_t* getMyDevice(void){
+  return &myDevice;
+}
+
+void setMyDevice(device_t data){
+  myDevice = data;
 }
 
 void loop_uttec(void){
@@ -27,10 +31,10 @@ void loop_uttec(void){
   uint32_t updateTime = 1000;
   if ((millis() - SensorUpdate) >= updateTime) {
     SensorUpdate = millis();
-    myWhybiz.adc1 = analogRead(PIN_A0);
-    myWhybiz.adc2 = analogRead(PIN_A1);
+    myDevice.adc0 = analogRead(PIN_A0);
+    myDevice.adc1 = analogRead(PIN_A1);
     for(int i = 0; i < 8; i++){
-      // myDevice.sw[i] = getSwitch(i);
+      myDevice.sw[i] = getSwitch(i);
     }
     // testPort();
   }
@@ -50,31 +54,35 @@ void initPort(void){
 }
 
 void dispFactor(void){
-    EEPROM.readBytes(0, &myWhybiz, sizeof(whybiz_t));
-    Serial.printf("flag: %x\r\n", myWhybiz.flashFlag);
-    Serial.printf("version: %d\r\n", myWhybiz.version);
-    Serial.printf("mode: %0.2f\r\n", myWhybiz.node);
-    Serial.printf("channel: %d\r\n", myWhybiz.channel);
-    Serial.printf("rssi: %d\r\n", myWhybiz.rssi);
+    EEPROM.readBytes(0, &myFactor, sizeof(factor_t));
+    Serial.printf("flag: %x\r\n", myFactor.flag);
+    Serial.printf("version: %d\r\n", myFactor.version);
+    Serial.printf("mode: %0.2f\r\n", myFactor.mode);
+    Serial.printf("channel: %d\r\n", myFactor.channel);
+    Serial.printf("rssi: %d\r\n", myFactor.rssi);
     delay(2000);
 }
 
 void initEeprom(void){
   EEPROM.begin(EEPROM_MAX);
   Serial.printf("EEPROM Size: %d\r\n", EEPROM.length());
-  EEPROM.readBytes(0, &myWhybiz, sizeof(whybiz_t));
+  EEPROM.readBytes(0, &myFactor, sizeof(factor_t));
   
-  if(myWhybiz.flashFlag != FLASH_FLAG){
+  if(myFactor.flag != FLASH_FLAG){
     Serial.printf("New software version---> 2023.12.06\r\n");
     delay(2000);
-    myWhybiz.flashFlag = FLASH_FLAG;
-    myWhybiz.version = VERSION;
-    myWhybiz.node = 0;
-    myWhybiz.channel = 21; //lora channel
-    myWhybiz.rssi = -102;
-    myWhybiz.channel = 0; //uart channel
-    myWhybiz.relay = 0;
-    EEPROM.writeBytes(0, &myWhybiz, sizeof(whybiz_t));
+    myFactor.flag = FLASH_FLAG;
+    myFactor.version = VERSION;
+    myFactor.mode = 0;
+    myFactor.channel = 21; //lora channel
+    myFactor.rssi = -102;
+    myFactor.uChannel = 0; //uart channel
+    for(int i = 0; i < sizeof(myFactor.relay); i++){
+      myFactor.relay[i] = i;
+    }
+    myFactor.uiTest = 0x1234;
+    myFactor.fTest = 0.001;
+    EEPROM.writeBytes(0, &myFactor, sizeof(myFactor));
     EEPROM.commit();
   }
   else{
@@ -87,7 +95,7 @@ void initEeprom(void){
 void initUttec(void){
   initEeprom();
   initPort();
-  // initSx1509();
+  initSx1509();
 }
 
 void procCmdLine(uttecJson_t data){
@@ -135,17 +143,3 @@ void setUartChannel(uint8_t channel){
   }
   Serial.printf("uart channel: %d\r\n", channel);
 }
-
-void procBleRx(uint8_t device, uint8_t value){
-  uint8_t pin = device % 10;
-  device = device / 10;
-  Serial.printf("device: %d\r\n", device);
-  switch(device){
-    case 4:
-      Serial.printf("setRelay\r\n");
-      // setRelay(pin, value);
-    break;
-    default: Serial.printf("Error-------- %d\r\n", device); break;
-  }
-}
-

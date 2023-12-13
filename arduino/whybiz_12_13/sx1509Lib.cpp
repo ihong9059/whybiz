@@ -4,6 +4,8 @@
 #include "sx1509Lib.h"
 #include "myJson.h"
 
+sx1509_t mySx1509 = {0, };
+// SX1509 I2C address (set by ADDR1 and ADDR0 (00 by default):
 const byte SX1509_ADDRESS = 0x3E; // SX1509 I2C address
 SX1509 io;                        // Create an SX1509 object to be used throughout
 
@@ -16,8 +18,10 @@ void initSx1509(void){
     while (1);
   }
   for(uint8_t i = 0; i < 8; i++){
-    io.pinMode(i + 8, OUTPUT); // Set LED pin to OUTPUT
-    io.pinMode(i, INPUT_PULLUP); // Set LED pin to OUTPUT
+    mySx1509.relayPin[i] = i + 8;
+    io.pinMode(mySx1509.relayPin[i], OUTPUT); // Set LED pin to OUTPUT
+    mySx1509.swPin[i] = i;
+    io.pinMode(mySx1509.swPin[i], INPUT_PULLUP); // Set LED pin to OUTPUT
   }
 }
 
@@ -55,9 +59,9 @@ void testSwitch(void){
 }
 
 void setRelay(uint8_t pin, uint8_t set){
-  io.digitalWrite(8 + pin, set);
+  io.digitalWrite(mySx1509.relayPin[pin], set);
 }
 
 uint8_t getSwitch(uint8_t pin){
-  return io.digitalRead(pin);
+  return io.digitalRead(mySx1509.swPin[pin]);
 }

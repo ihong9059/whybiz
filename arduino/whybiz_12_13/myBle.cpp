@@ -31,13 +31,24 @@ class MyServerCallbacks: public BLEServerCallbacks {
     }
 };
 
+void procRx(uint8_t device, uint8_t value){
+  uint8_t pin = device % 10;
+  device = device / 10;
+  Serial.printf("device: %d\r\n", device);
+  switch(device){
+    case 4:
+      setRelay(pin, value);
+    break;
+    default: Serial.printf("Error-------- %d\r\n", device); break;
+  }
+}
 
 class MyCallbacks: public BLECharacteristicCallbacks {
     void onWrite(BLECharacteristic *pCharacteristic) {
       std::string rxValue = pCharacteristic->getValue();
       Serial.printf("length: %d\r\n", rxValue.length());
       Serial.printf("first: %d, second: %d\r\n", rxValue[0], rxValue[1]);
-      // procRx(rxValue[0], rxValue[1]);
+      procRx(rxValue[0], rxValue[1]);
       // if (rxValue.length() > 0) {
       //   Serial.println("*********");
       //   Serial.print("Received Value: ");
@@ -87,18 +98,15 @@ void loop_ble(void){
     if (deviceConnected) {
       static uint8_t buf[3] = {0, };
       static uint16_t count = 0;
-      static uint8_t sw = 0;
-      uint8_t test = 1;
+      static uint16_t sw = 0;
       buf[0] = 2;
-      buf[1] = test << (count % 8);
-      buf[2] = sw;
-      if(!(count % 8)){
-        if(sw) sw = 0;
-        else sw = 1;
-      } 
-      count++;
+      buf[1] = sw % 8;
+      buf[2] = count++ % 2;
+      if(count % 2 == 1) sw++;
+
       pTxCharacteristic->setValue(buf, sizeof(buf));
       pTxCharacteristic->notify();
+      txValue++;
 
 		  delay(10); // bluetooth stack will go into congestion, if too many packets are sent
 	  }
