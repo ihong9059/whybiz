@@ -91,7 +91,7 @@ void readAdcValue(void){
     whybiz_t* pWhybiz = getWhybizFactor();
     err = adc_read(adc_dev, &sequence);
     if(err != 0){
-        printk("ADC reading failed with error %d\r\n", err);
+        printf("ADC reading failed with error %d\r\n", err);
         return;
     }
     pWhybiz->adc1 = sample_buffer[0]/10;

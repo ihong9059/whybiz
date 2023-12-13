@@ -98,7 +98,7 @@ void testNvm(void){
 	}
 }
 
-void writeFactor(void){
+void saveFactorToFlash(void){
 	whybiz_t* pWhybiz = getWhybizFactor();
 	(void)nvs_write(&fs, UTTEC_ID, pWhybiz, sizeof(whybiz_t)+1);
 }

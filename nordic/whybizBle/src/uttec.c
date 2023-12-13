@@ -7,6 +7,7 @@
 #include <zephyr/logging/log.h>
 #include "adc.h"
 #include "myBle.h"
+#include "nvm.h"
 
 whybiz_t myWhybiz = {0, };
 
@@ -103,13 +104,43 @@ void uttecJsonTest(uint8_t* pData, uint8_t len){
     if (ret < 0)
     {
         // LOG_INF("JSON Parse Error: %d\r\n", ret);
-        printf("JSON Parse Error");
+        printf("JSON Parse Error ----------->");
     }
     else
     {
-        printf("no:%d, ca:%d, se:%d, va:%d, crc:%d\r\n",
-        ctr.no, ctr.ca, ctr.se, ctr.va, ctr.crc);
-    	writeOutSx(ctr.se, ctr.va);
+        whybiz_t* pFactor = getWhybizFactor();
+        switch(ctr.ca){
+            case CTR_RELAY:
+                printf("no:%d, ca:%d, se:%d, va:%d, crc:%d\r\n",
+                ctr.no, ctr.ca, ctr.se, ctr.va, ctr.crc);
+                writeOutSx(ctr.se, ctr.va);
+            break;
+            case CTR_LORA:
+            case SET_LORA:
+                pFactor->power = ctr.se;
+                printf("set lora power-> se: %d, va: %d\r\n", 
+                    ctr.se, ctr.va);
+                printf("save factor ###########\r\n");
+                saveFactorToFlash();
+            break;
+            case CTR_CHANNEL:
+            case SET_CHANNEL:
+                pFactor->channel = ctr.se; pFactor->lora_ch = ctr.va;
+                printf("set channel-> uart: %d, lora: %d\r\n", 
+                    ctr.se, ctr.va);
+                printf("save factor ###########\r\n");
+                saveFactorToFlash();
+            break;
+            case SET_VERSION:
+                pFactor->version = ctr.se; pFactor->ble = ctr.va;
+                pFactor->node = ctr.va;
+                printf("set number-> node: %d, ble: %d\r\n", 
+                    ctr.se, ctr.va);
+                printf("save factor ###########\r\n");
+                saveFactorToFlash();
+            break;
+            default: printf("error category: %d\r\n", ctr.ca); break;
+        }
     }
 }
 
@@ -235,23 +266,42 @@ void sendJsonForStatus(void){
     if(!(count++ % 2)){
         static uint32_t sendCount = 0;
         uint8_t who = (sendCount++ % MAX_CATEGORY);
+        pFrame->node = pFactor->node;
         // printf("who: %d\r\n", who);
         switch(who){
-            case ADC_DEVICE: printf("ADC_DEVICE: %d\r\n", who); 
+            case ADC_DEVICE: 
+                procAdcTxBle();
+                printf("ADC_DEVICE: %d\r\n", who); 
+                pFrame->category = ADC_DEVICE; 
+                pFrame->sensor = pFactor->adc1; pFrame->value = pFactor->adc2; 
             break;
             case SWITCH_DEVICE: printf("SWITCH_DEVICE: %d\r\n", who); 
+                procSwitchTxBle();
+                pFrame->category = SWITCH_DEVICE; 
+                pFrame->sensor = pFactor->sw; pFrame->value = pFactor->sw; 
             break;
             case RELAY_DEVICE: printf("RELAY_DEVICE: %d\r\n", who); 
+                procRelayTxBle();
+                pFrame->category = RELAY_DEVICE; 
+                pFrame->sensor = pFactor->relay; pFrame->value = pFactor->relay; 
             break;
             case LORA_DEVICE: printf("LORA_DEVICE: %d\r\n", who); 
+                pFrame->category = LORA_DEVICE; 
+                pFrame->sensor = pFactor->power; pFrame->value = pFactor->rssi++; 
             break;
             case VERSION_DEVICE: printf("VERSION_DEVICE: %d\r\n", who); 
+                pFrame->category = VERSION_DEVICE; 
+                pFrame->sensor = pFactor->version; pFrame->value = pFactor->ble; 
             break;
             case CHANNEL_DEVICE: printf("CHANNEL_DEVICE: %d\r\n", who); 
+                pFrame->category = CHANNEL_DEVICE; 
+                pFrame->sensor = pFactor->channel; pFrame->value = pFactor->lora_ch; 
             break;
-        }        
+        }
+        pFrame->crc = pFrame->node + pFrame->category + pFrame->sensor + pFrame->value;  
+
+        printf("{\"no\":%d,\"ca\":%d,\"se\":%d,\"va\":%d,\"crc\":%d}\r\n",
+        pFrame->node, pFrame->category, pFrame->sensor, pFrame->value, pFrame->crc);
     }
-    // printf("{\"no\":%d,\"ca\":%d,\"se\":%d\"va\":%d,\"crc\":%d}\r\n",
-    // pFrame->node, pFrame->);
 }
 

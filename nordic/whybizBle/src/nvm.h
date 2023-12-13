@@ -7,7 +7,7 @@ void dispFactors(void);
 
 void testNvm(void);
 
-void writeFactor(void);
+void saveFactorToFlash(void);
 
 
 #endif 

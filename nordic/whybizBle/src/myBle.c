@@ -554,6 +554,7 @@ void procChannel(void){
 }
 
 void procAdcTxBle(void){
+	printk("procAdcTxBle\r\n");
 	readAdcValue();
 	uint8_t buf[3] = {0, };
     whybiz_t* pFactor = getWhybizFactor();
