@@ -5,8 +5,11 @@
 #include "sx1509Lib.h"
 #include "myJson.h"
 
+static uint8_t relayStatus = 0;
+
 const byte SX1509_ADDRESS = 0x3E; // SX1509 I2C address
 SX1509 io;                        // Create an SX1509 object to be used throughout
+
 
 void initSx1509(void){
   Serial.println("SX1509 Example");
@@ -43,34 +46,33 @@ void testRelay(void){
   toggle = !toggle;
 }
 
-void testSwitch(void){
-  static uint16_t count = 0;
-  uint8_t i = count++ % 8;
-  // if(io.digitalRead(mySx1509.swPin[i])){
-  if(getSwitch(i)){
-    Serial.printf("pin: %d, High\r\n", i);
-  }
-  else{
-    Serial.printf("pin: %d, Low\r\n", i);
-  }
-}
-
 void setRelay(uint8_t pin, uint8_t set){
   io.digitalWrite(8 + pin, set);
-}
-
-uint8_t getSwitch(uint8_t pin){
-  return io.digitalRead(pin);
+  uint8_t temp = 0x01;
+  temp = temp << pin;
+  if(set){
+    relayStatus |= temp;
+  }
+  else{
+    relayStatus &= ~temp;
+  }
 }
 
 uint8_t readSxRelay(void){
-  for(uint8_t i = 0; i < 8; i++){
-    if(digitalRead(8+i)) Serial.printf("%d, high\r\n", i);
-    else Serial.printf("%d, low\r\n", i);
-    delay(10);
-  }
-  return 0;
+  return relayStatus;
 }
+
 uint8_t readSxSw(void){
-  // return io.readByte(0x11);
+  uint8_t result = 0;
+  for(uint8_t i = 0; i < 8; i++){
+    uint8_t temp = 0x01;
+    temp <<= i;
+    if(io.digitalRead(i)){
+      result = result | (temp) ;
+    } 
+    else{
+      result = result & ~temp;
+    }
+  }
+  return result;
 }

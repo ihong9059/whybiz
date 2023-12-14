@@ -2,10 +2,11 @@
 #define UTTEC_H
 
 #include <Arduino.h>
+#include "myBle.h"
 
 #define FLASH_FLAG  0xaaaa
 
-#define VERSION     0.1
+#define VERSION     1
 #define EEPROM_MAX  1024
 
 // for status
@@ -87,7 +88,6 @@ whybiz_t* getWhybizFactor(void);
 void sendWhybizFrame(void);
 whybizFrame_t* getWhybizFrame(void);
 
-
 void procChannel(void);
 void procLora(void);
 void procVersion(void);
@@ -99,8 +99,9 @@ void testPort(void);
 void loop_uttec(void);
 void signal(void);
 
-
 void procBleRx(uint8_t device, uint8_t value);
+bleFrame_t* getBleFrame(void);
 
+void testEeprom(void);
 #endif 
 

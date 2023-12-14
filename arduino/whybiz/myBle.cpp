@@ -9,6 +9,7 @@
 
 BLEServer *pServer = NULL;
 BLECharacteristic * pTxCharacteristic;
+
 bool deviceConnected = false;
 bool oldDeviceConnected = false;
 uint8_t txValue = 0;
@@ -30,9 +31,6 @@ class MyServerCallbacks: public BLEServerCallbacks {
       deviceConnected = false;
     }
 };
-// void setRelay(uint8_t pin, uint8_t set);
-	// uint8_t readByte(uint8_t registerAddress);
-
 
 class MyCallbacks: public BLECharacteristicCallbacks {
     void onWrite(BLECharacteristic *pCharacteristic) {
@@ -46,14 +44,6 @@ class MyCallbacks: public BLECharacteristicCallbacks {
         case CTR_RELAY:
           setRelay(se, va);
       }
-      // procRx(rxValue[0], rxValue[1]);
-      // if (rxValue.length() > 0) {
-      //   Serial.println("*********");
-      //   Serial.print("Received Value: ");
-      //   for (int i = 0; i < rxValue.length(); i++)
-      //     Serial.print(rxValue[i]);
-      //   Serial.println("*********");
-      // }
     }
 };
 
@@ -91,39 +81,32 @@ void initBle(void){
   Serial.println("Waiting a client connection to notify...");  
 }
 
+void sendToBle(bleFrame_t pFrame){
+  if (deviceConnected) {
+    uint8_t ble[3] = {pFrame.category, pFrame.sensor, pFrame.value};
+    Serial.printf("ca: %d, se: %d, va: %d\r\n", ble[0],ble[1],ble[2]);  
+  
+    pTxCharacteristic->setValue(ble, sizeof(ble));
+    pTxCharacteristic->notify();
+  }
+}
+
 void loop_ble(void){
-
-    if (deviceConnected) {
-      static uint8_t buf[3] = {0, };
-      static uint16_t count = 0;
-      static uint8_t sw = 0;
-      uint8_t test = 1;
-      buf[0] = 2;
-      buf[1] = test << (count % 8);
-      buf[2] = sw;
-      if(!(count % 8)){
-        if(sw) sw = 0;
-        else sw = 1;
-      } 
-      count++;
-      pTxCharacteristic->setValue(buf, sizeof(buf));
-      pTxCharacteristic->notify();
-
-		  delay(10); // bluetooth stack will go into congestion, if too many packets are sent
-	  }
-
-    // disconnecting
-    if (!deviceConnected && oldDeviceConnected) {
-        delay(500); // give the bluetooth stack the chance to get things ready
-        pServer->startAdvertising(); // restart advertising
-        Serial.println("start advertising");
-        oldDeviceConnected = deviceConnected;
-    }
-    // connecting
-    if (deviceConnected && !oldDeviceConnected) {
-		// do stuff here on connecting
-        oldDeviceConnected = deviceConnected;
-    }
-
+  if (deviceConnected) {
+      Serial.printf("Ble connected..\r\n"); 
+  }
+  // disconnecting
+  if (!deviceConnected && oldDeviceConnected) {
+      delay(500); // give the bluetooth stack the chance to get things ready
+      pServer->startAdvertising(); // restart advertising
+      Serial.println("start advertising");
+      oldDeviceConnected = deviceConnected;
+  }
+  // connecting
+  if (deviceConnected && !oldDeviceConnected) {
+  // do stuff here on connecting
+      oldDeviceConnected = deviceConnected;
+      Serial.println("wait\r\n");
+  }
 }
 

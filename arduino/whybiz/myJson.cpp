@@ -35,6 +35,7 @@ void testReceiveJson(void){
     // read the incoming byte:
     temp[count++] = Serial2.read();
   }
+  
   if(count > 0){
     StaticJsonDocument<MAX_DOC> doc;
     DeserializationError error = deserializeJson(doc, temp);
@@ -46,40 +47,40 @@ void testReceiveJson(void){
 
     myJason.node = doc["no"];
     myJason.category = doc["ca"];
-    myJason.device = doc["de"];
+    myJason.device = doc["se"];
     myJason.value = doc["va"];
     myJason.crc = doc["crc"];
     int16_t totalCrc = myJason.node + myJason.value + myJason.category + myJason.device;
     Serial.printf("node: %d, category: %d, device: %d, value: %d\r\n", 
       myJason.node, myJason.category, myJason.device, myJason.value);
 
-    if(totalCrc == myJason.crc){
-      Serial.printf("congratulation -------------> \r\n");
-      switch(myJason.category){
-        case 0:
-        case 10:
-          procCmdLine(myJason);
-          Serial.printf("-------> Command line proc\r\n"); break;
-        case 1:
-        case 11:
-          procSwitch(myJason);
-          Serial.printf("-------> Switch proc\r\n"); break;
-        case 2:
-        case 12:
-          procRelay(myJason);
-          Serial.printf("-------> Relay proc\r\n"); break;
-        case 3:
-        case 13:
-          procAdc(myJason);
-          Serial.printf("-------> Adc proc\r\n"); break;
-        default:
-          Serial.printf("<-------- error category: %d\r\n", myJason.category); break;
-      }
-    } 
-    else{
-      Serial.printf("error in crc: %d, %d\r\n", totalCrc, myJason.crc);
-      return;
-    }
+    // if(totalCrc == myJason.crc){
+    //   Serial.printf("congratulation -------------> \r\n");
+    //   switch(myJason.category){
+    //     case 0:
+    //     case 10:
+    //       procCmdLine(myJason);
+    //       Serial.printf("-------> Command line proc\r\n"); break;
+    //     case 1:
+    //     case 11:
+    //       procSwitch(myJason);
+    //       Serial.printf("-------> Switch proc\r\n"); break;
+    //     case 2:
+    //     case 12:
+    //       procRelay(myJason);
+    //       Serial.printf("-------> Relay proc\r\n"); break;
+    //     case 3:
+    //     case 13:
+    //       procAdc(myJason);
+    //       Serial.printf("-------> Adc proc\r\n"); break;
+    //     default:
+    //       Serial.printf("<-------- error category: %d\r\n", myJason.category); break;
+    //   }
+    // } 
+    // else{
+    //   Serial.printf("error in crc: %d, %d\r\n", totalCrc, myJason.crc);
+    //   return;
+    // }
 
   }
 }

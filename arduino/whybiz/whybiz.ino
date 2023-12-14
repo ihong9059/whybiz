@@ -39,7 +39,7 @@ void loop() {
   loop_wifi();
 #endif  
   loop_uttec();
-  // testReceiveJson();
+  testReceiveJson();
   delay(600);
   // testSendJson();
   // testRelay();
@@ -51,8 +51,13 @@ void loop() {
   delay(5);
   digitalWrite(RS485_EN, 0);
   // Serial.printf("Lora test: %d\r\n", count);
-  testReceive();
-  uint8_t temp = readSxRelay();
-  Serial.printf("relay: %x\r\n", temp);
+  // testReceive();
+  // testEeprom();
+  // uint8_t temp = readSxRelay();
+  // Serial.printf("relay: %x\r\n", temp);
+
+  // temp = readSxSw();
+  // Serial.printf("switch: %x\r\n", temp);
+  
   count++;
 }

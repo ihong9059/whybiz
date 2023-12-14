@@ -1,9 +1,8 @@
-
 #include "uttec.h"
 #include "EEPROM.h"
 #include "myJson.h"
 #include "sx1509Lib.h"
-
+#include "myBle.h"
 
 #define SIGNAL_LED 2     //On board LED
 
@@ -25,14 +24,49 @@ whybiz_t* getWhybizFactor(void){
 void loop_uttec(void){
   static uint32_t SensorUpdate = 0;
   uint32_t updateTime = 1000;
+    
   if ((millis() - SensorUpdate) >= updateTime) {
+    static uint32_t bleCount = 0;
+    static bool toggle = false;
+    bleFrame_t Frame = {0, };
     SensorUpdate = millis();
-    myWhybiz.adc1 = analogRead(PIN_A0);
-    myWhybiz.adc2 = analogRead(PIN_A1);
-    for(int i = 0; i < 8; i++){
-      // myDevice.sw[i] = getSwitch(i);
+    uint8_t adc1 = analogRead(PIN_A0)/40;
+    uint8_t adc2 = analogRead(PIN_A1)/40;
+
+    switch(bleCount++ % MAX_CATEGORY){
+      case ADC_DEVICE:
+        // Serial.printf("adc1: %d, adc2: %d\r\n", adc1, adc2);
+        Frame.category = ADC_DEVICE;
+        Frame.sensor = adc1;
+        Frame.value = adc2;
+      break;
+      case SWITCH_DEVICE:
+        Frame.category = SWITCH_DEVICE;
+        Frame.sensor = readSxSw();
+        Frame.value = Frame.sensor;
+      break;
+      case RELAY_DEVICE:
+        Frame.category = RELAY_DEVICE;
+        Frame.sensor = readSxRelay();
+        Frame.value = Frame.sensor;
+      break;
+      case LORA_DEVICE:
+        Frame.category = LORA_DEVICE;
+        Frame.sensor = myWhybiz.power;
+        Frame.value = myWhybiz.rssi;
+      break;
+      case VERSION_DEVICE:
+        Frame.category = VERSION_DEVICE;
+        Frame.sensor = myWhybiz.version;
+        Frame.value = myWhybiz.ble;
+      break;
+      case CHANNEL_DEVICE:
+        Frame.category = CHANNEL_DEVICE;
+        Frame.sensor = myWhybiz.channel;
+        Frame.value = myWhybiz.lora_ch;
+      break;
     }
-    // testPort();
+    sendToBle(Frame);
   }
 }
 
@@ -46,15 +80,22 @@ void initPort(void){
   pinMode(SIGNAL_LED, OUTPUT);
   digitalWrite(LORA_RST, 1);
 
-  setUartChannel(RS485_CHANNEL);
+  setUartChannel(ETHERNET_CHANNEL);
 }
 
 void dispFactor(void){
     EEPROM.readBytes(0, &myWhybiz, sizeof(whybiz_t));
     Serial.printf("flag: %x\r\n", myWhybiz.flashFlag);
     Serial.printf("version: %d\r\n", myWhybiz.version);
-    Serial.printf("mode: %0.2f\r\n", myWhybiz.node);
+    Serial.printf("node: %d\r\n", myWhybiz.node);
     Serial.printf("channel: %d\r\n", myWhybiz.channel);
+    Serial.printf("ble: %d\r\n", myWhybiz.ble);
+    Serial.printf("adc1: %d\r\n", myWhybiz.adc1);
+    Serial.printf("adc2: %d\r\n", myWhybiz.adc2);
+    Serial.printf("sw: %d\r\n", myWhybiz.sw);
+    Serial.printf("relay: %d\r\n", myWhybiz.relay);
+    Serial.printf("lora_ch: %d\r\n", myWhybiz.lora_ch);
+    Serial.printf("power: %d\r\n", myWhybiz.power);
     Serial.printf("rssi: %d\r\n", myWhybiz.rssi);
     delay(2000);
 }
@@ -71,9 +112,14 @@ void initEeprom(void){
     myWhybiz.version = VERSION;
     myWhybiz.node = 0;
     myWhybiz.channel = 21; //lora channel
-    myWhybiz.rssi = -102;
-    myWhybiz.channel = 0; //uart channel
-    myWhybiz.relay = 0;
+    myWhybiz.ble = 12;
+    myWhybiz.adc1 = 3;
+    myWhybiz.adc2 = 4;
+    myWhybiz.sw = 1;
+    myWhybiz.relay = 2;
+    myWhybiz.lora_ch = 0; //uart channel
+    myWhybiz.power = 0;
+    myWhybiz.rssi = 0;
     EEPROM.writeBytes(0, &myWhybiz, sizeof(whybiz_t));
     EEPROM.commit();
   }
@@ -136,16 +182,12 @@ void setUartChannel(uint8_t channel){
   Serial.printf("uart channel: %d\r\n", channel);
 }
 
-void procBleRx(uint8_t device, uint8_t value){
-  uint8_t pin = device % 10;
-  device = device / 10;
-  Serial.printf("device: %d\r\n", device);
-  switch(device){
-    case 4:
-      Serial.printf("setRelay\r\n");
-      // setRelay(pin, value);
-    break;
-    default: Serial.printf("Error-------- %d\r\n", device); break;
-  }
+
+void testEeprom(void){
+  EEPROM.readBytes(0, &myWhybiz, sizeof(whybiz_t));
+  Serial.printf("read rssi: %d\r\n", myWhybiz.rssi);
+  myWhybiz.rssi++;
+  EEPROM.writeBytes(0, &myWhybiz, sizeof(whybiz_t));
+  EEPROM.commit();
 }
 
