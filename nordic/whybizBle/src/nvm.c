@@ -21,19 +21,19 @@ static struct nvs_fs fs;
 
 void dispFactors(void){
 	whybiz_t* pWhybiz = getWhybizFactor();
-	printf("============= whybiz factors ==========\r\n");
-	printf("version: %d\r\n", pWhybiz->version);
-	printf("node: %d\r\n", pWhybiz->node);
-	printf("uart: %d\r\n", pWhybiz->channel);
-	printf("ble: %d\r\n", pWhybiz->ble);
-	printf("adc1: %d\r\n", pWhybiz->adc1);
-	printf("adc2: %d\r\n", pWhybiz->adc2);
-	printf("sw: %d\r\n", pWhybiz->sw);
-	printf("relay: %d\r\n", pWhybiz->relay);
-	printf("lora_ch: %d\r\n", pWhybiz->lora_ch);
-	printf("power: %d\r\n", pWhybiz->power);
-	printf("rssi: %d\r\n", pWhybiz->rssi);
-	printf("============= whybiz factors ==========\r\n");
+	printk("============= whybiz factors ==========\r\n");
+	printk("version: %d\r\n", pWhybiz->version);
+	printk("node: %d\r\n", pWhybiz->node);
+	printk("uart: %d\r\n", pWhybiz->channel);
+	printk("ble: %d\r\n", pWhybiz->ble);
+	printk("adc1: %d\r\n", pWhybiz->adc1);
+	printk("adc2: %d\r\n", pWhybiz->adc2);
+	printk("sw: %d\r\n", pWhybiz->sw);
+	printk("relay: %d\r\n", pWhybiz->relay);
+	printk("lora_ch: %d\r\n", pWhybiz->lora_ch);
+	printk("power: %d\r\n", pWhybiz->power);
+	printk("rssi: %d\r\n", pWhybiz->rssi);
+	printk("============= whybiz factors ==========\r\n");
 	k_sleep(K_MSEC(1000));
 }
 
@@ -62,11 +62,11 @@ void initNvm(void){
 	rc = nvs_read(&fs, UTTEC_ID, pWhybiz, sizeof(whybiz_t));
 
 	if(pWhybiz->flashFlag == FLASH_FLAG){
-		printf("Already written to flash factors\r\n");
-		printf("version: %d\r\n", pWhybiz->version);			
+		printk("Already written to flash factors\r\n");
+		printk("version: %d\r\n", pWhybiz->version);			
 	}
 	else{
-		printf("New Program. now set first factors\r\n");
+		printk("New Program. now set first factors\r\n");
 		pWhybiz->flashFlag = FLASH_FLAG;
 		pWhybiz->version = 1;
 		pWhybiz->node = 111;

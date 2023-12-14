@@ -30,13 +30,22 @@ class MyServerCallbacks: public BLEServerCallbacks {
       deviceConnected = false;
     }
 };
+// void setRelay(uint8_t pin, uint8_t set);
+	// uint8_t readByte(uint8_t registerAddress);
 
 
 class MyCallbacks: public BLECharacteristicCallbacks {
     void onWrite(BLECharacteristic *pCharacteristic) {
       std::string rxValue = pCharacteristic->getValue();
       Serial.printf("length: %d\r\n", rxValue.length());
-      Serial.printf("first: %d, second: %d\r\n", rxValue[0], rxValue[1]);
+      Serial.printf("ca: %d, se: %d, va: %d\r\n", rxValue[0], rxValue[1], rxValue[2]);
+      uint8_t ca = rxValue[0];
+      uint8_t se = rxValue[1];
+      uint8_t va = rxValue[2];
+      switch(ca){
+        case CTR_RELAY:
+          setRelay(se, va);
+      }
       // procRx(rxValue[0], rxValue[1]);
       // if (rxValue.length() > 0) {
       //   Serial.println("*********");

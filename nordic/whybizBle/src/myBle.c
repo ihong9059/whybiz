@@ -536,25 +536,31 @@ void procRxBle(uint8_t* data, uint16_t len){
 	uint8_t category = data[0];
 	uint8_t sensor = data[1];
 	uint8_t value = data[2];
+	whybiz_t* pFactor = getWhybizFactor();
 	printk("ca: %d, se: %d, value: %d\r\n", category, sensor, value);
 	switch(category){
 		case CTR_RELAY:
-			printf("relay setting\r\n");
+			printk("relay setting\r\n");
 			writeOutSx(sensor, value);
 		break;
 		case CTR_LORA:
-			printf("lora setting by ble. tbd(2023.12.14)\r\n");
+			printk("lora setting by ble. tbd(2023.12.14)\r\n");
 			// writeOutSx(sensor, value);
 		break;
 		case CTR_CHANNEL:
-			printf("channel setting by ble. tbd(2023.12.14)\r\n");
+			pFactor->channel = sensor - 1;
+			setUartChannel(pFactor->channel);
+			printk("channel setting by ble. tbd(2023.12.14)\r\n");
 		break;
 	}
 }
 
 void sendToMobile(uint8_t* buf, uint8_t len){
-	if (bt_nus_send(NULL, buf, len)) {
-		LOG_WRN("Failed to send data over BLE connection");
+	connectFlag_t* pFlag = getConnectFlag();
+	if(pFlag->ble){
+		if (bt_nus_send(NULL, buf, len)) {
+			LOG_WRN("Failed to send data over BLE connection");
+		}
 	}
 }
 
@@ -653,8 +659,8 @@ void ble_write_thread(void)
 
 		// LOG_INF("ble_write_thread: %d", buf->len);
 /*
-		printf("ble_write_thread: %d\r\n", buf->len);
-		printf("buf: %s\r\n", buf->data);
+		printk("ble_write_thread: %d\r\n", buf->len);
+		printk("buf: %s\r\n", buf->data);
 */
 		// printk("---->%s\r\n", buf->data);
 		// LOG_INF("---->%s", buf->data);

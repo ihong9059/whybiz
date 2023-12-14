@@ -8,6 +8,30 @@
 #define VERSION     0.1
 #define EEPROM_MAX  1024
 
+// for status
+#define ADC_DEVICE		    1
+#define SWITCH_DEVICE 	    2
+#define RELAY_DEVICE	    3
+#define LORA_DEVICE	        4
+#define VERSION_DEVICE	    5
+#define CHANNEL_DEVICE		6
+// #define BLE_NUM_DEVICE	    6
+#define MAX_CATEGORY        CHANNEL_DEVICE + 1
+#define MAX_BLE_CATEGORY    4
+// end
+
+// for control
+#define CTR_RELAY           13
+#define CTR_LORA            14
+#define CTR_CHANNEL         16
+// end
+
+// for control
+#define SET_LORA            24
+#define SET_VERSION         25
+#define SET_CHANNEL         26
+// end
+
 #define SEL1            32 //SCL(32) 
 #define SEL2            33 //SDA(33)
 #define SX_RESET        17

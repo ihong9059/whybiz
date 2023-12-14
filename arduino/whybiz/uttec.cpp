@@ -87,7 +87,7 @@ void initEeprom(void){
 void initUttec(void){
   initEeprom();
   initPort();
-  // initSx1509();
+  initSx1509();
 }
 
 void procCmdLine(uttecJson_t data){

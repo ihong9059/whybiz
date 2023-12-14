@@ -98,7 +98,6 @@ void dispJsonFrame(void);
 
 connectFlag_t* getConnectFlag(void);
 void sendFactorAtConnection(void);
-void sendFactorRepeat(void);
 
 
 void procChannel(void);
@@ -107,7 +106,7 @@ void procVersion(void);
 
 void sendJsonForStatus(void);
 
-
+void dispChannel(void);
 
 
 #endif 

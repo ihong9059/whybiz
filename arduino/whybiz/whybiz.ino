@@ -52,5 +52,7 @@ void loop() {
   digitalWrite(RS485_EN, 0);
   // Serial.printf("Lora test: %d\r\n", count);
   testReceive();
+  uint8_t temp = readSxRelay();
+  Serial.printf("relay: %x\r\n", temp);
   count++;
 }

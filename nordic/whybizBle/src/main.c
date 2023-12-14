@@ -27,7 +27,7 @@ connectFlag_t* getConnectFlag(void){
 
 int main(void)
 {
-	printf("nordic for whybiz.\r\n");
+	printk("nordic for whybiz.\r\n");
 	initBle();
 	initSx1509();
 	initAdc();
@@ -50,13 +50,13 @@ int main(void)
 			k_sleep(K_MSEC(20));
 			clearJsonData();
 		}
-		// sendJsonForStatus();
-		// sendFactorRepeat();	
-		printk("main: %d\r\n", count);
+		sendJsonForStatus();
 		// procSwitchTxBle();
 		// procRelayTxBle();
 		// procAdcTxBle();
 		// testNvm();	
+		printk("main: %d\r\n", count);
+		dispChannel();
 		toggle = !toggle;
 		count++;
 	}

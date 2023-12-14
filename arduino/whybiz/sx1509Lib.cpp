@@ -1,6 +1,7 @@
 #include <Wire.h>           // Include the I2C library (required)
 #include <SparkFunSX1509.h> //Click here for the library: http://librarymanager/All#SparkFun_SX1509
 
+// #include "mySpark.h"
 #include "sx1509Lib.h"
 #include "myJson.h"
 
@@ -60,4 +61,16 @@ void setRelay(uint8_t pin, uint8_t set){
 
 uint8_t getSwitch(uint8_t pin){
   return io.digitalRead(pin);
+}
+
+uint8_t readSxRelay(void){
+  for(uint8_t i = 0; i < 8; i++){
+    if(digitalRead(8+i)) Serial.printf("%d, high\r\n", i);
+    else Serial.printf("%d, low\r\n", i);
+    delay(10);
+  }
+  return 0;
+}
+uint8_t readSxSw(void){
+  // return io.readByte(0x11);
 }
