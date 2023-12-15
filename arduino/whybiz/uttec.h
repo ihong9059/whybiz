@@ -88,10 +88,6 @@ whybiz_t* getWhybizFactor(void);
 void sendWhybizFrame(void);
 whybizFrame_t* getWhybizFrame(void);
 
-void procChannel(void);
-void procLora(void);
-void procVersion(void);
-
 void sendJsonForStatus(void);
 
 void testPort(void);
@@ -103,5 +99,7 @@ void procBleRx(uint8_t device, uint8_t value);
 bleFrame_t* getBleFrame(void);
 
 void testEeprom(void);
+
+connectFlag_t* getConnectFlag(void);
 #endif 
 

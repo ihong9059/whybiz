@@ -1,5 +1,6 @@
 #include <Wire.h>           // Include the I2C library (required)
 #include <SparkFunSX1509.h> //Click here for the library: http://librarymanager/All#SparkFun_SX1509
+// #include "SparkFunSX1509.h" //Click here for the library: http://librarymanager/All#SparkFun_SX1509
 
 // #include "mySpark.h"
 #include "sx1509Lib.h"

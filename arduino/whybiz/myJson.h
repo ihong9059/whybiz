@@ -13,8 +13,6 @@ typedef struct{
 
 void testReceive(void);
 
-void testParse(void);
-void generateJsonSerial(void);
 void testReceiveJson(void);
 void testSendJson(void);
 

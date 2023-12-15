@@ -262,7 +262,7 @@ void sendJsonForStatus(void){
         }
         pFrame->crc = pFrame->node + pFrame->category + pFrame->sensor + pFrame->value;  
 
-        printk("{\"no\":%d,\"ca\":%d,\"se\":%d,\"va\":%d,\"crc\":%d}\r\n",
+        printf("{\"no\":%d,\"ca\":%d,\"se\":%d,\"va\":%d,\"crc\":%d}\r\n",
         pFrame->node, pFrame->category, pFrame->sensor, pFrame->value, pFrame->crc);
     }
 }

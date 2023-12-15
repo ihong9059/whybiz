@@ -67,6 +67,7 @@ void loop_uttec(void){
       break;
     }
     sendToBle(Frame);
+    sendJsonForStatus();
   }
 }
 
@@ -190,4 +191,80 @@ void testEeprom(void){
   EEPROM.writeBytes(0, &myWhybiz, sizeof(whybiz_t));
   EEPROM.commit();
 }
+
+void sendJsonForStatus(void){
+    static uint32_t count = 0;
+    whybiz_t* pFactor = getWhybizFactor();
+    whybizFrame_t* pFrame = getWhybizFrame();
+
+    connectFlag_t* pFlags = getConnectFlag();
+
+    // if(!pFlags->first){
+    //     sendFactorAtConnection();
+    //     pFlags->first = true;
+    //     return;
+    // }
+    // if(pFlags->ble) printf("Ble connected---->\r\n");
+    // else return;
+
+    if(!(count++ % 2)){
+        static uint32_t sendCount = 0;
+        uint8_t who = (sendCount++ % MAX_CATEGORY);
+        pFrame->node = pFactor->node;
+        // printf("who: %d\r\n", who);
+        switch(who){
+            case ADC_DEVICE: 
+                printf("ADC_DEVICE: %d\r\n", who); 
+                pFrame->category = ADC_DEVICE; 
+                pFrame->sensor = pFactor->adc1; pFrame->value = pFactor->adc2; 
+            break;
+            case SWITCH_DEVICE: printf("SWITCH_DEVICE: %d\r\n", who); 
+                pFrame->category = SWITCH_DEVICE; 
+                pFrame->sensor = pFactor->sw; pFrame->value = pFactor->sw; 
+            break;
+            case RELAY_DEVICE: printf("RELAY_DEVICE: %d\r\n", who); 
+                pFrame->category = RELAY_DEVICE; 
+                pFrame->sensor = pFactor->relay; pFrame->value = pFactor->relay; 
+            break;
+            case LORA_DEVICE: printf("LORA_DEVICE: %d\r\n", who); 
+                pFrame->category = LORA_DEVICE; 
+                pFrame->sensor = pFactor->power; pFrame->value = pFactor->rssi++; 
+            break;
+            case VERSION_DEVICE: printf("VERSION_DEVICE: %d\r\n", who); 
+                pFrame->category = VERSION_DEVICE; 
+                pFrame->sensor = pFactor->version; pFrame->value = pFactor->ble; 
+            break;
+            case CHANNEL_DEVICE: printf("CHANNEL_DEVICE: %d\r\n", who); 
+                pFrame->category = CHANNEL_DEVICE; 
+                pFrame->sensor = pFactor->channel; pFrame->value = pFactor->lora_ch; 
+            break;
+        }
+        pFrame->crc = pFrame->node + pFrame->category + pFrame->sensor + pFrame->value;  
+        
+//for server through selected uart channel. printf. 2023.12.15
+        printf("{\"no\":%d,\"ca\":%d,\"se\":%d,\"va\":%d,\"crc\":%d}\r\n",
+        pFrame->node, pFrame->category, pFrame->sensor, pFrame->value, pFrame->crc);
+    }
+}
+
+connectFlag_t whybizConnect = {0, };
+connectFlag_t* getConnectFlag(void){
+	return &whybizConnect;
+}
+
+whybizFrame_t myWhybizFrame = {0, };
+
+void sendWhybizFrame(void){
+    whybizFrame_t* pJson = getWhybizFrame();
+    pJson->crc = pJson->node + pJson->category + pJson->sensor + pJson->sensor;
+    printf("{\"no\":%d,\"ca\":%d,\"se\":%d,\"va\":%d,\"crc\":%d}\r\n",
+    pJson->node, pJson->category, pJson->sensor, pJson->value, pJson->crc);
+}
+
+whybizFrame_t* getWhybizFrame(void){
+    return &myWhybizFrame;
+}
+
+
+
 
