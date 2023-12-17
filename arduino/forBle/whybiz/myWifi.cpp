@@ -6,9 +6,9 @@
 #include "myWifi.h"
 #include "sx1509Lib.h"
 
-#define USE_INTRANET
+// #define USE_INTRANET
 
-#define MYHOME 1
+// #define MYHOME 1
 
 #ifdef MYHOME
 #define LOCAL_SSID "ihong"
@@ -124,9 +124,10 @@ void serverForGeneral(void){
 }
 
 void loop_wifi(void){
+  char temp[100];
   server.handleClient();
-  serverForGeneral(); //for uttec_client, port: 2000, server by myself
-  // connectToServer(); //for myPort: 8091, 192.168.1.4 is server. 
+  serverForGeneral(); //for uttec_client, port: 2000
+  connectToServer(); //for myPort: 8091, 192.168.1.4
 }
 
 
@@ -139,76 +140,72 @@ void ProcessToggle() {
 }
 
 void ProcessSelect() {
-  whybiz_t* pFactor = getWhybizFactor();
   String str_select = server.arg("VALUE");
   uint8_t select_num = str_select.toInt();
-  pFactor->channel = mySelect = select_num;  
-  Serial.printf("\r\nSelect: %d, set\r\n", select_num);
-  setUartChannel(mySelect);
+  mySelect = select_num;
+  Serial.printf("\r\nSelect: %d\r\n", select_num);
   server.send(200, "text/plain", ""); //Send web page
 }
 
 void ProcessButton_0() {
-  String str_select = server.arg("VALUE");
-  // printf("received value: %d\r\n", str_select.toInt());
-  // if(pData->relay & 0x01) setRelay(0, 1);
-  if(str_select.toInt()) setRelay(0, 1);
+  whybiz_t* pData = getWhybizFactor();
+  if(pData->relay & 0x01) setRelay(0, 1);
   else setRelay(0, 0);
-  Serial.printf("Button 0 press: %s\r\n", str_select);
+  Serial.println("Button 0 press");
   server.send(200, "text/plain", ""); //Send web page
 }
 
 void ProcessButton_1() {
-  String str_select = server.arg("VALUE");
-  if(str_select.toInt()) setRelay(1, 1);
+  whybiz_t* pData = getWhybizFactor();
+  if(pData->relay & 0x02) setRelay(1, 1);
   else setRelay(1, 0);
-  Serial.printf("Button 1 press: %s\r\n", str_select);
+  Serial.println("Button 1 press");
   server.send(200, "text/plain", ""); //Send web page
 }
 
 void ProcessButton_2() {
-  String str_select = server.arg("VALUE");
-  if(str_select.toInt()) setRelay(2, 1);
+  whybiz_t* pData = getWhybizFactor();
+  if(pData->relay & 0x04) setRelay(2, 1);
   else setRelay(2, 0);
   Serial.println("Button 2 press");
   server.send(200, "text/plain", ""); //Send web page
 }
 
 void ProcessButton_3() {
-  String str_select = server.arg("VALUE");
-  if(str_select.toInt()) setRelay(3, 1);
+  whybiz_t* pData = getWhybizFactor();
+  if(pData->relay & 0x08) setRelay(3, 1);
   else setRelay(3, 0);
   Serial.println("Button 3 press");
   server.send(200, "text/plain", ""); //Send web page
 }
 
 void ProcessButton_4() {
-  String str_select = server.arg("VALUE");
-  if(str_select.toInt()) setRelay(4, 1);
+  whybiz_t* pData = getWhybizFactor();
+  if(pData->relay & 0x10) setRelay(4, 1);
   else setRelay(4, 0);
   Serial.println("Button 4 press");
   server.send(200, "text/plain", ""); //Send web page
 }
 
 void ProcessButton_5() {
-  String str_select = server.arg("VALUE");
-  if(str_select.toInt()) setRelay(5, 1);
+  whybiz_t* pData = getWhybizFactor();
+  if(pData->relay & 0x20) setRelay(5, 1);
   else setRelay(5, 0);
   Serial.println("Button 5 press");
   server.send(200, "text/plain", ""); //Send web page
 }
 
 void ProcessButton_6() {
-  String str_select = server.arg("VALUE");
-  if(str_select.toInt()) setRelay(6, 1);
+  whybiz_t* pData = getWhybizFactor();
+  if(pData->relay & 0x40) setRelay(6, 1);
   else setRelay(6, 0);
   Serial.println("Button 6 press");
   server.send(200, "text/plain", ""); //Send web page
 }
 
 void ProcessButton_7() {
-  String str_select = server.arg("VALUE");
-  if(str_select.toInt()) setRelay(7, 1);
+  whybiz_t* pData = getWhybizFactor();
+  if(pData->relay & 0x80) setRelay(7, 1);
   else setRelay(7, 0);
   Serial.println("Button 7 press");
   server.send(200, "text/plain", ""); //Send web page
@@ -223,7 +220,7 @@ void SendXML() {
   static uint32_t count = 0;
   char buf[32];
   whybiz_t* pData = getWhybizFactor();
-  // printf("relay: %x\r\n", pData->relay);
+
   int16_t lora_rssi = -110;
   if(count++ % 20 == 0)
     Serial.println("sending xml");
@@ -236,30 +233,6 @@ void SendXML() {
 
   sprintf(buf, "<B1>%d</B1>\n", pData->adc2);
   strcat(XML, buf);
-
-  // if (pData->relay & 0x01) {strcat(XML, "<LED>0</LED>\n");}
-  // else {strcat(XML, "<LED>1</LED>\n");}
-
-  // if (pData->relay & 0x02) {strcat(XML, "<LED1>0</LED1>\n");}
-  // else {strcat(XML, "<LED1>1</LED1>\n");}
-
-  // if (pData->relay & 0x04) {strcat(XML, "<LED2>0</LED2>\n");}
-  // else {strcat(XML, "<LED2>1</LED2>\n");}
-
-  // if (pData->relay & 0x08) {strcat(XML, "<LED3>0</LED3>\n");}
-  // else {strcat(XML, "<LED3>1</LED3>\n");}
-
-  // if (pData->relay & 0x10) {strcat(XML, "<LED4>0</LED4>\n");}
-  // else {strcat(XML, "<LED4>1</LED4>\n");}
-
-  // if (pData->relay & 0x20) {strcat(XML, "<LED5>0</LED5>\n");}
-  // else {strcat(XML, "<LED5>1</LED5>\n");}
-
-  // if (pData->relay & 0x40) {strcat(XML, "<LED6>0</LED6>\n");}
-  // else {strcat(XML, "<LED6>1</LED6>\n");}
-
-  // if (pData->relay & 0x80) {strcat(XML, "<LED7>0</LED7>\n");}
-  // else {strcat(XML, "<LED7>1</LED7>\n");}
 
   if (pData->relay & 0x01) {strcat(XML, "<LED>1</LED>\n");}
   else {strcat(XML, "<LED>0</LED>\n");}
@@ -310,13 +283,12 @@ void SendXML() {
   if (pData->sw & 0x80) {strcat(XML, "<sw8>1</sw8>\n");}
   else {strcat(XML, "<sw8>0</sw8>\n");}
 
-  switch(mySelect){
-  // switch(mySelect++ % 4){
-    case 0: strcat(XML, "<SELECT>0</SELECT>\n"); break; 
-    case 1: strcat(XML, "<SELECT>1</SELECT>\n"); break; 
-    case 2: strcat(XML, "<SELECT>2</SELECT>\n"); break; 
-    case 3: strcat(XML, "<SELECT>3</SELECT>\n"); break; 
-  }
+  // switch(mySelect){
+  //   case 0: strcat(XML, "<select>0</select>\n"); break; 
+  //   case 1: strcat(XML, "<select>1</select>\n"); break; 
+  //   case 2: strcat(XML, "<select>2</select>\n"); break; 
+  //   case 3: strcat(XML, "<select>3</select>\n"); break; 
+  // }
   // if(count % 2) {strcat(XML, "<act1>1</act1>\n");}
   // else {strcat(XML, "<act1>0</act1>\n");}
 

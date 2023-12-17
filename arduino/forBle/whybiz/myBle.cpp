@@ -7,7 +7,6 @@
 #include "myBle.h"
 #include "sx1509Lib.h"
 
-/* --------------------------------------------------------------------- */
 #ifdef BLE_PROGRAM
 
 BLEServer *pServer = NULL;
@@ -132,3 +131,5 @@ void loop_ble(void){
 }
 
 #endif 
+
+

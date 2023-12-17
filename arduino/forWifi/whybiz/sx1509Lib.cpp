@@ -5,7 +5,6 @@
 // #include "mySpark.h"
 #include "sx1509Lib.h"
 #include "myJson.h"
-#include "uttec.h"
 
 static uint8_t relayStatus = 0;
 
@@ -32,31 +31,25 @@ void testRelay(void){
   static bool toggle = false;
   if(toggle){
     setRelay(count % 8, 1);
-    printf("high: %d\r\n", count%8);
+    count++;
   }
   else{
     setRelay(count % 8, 0);
-    printf("low: %d\r\n", count%8);
   }
-  if(!(count % 8)){
-    toggle = !toggle;
-  }
-  count++;
+  toggle = !toggle;
 }
 
 void setRelay(uint8_t pin, uint8_t set){
-  whybiz_t* pFactor = getWhybizFactor();
-  printf("pin: %d, set: %d\r\n", pin, set);
-  io.digitalWrite(8 + pin, set);
-  uint8_t temp = 0x01;
-  temp = temp << pin;
-  if(set){
-    relayStatus |= temp;
-  }
-  else{
-    relayStatus &= ~temp;
-  }
-  pFactor->relay = relayStatus;
+  printf("setRelay Test");
+  // io.digitalWrite(8 + pin, set);
+  // uint8_t temp = 0x01;
+  // temp = temp << pin;
+  // if(set){
+  //   relayStatus |= temp;
+  // }
+  // else{
+  //   relayStatus &= ~temp;
+  // }
 }
 
 uint8_t readSxRelay(void){
@@ -64,16 +57,18 @@ uint8_t readSxRelay(void){
 }
 
 uint8_t readSxSw(void){
+  printf("readSxSw Test\r\n");
   uint8_t result = 0;
-  for(uint8_t i = 0; i < 8; i++){
-    uint8_t temp = 0x01;
-    temp <<= i;
-    if(io.digitalRead(i)){
-      result = result | (temp) ;
-    } 
-    else{
-      result = result & ~temp;
-    }
-  }
+  // uint8_t result = 0;
+  // for(uint8_t i = 0; i < 8; i++){
+  //   uint8_t temp = 0x01;
+  //   temp <<= i;
+  //   if(io.digitalRead(i)){
+  //     result = result | (temp) ;
+  //   } 
+  //   else{
+  //     result = result & ~temp;
+  //   }
+  // }
   return result;
 }

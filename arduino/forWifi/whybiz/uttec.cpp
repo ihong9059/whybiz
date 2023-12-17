@@ -2,7 +2,6 @@
 #include "EEPROM.h"
 #include "myJson.h"
 #include "sx1509Lib.h"
-#include "myBle.h"
 
 #define SIGNAL_LED 2     //On board LED
 
@@ -22,57 +21,9 @@ whybiz_t* getWhybizFactor(void){
 }
 
 void loop_uttec(void){
-  static uint32_t SensorUpdate = 0;
-  uint32_t updateTime = 1000;
-    
-  if ((millis() - SensorUpdate) >= updateTime) {
-    static uint32_t bleCount = 0;
-    static bool toggle = false;
-    whybizFrame_t* pFrame = getWhybizFrame();
-    whybiz_t* pFactor = getWhybizFactor();
-
-    SensorUpdate = millis();
-    uint8_t adc1 = analogRead(PIN_A0)/40;
-    uint8_t adc2 = analogRead(PIN_A1)/40;
-    // printf("adc1: %d, adc2: %d\r\n", analogRead(PIN_A0), analogRead(PIN_A1));
-    switch(bleCount++ % MAX_CATEGORY){
-      case ADC_DEVICE:
-        // Serial.printf("adc1: %d, adc2: %d\r\n", adc1, adc2);
-        pFrame->category = ADC_DEVICE;
-        pFactor->adc1 = pFrame->sensor = adc1;
-        pFactor->adc2 = pFrame->value = adc2;
-      break;
-      case SWITCH_DEVICE:
-        pFrame->category = SWITCH_DEVICE;
-        pFactor->sw = pFrame->sensor = readSxSw();
-        pFrame->value = pFrame->sensor;
-      break;
-      case RELAY_DEVICE:
-        pFrame->category = RELAY_DEVICE;
-        pFactor->relay = pFrame->sensor = readSxRelay();
-        pFrame->value = pFrame->sensor;
-      break;
-      case LORA_DEVICE:
-        pFrame->category = LORA_DEVICE;
-        pFrame->sensor = myWhybiz.power;
-        pFrame->value = myWhybiz.rssi;
-      break;
-      case VERSION_DEVICE:
-        pFrame->category = VERSION_DEVICE;
-        pFrame->sensor = myWhybiz.version;
-        pFrame->value = myWhybiz.ble;
-      break;
-      case CHANNEL_DEVICE:
-        pFrame->category = CHANNEL_DEVICE;
-        pFrame->sensor = myWhybiz.channel;
-        pFrame->value = myWhybiz.lora_ch;
-      break;
-    }
-#ifdef BLE_PROGRAM
-    sendToBle();
-#endif     
-    sendJsonForStatus();
-  }
+  static uint32_t count = 0;
+  if(!(count++ % 10)) printf("loop_uttec: %d\r\n", count++);
+  printf(".");
 }
 
 void initPort(void){
@@ -84,26 +35,25 @@ void initPort(void){
   pinMode(LORA_RST, OUTPUT);
   pinMode(SIGNAL_LED, OUTPUT);
   digitalWrite(LORA_RST, 1);
-  digitalWrite(SX_RESET, 1);
 
   setUartChannel(ETHERNET_CHANNEL);
 }
 
 void dispFactor(void){
-    // EEPROM.readBytes(0, &myWhybiz, sizeof(whybiz_t));
-    // Serial.printf("flag: %x\r\n", myWhybiz.flashFlag);
-    // Serial.printf("version: %d\r\n", myWhybiz.version);
-    // Serial.printf("node: %d\r\n", myWhybiz.node);
-    // Serial.printf("channel: %d\r\n", myWhybiz.channel);
-    // Serial.printf("ble: %d\r\n", myWhybiz.ble);
-    // Serial.printf("adc1: %d\r\n", myWhybiz.adc1);
-    // Serial.printf("adc2: %d\r\n", myWhybiz.adc2);
-    // Serial.printf("sw: %d\r\n", myWhybiz.sw);
-    // Serial.printf("relay: %d\r\n", myWhybiz.relay);
-    // Serial.printf("lora_ch: %d\r\n", myWhybiz.lora_ch);
-    // Serial.printf("power: %d\r\n", myWhybiz.power);
-    // Serial.printf("rssi: %d\r\n", myWhybiz.rssi);
-    // delay(2000);
+    EEPROM.readBytes(0, &myWhybiz, sizeof(whybiz_t));
+    Serial.printf("flag: %x\r\n", myWhybiz.flashFlag);
+    Serial.printf("version: %d\r\n", myWhybiz.version);
+    Serial.printf("node: %d\r\n", myWhybiz.node);
+    Serial.printf("channel: %d\r\n", myWhybiz.channel);
+    Serial.printf("ble: %d\r\n", myWhybiz.ble);
+    Serial.printf("adc1: %d\r\n", myWhybiz.adc1);
+    Serial.printf("adc2: %d\r\n", myWhybiz.adc2);
+    Serial.printf("sw: %d\r\n", myWhybiz.sw);
+    Serial.printf("relay: %d\r\n", myWhybiz.relay);
+    Serial.printf("lora_ch: %d\r\n", myWhybiz.lora_ch);
+    Serial.printf("power: %d\r\n", myWhybiz.power);
+    Serial.printf("rssi: %d\r\n", myWhybiz.rssi);
+    delay(2000);
 }
 
 void saveFactorToFlash(void){
@@ -142,7 +92,7 @@ void initEeprom(void){
 void initUttec(void){
   initEeprom();
   initPort();
-  initSx1509();
+  // initSx1509();
 }
 
 void procCmdLine(uttecJson_t data){

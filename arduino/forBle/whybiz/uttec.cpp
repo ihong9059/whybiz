@@ -68,9 +68,9 @@ void loop_uttec(void){
         pFrame->value = myWhybiz.lora_ch;
       break;
     }
-#ifdef BLE_PROGRAM
+#ifdef BLE_PROGRAM    
     sendToBle();
-#endif     
+#endif    
     sendJsonForStatus();
   }
 }
@@ -84,7 +84,6 @@ void initPort(void){
   pinMode(LORA_RST, OUTPUT);
   pinMode(SIGNAL_LED, OUTPUT);
   digitalWrite(LORA_RST, 1);
-  digitalWrite(SX_RESET, 1);
 
   setUartChannel(ETHERNET_CHANNEL);
 }

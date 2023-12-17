@@ -3,11 +3,9 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
 
 <!DOCTYPE html>
 <html lang="en" class="js-focus-visible">
-<head>
-  <meta name="viewport" content="width=device-width, initial-scale=0.75, maximum-scale=1, user-scalable=0">
-</head>
 
-<title>Whybiz Controller</title>
+<title>Web Page Update Demo</title>
+
   <style>
     table {
       position: relative;
@@ -81,7 +79,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       padding-left: 20px;
     }
    .navheading {
-    float: right;
+     position: fixed;
      left: 20%;
      height: 50px;
      font-family: "Verdana", "Arial", sans-serif;
@@ -92,7 +90,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
    }
    .navdata {
       justify-content: flex-end;
-      float: right;
+      position: fixed;
       left: 30%;
       height: 50px;
       font-family: "Verdana", "Arial", sans-serif;
@@ -216,11 +214,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       border-radius: 50%;
     }
   </style>
-<!--
-            <div class="navheading">DATE</div><br>
-            <div class="navheading">TIME</div>
-            <br>
--->
+
   <body style="background-color: #efefef" onload="process()">
   
     <header>
@@ -228,7 +222,10 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
           <div class="container">
             <div class="navtitle">Whybiz</div>
             <div class="navdata" id = "date">mm/dd/yyyy</div>
-            <div class="navdata" id = "time">00:00:00</div>            
+            <div class="navheading">DATE</div><br>
+            <div class="navdata" id = "time">00:00:00</div>
+            <div class="navheading">TIME</div>
+            
           </div>
       </div>
     </header>
@@ -241,81 +238,81 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       <br>
       <div class="category">Analog & Switch</div>
       <div style="border-radius: 10px !important;">
-      <table style="width:70%">
-        <colgroup>
-          <col span="1" style="background-color:rgb(230,230,230); width: 10%; color:#000000 ;">
-          <col span="1" style="background-color:rgb(200,200,200); width: 10%; color:#000000 ;">
-          <col span="1" style="background-color:rgb(230,230,230); width: 10%; color:#000000 ;">
-          <col span="1" style="background-color:rgb(200,200,200); width: 10%; color:#000000 ;">
-        </colgroup>
-        <col span="2"style="background-color:rgb(0,0,0); color:#FFFFFF">
-        <col span="2"style="background-color:rgb(0,0,0); color:#FFFFFF">
-        <col span="2"style="background-color:rgb(0,0,0); color:#FFFFFF">
-        <col span="2"style="background-color:rgb(0,0,0); color:#FFFFFF">
-        <tr>
-          <th colspan="1"><div class="heading">Pin</div></th>
-          <th colspan="1"><div class="heading">Bits</div></th>
-          <th colspan="1"><div class="heading">Pin</div></th>
-          <th colspan="1"><div class="heading">Bits</div></th>
-        </tr>
-        <tr>
-          <td><div class="bodytext">ADC 34</div></td>
-          <td><div class="tabledata" id = "b0"></div></td>
-          <td><div class="bodytext">ADC 35</div></td>
-          <td><div class="tabledata" id = "b1"></div></td>
-        </tr>
-        <tr>
-          <td><div class="bodytext">SW 1</div></td>
-          <td><div class="tabledata" id = "sw1"></div></td>
-          <td><div class="bodytext">SW 2</div></td>
-          <td><div class="tabledata" id = "sw2"></div></td>
-        </tr>
-        <tr>
-          <td><div class="bodytext">SW 3</div></td>
-          <td><div class="tabledata" id = "sw3"></div></td>
-          <td><div class="bodytext">SW 4</div></td>
-          <td><div class="tabledata" id = "sw4"></div></td>
-        </tr>
-        <tr>
-          <td><div class="bodytext">SW 5</div></td>
-          <td><div class="tabledata" id = "sw5"></div></td>
-          <td><div class="bodytext">SW 6</div></td>
-          <td><div class="tabledata" id = "sw6"></div></td>
-        </tr>
-        <tr>
-          <td><div class="bodytext">SW 7</div></td>
-          <td><div class="tabledata" id = "sw7"></div></td>
-          <td><div class="bodytext">SW 8</div></td>
-          <td><div class="tabledata" id = "sw8"></div></td>
-        </tr>
+      <table style="width:50%">
+      <colgroup>
+        <col span="1" style="background-color:rgb(230,230,230); width: 10%; color:#000000 ;">
+        <col span="1" style="background-color:rgb(200,200,200); width: 10%; color:#000000 ;">
+        <col span="1" style="background-color:rgb(230,230,230); width: 10%; color:#000000 ;">
+        <col span="1" style="background-color:rgb(200,200,200); width: 10%; color:#000000 ;">
+      </colgroup>
+      <col span="2"style="background-color:rgb(0,0,0); color:#FFFFFF">
+      <col span="2"style="background-color:rgb(0,0,0); color:#FFFFFF">
+      <col span="2"style="background-color:rgb(0,0,0); color:#FFFFFF">
+      <col span="2"style="background-color:rgb(0,0,0); color:#FFFFFF">
+      <tr>
+        <th colspan="1"><div class="heading">Pin</div></th>
+        <th colspan="1"><div class="heading">Bits</div></th>
+        <th colspan="1"><div class="heading">Pin</div></th>
+        <th colspan="1"><div class="heading">Bits</div></th>
+      </tr>
+      <tr>
+        <td><div class="bodytext">ADC 34</div></td>
+        <td><div class="tabledata" id = "b0"></div></td>
+        <td><div class="bodytext">ADC 35</div></td>
+        <td><div class="tabledata" id = "b1"></div></td>
+      </tr>
+      <tr>
+        <td><div class="bodytext">SW 1</div></td>
+        <td><div class="tabledata" id = "sw1"></div></td>
+        <td><div class="bodytext">SW 2</div></td>
+        <td><div class="tabledata" id = "sw2"></div></td>
+      </tr>
+      <tr>
+        <td><div class="bodytext">SW 3</div></td>
+        <td><div class="tabledata" id = "sw3"></div></td>
+        <td><div class="bodytext">SW 4</div></td>
+        <td><div class="tabledata" id = "sw4"></div></td>
+      </tr>
+      <tr>
+        <td><div class="bodytext">SW 5</div></td>
+        <td><div class="tabledata" id = "sw5"></div></td>
+        <td><div class="bodytext">SW 6</div></td>
+        <td><div class="tabledata" id = "sw6"></div></td>
+      </tr>
+      <tr>
+        <td><div class="bodytext">SW 7</div></td>
+        <td><div class="tabledata" id = "sw7"></div></td>
+        <td><div class="bodytext">SW 8</div></td>
+        <td><div class="tabledata" id = "sw8"></div></td>
+      </tr>
 
       </table>
     </div>
   
     <div class="category">Relays</div>
   
-    <div class="bodytext"></div>
-      <button type="button" class = "btn" id = "btn0" onclick="ButtonPress0()"></button>
-      <button type="button" class = "btn" id = "btn1" onclick="ButtonPress1()"></button>
-      <button type="button" class = "btn" id = "btn2" onclick="ButtonPress2()"></button>
-      <button type="button" class = "btn" id = "btn3" onclick="ButtonPress3()"></button>
+    <div class="bodytext">0 ~ 3</div>
+    <button type="button" class = "btn" id = "btn0" onclick="ButtonPress0()"></button>
+    <button type="button" class = "btn" id = "btn1" onclick="ButtonPress1()"></button>
+    <button type="button" class = "btn" id = "btn2" onclick="ButtonPress2()"></button>
+    <button type="button" class = "btn" id = "btn3" onclick="ButtonPress3()"></button>
     </div>
     <br>
-    <div class="bodytext"></div>
-      <button type="button" class = "btn" id = "btn4" onclick="ButtonPress4()"></button>
-      <button type="button" class = "btn" id = "btn5" onclick="ButtonPress5()"></button>
-      <button type="button" class = "btn" id = "btn6" onclick="ButtonPress6()"></button>
-      <button type="button" class = "btn" id = "btn7" onclick="ButtonPress7()"></button>
+    <div class="bodytext">4 ~ 7</div>
+    <button type="button" class = "btn" id = "btn4" onclick="ButtonPress4()"></button>
+    <button type="button" class = "btn" id = "btn5" onclick="ButtonPress5()"></button>
+    <button type="button" class = "btn" id = "btn6" onclick="ButtonPress6()"></button>
+    <button type="button" class = "btn" id = "btn7" onclick="ButtonPress7()"></button>
     </div>
 
     <br>
     <select class="category" id="select_value" onchange="ChangeValue()">
-      <option value="0">Ethernet</option>
-      <option value="1">RS485</option>
-      <option value="2">Lora</option>
-      <option value="3">T.B.D</option>
+      <option value="1">select1</option>
+      <option value="2">select2</option>
+      <option value="3">select3</option>
+      <option value="4">select4</option>
     </select>
-<!--
+
     <div style="border-radius: 10px !important;">
       <table style="width:50%">
       <colgroup>
@@ -331,7 +328,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
 
       </table>
     </div>
--->
+
   </main>
 
   <footer div class="foot" id = "temp" >Whybiz Test Web by UTTEC</div></footer>
@@ -355,65 +352,54 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
 
     function ButtonPress0() {
       var xhttp = new XMLHttpRequest(); 
-      var value = 0;
-      if(document.getElementById("btn0").innerHTML == "Relay0 ON") value = 1;
-      xhttp.open("PUT", "BUTTON_0?VALUE="+value, false);
+      xhttp.open("PUT", "BUTTON_0", false);
       xhttp.send();
     }
 
     function ButtonPress1() {
       var xhttp = new XMLHttpRequest(); 
-      var value = 0;
-      if(document.getElementById("btn1").innerHTML == "Relay1 ON") value = 1;
-      xhttp.open("PUT", "BUTTON_1?VALUE="+value, false);
+      xhttp.open("PUT", "BUTTON_1", false);
       xhttp.send(); 
     }
     
     function ButtonPress2() {
       var xhttp = new XMLHttpRequest(); 
-      var value = 0;
-      if(document.getElementById("btn2").innerHTML == "Relay2 ON") value = 1;
-      xhttp.open("PUT", "BUTTON_2?VALUE="+value, false);
+      xhttp.open("PUT", "BUTTON_2", false);
       xhttp.send(); 
     }
     
     function ButtonPress3() {
       var xhttp = new XMLHttpRequest(); 
-      var value = 0;
-      if(document.getElementById("btn3").innerHTML == "Relay3 ON") value = 1;
-      xhttp.open("PUT", "BUTTON_3?VALUE="+value, false);
+      xhttp.open("PUT", "BUTTON_3", false);
       xhttp.send(); 
     }
     
     function ButtonPress4() {
       var xhttp = new XMLHttpRequest(); 
-      var value = 0;
-      if(document.getElementById("btn4").innerHTML == "Relay4 ON") value = 1;
-      xhttp.open("PUT", "BUTTON_4?VALUE="+value, false);
+      xhttp.open("PUT", "BUTTON_4", false);
       xhttp.send(); 
     }
     
     function ButtonPress5() {
       var xhttp = new XMLHttpRequest(); 
-      var value = 0;
-      if(document.getElementById("btn5").innerHTML == "Relay5 ON") value = 1;
-      xhttp.open("PUT", "BUTTON_5?VALUE="+value, false);
+      xhttp.open("PUT", "BUTTON_5", false);
       xhttp.send(); 
     }
     
     function ButtonPress6() {
       var xhttp = new XMLHttpRequest(); 
-      var value = 0;
-      if(document.getElementById("btn6").innerHTML == "Relay6 ON") value = 1;
-      xhttp.open("PUT", "BUTTON_6?VALUE="+value, false);
+      xhttp.open("PUT", "BUTTON_6", false);
       xhttp.send(); 
     }
 
     function ButtonPress7() {
+      // var xmlResponse=xmlHttp.responseXML;
+      // xmldoc = xmlResponse.getElementsByTagName("LED7");
+      // message = xmldoc[0].firstChild.nodeValue;
+
       var xhttp = new XMLHttpRequest(); 
-      var value = 0;
-      if(document.getElementById("btn7").innerHTML == "Relay7 ON") value = 1;
-      xhttp.open("PUT", "BUTTON_7?VALUE="+value, false);
+      // xhttp.open("PUT", "BUTTON_7?VALUE="+message, false);
+      xhttp.open("PUT", "BUTTON_7", false);
       xhttp.send(); 
     }
     
@@ -424,23 +410,22 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       xhttp.send(); 
     }
 
-    // function Act1(){
-    //   var xhttp = new XMLHttpRequest(); 
-    //   var value_str = document.getElementById('act1');
-    //   var result = 0;
-    //   if(value_str.checked){result = 1;}
-    //   xhttp.open("PUT", "UPDATE_TOGGLE?VALUE="+result, false);
-    //   xhttp.send(); 
-    // }
-    // function Act2(){
-    //   var xhttp = new XMLHttpRequest(); 
-    //   var value_str = document.getElementById('act2');
-    //   var result = 0;
-    //   if(value_str.checked){result = 1;}
-    //   xhttp.open("PUT", "UPDATE_TOGGLE?VALUE="+result, false);
-    //   xhttp.send(); 
-    // }
-
+    function Act1(){
+      var xhttp = new XMLHttpRequest(); 
+      var value_str = document.getElementById('act1');
+      var result = 0;
+      if(value_str.checked){result = 1;}
+      xhttp.open("PUT", "UPDATE_TOGGLE?VALUE="+result, false);
+      xhttp.send(); 
+    }
+    function Act2(){
+      var xhttp = new XMLHttpRequest(); 
+      var value_str = document.getElementById('act2');
+      var result = 0;
+      if(value_str.checked){result = 1;}
+      xhttp.open("PUT", "UPDATE_TOGGLE?VALUE="+result, false);
+      xhttp.send(); 
+    }
     // function to handle the response from the ESP
     function response(){
       var message;
@@ -450,7 +435,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       var xmldoc;
       var dt = new Date();
       var color = "#e8e8e8";
-
+     
       // get the xml stream
       xmlResponse=xmlHttp.responseXML;
   
@@ -500,12 +485,6 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       width = message / 40.95;
       document.getElementById("b1").style.width=(width+"%");
       document.getElementById("b1").style.backgroundColor=color;
-
-//------------------------------------------------------------------------------- 
-      xmldoc = xmlResponse.getElementsByTagName("SELECT");
-      message = xmldoc[0].firstChild.nodeValue;
-      var el = document.getElementById("select_value");
-      el.options[message].selected = true;
 
 //------------------------------------------------------------------------------- 
       xmldoc = xmlResponse.getElementsByTagName("LED");

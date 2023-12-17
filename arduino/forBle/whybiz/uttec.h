@@ -4,9 +4,8 @@
 #include <Arduino.h>
 #include "myBle.h"
 
-// #define BLE_PROGRAM     1
-
 #define FLASH_FLAG  0xaaaa
+
 #define VERSION     1
 #define EEPROM_MAX  1024
 
@@ -40,6 +39,8 @@
 #define RS485_EN        19
 #define PWR_CTL         27
 #define LORA_RST        18
+
+#define BLE_PROGRAM     1
 
 typedef struct{
     uint16_t flashFlag;
