@@ -7,8 +7,11 @@
 #include "sx1509Lib.h"
 #include "myJson.h"
 
+#ifndef BLE_PROGRAM
+
+
 #define USE_INTRANET
-// #define MYHOME 1
+#define MYHOME 1
 
 #ifdef MYHOME
 #define LOCAL_SSID "ihong"
@@ -168,3 +171,6 @@ void printWifiStatus() {
   Serial.print("Open http://");
   Serial.println(ip);
 }
+
+
+#endif

@@ -6,8 +6,7 @@
 #include "myWifi.h"
 #include "sx1509Lib.h"
 #include "myJson.h"
-
-// #define BLE_MODE 1
+#include "myBle.h"
 
 #define RXD2 4  //ok
 #define TXD2 5  //ok
@@ -22,7 +21,7 @@ void setup() {
   Serial.printf("Now start Whybiz project. 2023.12.03\r\n");
   initUttec();
   
-#ifdef BLE_MODE  
+#ifdef BLE_PROGRAM  
   initBle();
 #else
   initWifi();
@@ -33,7 +32,7 @@ void loop() {
   static uint32_t count = 0;
   uint16_t value = random(300);
   whybiz_t* pFactor = getWhybizFactor();
-#ifdef BLE_MODE  
+#ifdef BLE_PROGRAM  
   loop_ble();
 #else
   loop_wifi();

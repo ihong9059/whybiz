@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include "myBle.h"
 
-// #define BLE_PROGRAM     1
+#define BLE_PROGRAM     1
 
 #define FLASH_FLAG  0xaaaa
 #define VERSION     1
