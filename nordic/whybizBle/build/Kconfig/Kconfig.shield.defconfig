@@ -1,0 +1,2 @@
+osource "/Users/honggwangseon/project/whybiz/nordic/whybizBle/boards/shields/*/Kconfig.defconfig"
+osource "/opt/nordic/ncs/v2.5.0/nrf/boards/shields/*/Kconfig.defconfig"

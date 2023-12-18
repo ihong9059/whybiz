@@ -80,6 +80,7 @@ void initUttec(void);
 
 void initPort(void);
 void setUartChannel(uint8_t channel);
+void readAdc(void);
 
 sx1509_t* getBeforeSxReg(void);
 whybiz_t* getWhybizFactor(void);

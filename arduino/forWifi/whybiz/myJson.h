@@ -13,6 +13,8 @@ typedef struct{
 
 void testReceive(void);
 
+void parseWifiJson(String pData);
+
 void parseReceiveJson(void);
 void testSendJson(void);
 

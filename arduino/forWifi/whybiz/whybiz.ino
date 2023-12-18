@@ -1,6 +1,6 @@
 #include <WiFi.h>       // standard library
 #include <WebServer.h>  // standard library
-#include "SuperMon.h"   // .h file that stores your html page code
+// #include "SuperMon.h"   // .h file that stores your html page code
 
 #include "uttec.h"
 #include "myWifi.h"
@@ -32,12 +32,14 @@ void setup() {
 void loop() {
   static uint32_t count = 0;
   uint16_t value = random(300);
+  whybiz_t* pFactor = getWhybizFactor();
 #ifdef BLE_MODE  
   loop_ble();
 #else
   loop_wifi();
 #endif  
   loop_uttec();
+  // Serial.printf("relay: %x, sw: %x\r\n", pFactor->relay, pFactor->sw);
   parseReceiveJson();
   delay(600);
   // testRelay();
@@ -54,8 +56,9 @@ void loop() {
   // uint8_t temp = readSxRelay();
   // Serial.printf("relay: %x\r\n", temp);
 
-  // temp = readSxSw();
+  uint8_t temp = readSxSw();
   // Serial.printf("switch: %x\r\n", temp);
+  readAdc();
   
   count++;
 }

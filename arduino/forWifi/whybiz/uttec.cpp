@@ -20,10 +20,19 @@ whybiz_t* getWhybizFactor(void){
     return &myWhybiz;    
 }
 
+void readAdc(void){
+  myWhybiz.adc1 = analogRead(PIN_A0) / 40;
+  myWhybiz.adc2 = analogRead(PIN_A1) / 40;
+  // Serial.printf("Adc1: %d, Adc2: %d\r\n", 
+  //   myWhybiz.adc1, myWhybiz.adc2);
+
+}
+
 void loop_uttec(void){
   static uint32_t count = 0;
   if(!(count++ % 10)) printf("loop_uttec: %d\r\n", count++);
   printf(".");
+  sendJsonForStatus();
 }
 
 void initPort(void){
@@ -92,7 +101,7 @@ void initEeprom(void){
 void initUttec(void){
   initEeprom();
   initPort();
-  // initSx1509();
+  initSx1509();
 }
 
 void procCmdLine(uttecJson_t data){
@@ -172,27 +181,27 @@ void sendJsonForStatus(void){
         // printf("who: %d\r\n", who);
         switch(who){
             case ADC_DEVICE: 
-                Serial.printf("ADC_DEVICE: %d\r\n", who); 
+                // Serial.printf("ADC_DEVICE: %d\r\n", who); 
                 pFrame->category = ADC_DEVICE; 
                 pFrame->sensor = pFactor->adc1; pFrame->value = pFactor->adc2; 
             break;
-            case SWITCH_DEVICE: Serial.printf("SWITCH_DEVICE: %d\r\n", who); 
+            case SWITCH_DEVICE: //Serial.printf("SWITCH_DEVICE: %d\r\n", who); 
                 pFrame->category = SWITCH_DEVICE; 
                 pFrame->sensor = pFactor->sw; pFrame->value = pFactor->sw; 
             break;
-            case RELAY_DEVICE: Serial.printf("RELAY_DEVICE: %d\r\n", who); 
+            case RELAY_DEVICE: //Serial.printf("RELAY_DEVICE: %d\r\n", who); 
                 pFrame->category = RELAY_DEVICE; 
                 pFrame->sensor = pFactor->relay; pFrame->value = pFactor->relay; 
             break;
-            case LORA_DEVICE: Serial.printf("LORA_DEVICE: %d\r\n", who); 
+            case LORA_DEVICE: //Serial.printf("LORA_DEVICE: %d\r\n", who); 
                 pFrame->category = LORA_DEVICE; 
                 pFrame->sensor = pFactor->power; pFrame->value = pFactor->rssi; 
             break;
-            case VERSION_DEVICE: Serial.printf("VERSION_DEVICE: %d\r\n", who); 
+            case VERSION_DEVICE: //Serial.printf("VERSION_DEVICE: %d\r\n", who); 
                 pFrame->category = VERSION_DEVICE; 
                 pFrame->sensor = pFactor->version; pFrame->value = pFactor->ble; 
             break;
-            case CHANNEL_DEVICE: Serial.printf("CHANNEL_DEVICE: %d\r\n", who); 
+            case CHANNEL_DEVICE: //Serial.printf("CHANNEL_DEVICE: %d\r\n", who); 
                 pFrame->category = CHANNEL_DEVICE; 
                 pFrame->sensor = pFactor->channel; pFrame->value = pFactor->lora_ch; 
             break;
@@ -222,7 +231,5 @@ void sendWhybizFrame(void){
 whybizFrame_t* getWhybizFrame(void){
     return &myWhybizFrame;
 }
-
-
 
 

@@ -16,6 +16,63 @@
 // }
 
 #include "sx1509Lib.h"
+#include <stdio.h>
+
+void parseWifiJson(String pData){
+  uttecJson_t ctr;
+  whybiz_t* pFactor = getWhybizFactor();
+
+  StaticJsonDocument<MAX_DOC> doc;
+  DeserializationError error = deserializeJson(doc, pData);
+  if (error) {
+    // Serial.print(F("deserializeJson() failed: "));
+    // Serial.println(error.f_str());
+    Serial.printf("json error ---------\r\n");
+    return;
+  }    
+  ctr.ca = doc["ca"];
+  ctr.se = doc["se"];
+  ctr.va = doc["va"];
+  bool ctrFlag = false;
+
+  switch(ctr.ca){
+    case CTR_RELAY:
+      Serial.printf("setRelay\r\n");
+      setRelay(ctr.se, ctr.va);
+    break;
+    case CTR_LORA:
+    case SET_LORA:
+      pFactor->power = ctr.se; pFactor->rssi;
+      ctrFlag = true;
+      Serial.printf("set Lora factor: %d, %d\r\n",
+        pFactor->power, pFactor->rssi);
+      saveFactorToFlash();  
+    break;
+    case CTR_CHANNEL:
+    case SET_CHANNEL:
+      pFactor->channel = ctr.se; pFactor->lora_ch;
+      ctrFlag = true;
+      Serial.printf("set channel: %d, %d\r\n",
+        pFactor->power, pFactor->rssi);
+      saveFactorToFlash();  
+    break;
+    case SET_VERSION:
+      pFactor->version = ctr.se; pFactor->ble;
+      ctrFlag = true;
+      Serial.printf("set version: %d, %d\r\n",
+        pFactor->power, pFactor->rssi);
+      saveFactorToFlash();  
+    break;
+    default:
+      // Serial.printf("no category: %d\r\n", ctr.ca);
+    break;
+  }
+
+  if(ctrFlag){
+    Serial.printf("ca: %d, se: %d, va: %d\r\n",
+      ctr.ca, ctr.se, ctr.va);
+  }
+}
 
 void parseReceiveJson(void){
   uttecJson_t ctr;
@@ -31,7 +88,7 @@ void parseReceiveJson(void){
     else if(test == '}') flag1++;
     temp[count++] = test;
     if(count > MAX_DOC){
-      Serial.printf("<------- MAX over ---------->\r\n");
+      // Serial.printf("<------- MAX over ---------->\r\n");
       return;
     } 
   }
