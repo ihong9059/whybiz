@@ -49,6 +49,7 @@
         "name": "switch parse",
         "func": "var list = [false, true, false, true, false, true, false, true];\n\nvar obj = msg.payload;\nvar myNode = obj.no;\nvar category = obj.ca;\nvar sensor = obj.se;\nvar value = obj.va;\n\nif (category != 2) return;\n\nif(sensor & 0x01) list[0] = false;\nelse list[0] =true;\n\nif(sensor & 0x02) list[1] = false;\nelse list[1] =true;\n\nif(sensor & 0x04) list[2] = false;\nelse list[2] =true;\n\nif(sensor & 0x08) list[3] = false;\nelse list[3] =true;\n\nif(sensor & 0x10) list[4] = false;\nelse list[4] =true;\n\nif(sensor & 0x20) list[5] = false;\nelse list[5] =true;\n\nif(sensor & 0x40) list[6] = false;\nelse list[6] =true;\n\nif(sensor & 0x80) list[7] = false;\nelse list[7] =true;\n\nmsg.payload = list[0];\nvar msg1 = { payload: list[1] };\nvar msg2 = { payload: list[2] };\nvar msg3 = { payload: list[3] };\nvar msg4 = { payload: list[4] };\nvar msg5 = { payload: list[5] };\nvar msg6 = { payload: list[6] };\nvar msg7 = { payload: list[7] };\n\nlist = [msg, msg1, msg2, msg3, msg4, msg5, msg6, msg7];\nreturn list;\n",
         "outputs": 8,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -395,8 +396,8 @@
         "offcolor": "",
         "animate": false,
         "className": "",
-        "x": 510,
-        "y": 540,
+        "x": 370,
+        "y": 480,
         "wires": [
             [
                 "3c7680eb3634e50b"
@@ -429,8 +430,8 @@
         "offcolor": "",
         "animate": false,
         "className": "",
-        "x": 510,
-        "y": 700,
+        "x": 370,
+        "y": 640,
         "wires": [
             [
                 "3c7680eb3634e50b"
@@ -463,8 +464,8 @@
         "offcolor": "",
         "animate": false,
         "className": "",
-        "x": 510,
-        "y": 580,
+        "x": 370,
+        "y": 520,
         "wires": [
             [
                 "3c7680eb3634e50b"
@@ -497,8 +498,8 @@
         "offcolor": "",
         "animate": false,
         "className": "",
-        "x": 510,
-        "y": 620,
+        "x": 370,
+        "y": 560,
         "wires": [
             [
                 "3c7680eb3634e50b"
@@ -531,8 +532,8 @@
         "offcolor": "",
         "animate": false,
         "className": "",
-        "x": 510,
-        "y": 660,
+        "x": 370,
+        "y": 600,
         "wires": [
             [
                 "3c7680eb3634e50b"
@@ -565,8 +566,8 @@
         "offcolor": "",
         "animate": false,
         "className": "",
-        "x": 510,
-        "y": 740,
+        "x": 370,
+        "y": 680,
         "wires": [
             [
                 "3c7680eb3634e50b"
@@ -599,8 +600,8 @@
         "offcolor": "",
         "animate": false,
         "className": "",
-        "x": 510,
-        "y": 780,
+        "x": 370,
+        "y": 720,
         "wires": [
             [
                 "3c7680eb3634e50b"
@@ -633,8 +634,8 @@
         "offcolor": "",
         "animate": false,
         "className": "",
-        "x": 510,
-        "y": 820,
+        "x": 370,
+        "y": 760,
         "wires": [
             [
                 "3c7680eb3634e50b"
@@ -649,12 +650,11 @@
         "property": "payload",
         "action": "",
         "pretty": false,
-        "x": 710,
+        "x": 570,
         "y": 780,
         "wires": [
             [
-                "d160b2afa8f7126c",
-                "19527beb221a8b4e"
+                "d160b2afa8f7126c"
             ]
         ]
     },
@@ -670,8 +670,8 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 920,
-        "y": 780,
+        "x": 800,
+        "y": 740,
         "wires": []
     },
     {
@@ -680,7 +680,7 @@
         "z": "9dc7d6ae6b54526f",
         "name": "",
         "serial": "f044b6e7b8fba745",
-        "x": 910,
+        "x": 850,
         "y": 700,
         "wires": []
     },
@@ -735,6 +735,7 @@
         "name": "get ble",
         "func": "var ble_num = msg.payload;\nflow.set(\"ble_num1\", ble_num);\nreturn msg;",
         "outputs": 1,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -800,6 +801,7 @@
         "name": "set channel",
         "func": "var uart = flow.get('uart');\nvar lora = flow.get('lora');\nmsg.payload = { \"no\": 1, \"ca\": 16, \"se\": uart, \"va\": lora};\nreturn msg;",
         "outputs": 1,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -875,6 +877,7 @@
         "name": "get node",
         "func": "var version = msg.payload;\nflow.set(\"new_version\", version);\nreturn msg;",
         "outputs": 1,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -892,6 +895,7 @@
         "name": "set node",
         "func": "var version = flow.get(\"new_version\");\nvar ble_num = flow.get(\"ble_num1\");\n\n\nmsg.payload = { \"no\": 1, \"ca\": 25, \"se\": version, \"va\": ble_num};\nreturn msg;",
         "outputs": 1,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -911,6 +915,7 @@
         "name": "adc switch",
         "func": "var obj = msg.payload;\nvar myNode = obj.no;\nvar category = obj.ca;\nvar sensor = obj.se;\nvar value = obj.va;\n\nswitch(category){\n    case 1: //adc\n        flow.set(\"adc1\", sensor);\n        flow.set(\"adc2\", value);\n    break;\n    // case 4: //lora_device\n    //     flow.set(\"rssi\", sensor);\n    //     flow.set(\"power\", value);\n    // break;\n    // case 5: //version\n    //     flow.set(\"version\", sensor);\n    //     flow.set(\"ble_num\", value);\n    // break;\n    // case 6: //channel\n    //     flow.set(\"now_uart\", sensor);\n    //     flow.set(\"now_lora\", value);\n    // break;\n    default: return;\n}\n\nvar version = flow.get(\"version\") | 0;\nvar ble_num = flow.get(\"ble_num\") | 0;\nvar adc1 = flow.get(\"adc1\") | 0;\nvar adc2 = flow.get(\"adc2\") | 0;\nvar uart = flow.get(\"now_uart\") | 0;\nvar lora_ch = flow.get(\"now_lora\") | 0;\nvar rssi = flow.get(\"rssi\") | 0;\nvar power = flow.get(\"power\") | 0;\n\nmsg.payload = adc1;\nvar msg1 = { payload: adc2 };\nvar list = [msg, msg1];\nreturn list;",
         "outputs": 2,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -1059,6 +1064,7 @@
         "name": "set power",
         "func": "var power = flow.get('lora_power');\nmsg.payload = { \"no\": 1, \"ca\": 14, \"se\": power, \"va\": power};\nreturn msg;",
         "outputs": 1,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -1134,6 +1140,7 @@
         "name": "set channel ",
         "func": "if(msg.topic == 'channel'){\n    flow.set('uart', msg.payload);\n    msg.payload = 'uart channel: ' + msg.payload;\n} \nelse if(msg.topic){\n    flow.set('lora', msg.payload);\n    msg.payload = 'lora channel: ' + msg.payload;\n}\nelse{\n    msg.payload = \"error data in channel\";\n}\nreturn msg;",
         "outputs": 1,
+        "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -1187,6 +1194,52 @@
         "wires": []
     },
     {
+        "id": "d2c2d104a224696e",
+        "type": "ui_dropdown",
+        "z": "9dc7d6ae6b54526f",
+        "name": "now Channel",
+        "label": "now channel",
+        "tooltip": "",
+        "place": "Select option",
+        "group": "461a06597ab3daf5",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "multiple": false,
+        "options": [
+            {
+                "label": "Ethernet",
+                "value": 0,
+                "type": "num"
+            },
+            {
+                "label": "RS485",
+                "value": 1,
+                "type": "num"
+            },
+            {
+                "label": "Lora",
+                "value": 2,
+                "type": "num"
+            },
+            {
+                "label": "T.B.d",
+                "value": 3,
+                "type": "num"
+            }
+        ],
+        "payload": "",
+        "topic": "channel",
+        "topicType": "str",
+        "className": "",
+        "x": 810,
+        "y": 600,
+        "wires": [
+            []
+        ]
+    },
+    {
         "id": "048485c38ef4be5b",
         "type": "ui_button",
         "z": "9dc7d6ae6b54526f",
@@ -1221,6 +1274,7 @@
         "name": "function 2",
         "func": "flow.set('lora_power', msg.payload);\nreturn msg;",
         "outputs": 1,
+        "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -1259,6 +1313,7 @@
         "name": "lora switch ",
         "func": "var obj = msg.payload;\nvar myNode = obj.no;\nvar category = obj.ca;\nvar sensor = obj.se;\nvar value = obj.va;\n\nswitch(category){\n    // case 1: //adc\n    //     flow.set(\"adc1\", sensor);\n    //     flow.set(\"adc2\", value);\n    // break;\n    case 4: //lora_device\n        flow.set(\"rssi\", sensor);\n        flow.set(\"power\", value);\n    break;\n    // case 5: //version\n    //     flow.set(\"version\", sensor);\n    //     flow.set(\"ble_num\", value);\n    // break;\n    // case 6: //channel\n    //     flow.set(\"now_uart\", sensor);\n    //     flow.set(\"now_lora\", value);\n    // break;\n    default: return;\n}\n\nvar version = flow.get(\"version\") | 0;\nvar ble_num = flow.get(\"ble_num\") | 0;\nvar adc1 = flow.get(\"adc1\") | 0;\nvar adc2 = flow.get(\"adc2\") | 0;\nvar uart = flow.get(\"now_uart\") | 0;\nvar lora_ch = flow.get(\"now_lora\") | 0;\nvar rssi = flow.get(\"rssi\") | 0;\nvar power = flow.get(\"power\") | 0;\n\nmsg.payload = rssi;\nvar msg1 = { payload: power };\nvar list = [msg, msg1];\nreturn list;",
         "outputs": 2,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -1281,6 +1336,7 @@
         "name": "version",
         "func": "var obj = msg.payload;\nvar myNode = obj.no;\nvar category = obj.ca;\nvar sensor = obj.se;\nvar value = obj.va;\n\nvar version = flow.get(\"version\") | 0;\nvar ble_num = flow.get(\"ble_num\") | 0;\n\nswitch(category){\n    // case 1: //adc\n    //     flow.set(\"adc1\", sensor);\n    //     flow.set(\"adc2\", value);\n    // break;\n    // case 4: //lora_device\n    //     flow.set(\"rssi\", sensor);\n    //     flow.set(\"power\", value);\n    // break;\n    case 5: //version\n        version = sensor;\n        ble_num = value;\n        // flow.set(\"version\", sensor);\n        // flow.set(\"ble_num\", value);\n    break;\n    // case 6: //channel\n    //     flow.set(\"now_uart\", sensor);\n    //     flow.set(\"now_lora\", value);\n    // break;\n    default: return;\n}\n\n// var version = flow.get(\"version\") | 0;\n// var ble_num = flow.get(\"ble_num\") | 0;\n// var adc1 = flow.get(\"adc1\") | 0;\n// var adc2 = flow.get(\"adc2\") | 0;\n// var uart = flow.get(\"now_uart\") | 0;\n// var lora_ch = flow.get(\"now_lora\") | 0;\n// var rssi = flow.get(\"rssi\") | 0;\n// var power = flow.get(\"power\") | 0;\n\nmsg.payload = version;\nvar msg1 = { payload: ble_num };\nvar list = [msg, msg1];\nreturn list;",
         "outputs": 2,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -1301,8 +1357,9 @@
         "type": "function",
         "z": "9dc7d6ae6b54526f",
         "name": "channel switch ",
-        "func": "var obj = msg.payload;\nvar myNode = obj.no;\nvar category = obj.ca;\nvar sensor = obj.se;\nvar value = obj.va;\n\nvar uart = flow.get(\"now_uart\") | 0;\nvar lora_ch = flow.get(\"now_lora\") | 0;\n\nswitch(category){\n    // case 1: //adc\n    //     flow.set(\"adc1\", sensor);\n    //     flow.set(\"adc2\", value);\n    // break;\n    // case 4: //lora_device\n    //     flow.set(\"rssi\", sensor);\n    //     flow.set(\"power\", value);\n    // break;\n    // case 5: //version\n    //     flow.set(\"version\", sensor);\n    //     flow.set(\"ble_num\", value);\n    // break;\n    case 6: //channel\n        switch (sensor){\n            case 0: uart = \"Ethernet\"; break;\n            case 1: uart = \"RS485\"; break;\n            case 2: uart = \"Lora\"; break;\n            case 3: uart = \"T.B.D\"; break;\n        }\n        // uart = sensor;\n        lora_ch = value;\n        // flow.set(\"now_uart\", sensor);\n        // flow.set(\"now_lora\", value);\n    break;\n    default: return;\n}\n\n// var version = flow.get(\"version\") | 0;\n// var ble_num = flow.get(\"ble_num\") | 0;\n// var adc1 = flow.get(\"adc1\") | 0;\n// var adc2 = flow.get(\"adc2\") | 0;\n// var uart = flow.get(\"now_uart\") | 0;\n// var lora_ch = flow.get(\"now_lora\") | 0;\n// var rssi = flow.get(\"rssi\") | 0;\n// var power = flow.get(\"power\") | 0;\n\nmsg.payload = uart;\nvar msg1 = { payload: lora_ch };\nvar list = [msg, msg1];\nreturn list;",
+        "func": "var obj = msg.payload;\nvar myNode = obj.no;\nvar category = obj.ca;\nvar sensor = obj.se;\nvar value = obj.va;\n\nvar uart = flow.get(\"now_uart\") | 0;\nvar lora_ch = flow.get(\"now_lora\") | 0;\n\nswitch(category){\n    // case 1: //adc\n    //     flow.set(\"adc1\", sensor);\n    //     flow.set(\"adc2\", value);\n    // break;\n    // case 4: //lora_device\n    //     flow.set(\"rssi\", sensor);\n    //     flow.set(\"power\", value);\n    // break;\n    // case 5: //version\n    //     flow.set(\"version\", sensor);\n    //     flow.set(\"ble_num\", value);\n    // break;\n    case 6: //channel\n        uart = sensor;\n        lora_ch = value;\n        // flow.set(\"now_uart\", sensor);\n        // flow.set(\"now_lora\", value);\n    break;\n    default: return;\n}\n\n// var version = flow.get(\"version\") | 0;\n// var ble_num = flow.get(\"ble_num\") | 0;\n// var adc1 = flow.get(\"adc1\") | 0;\n// var adc2 = flow.get(\"adc2\") | 0;\n// var uart = flow.get(\"now_uart\") | 0;\n// var lora_ch = flow.get(\"now_lora\") | 0;\n// var rssi = flow.get(\"rssi\") | 0;\n// var power = flow.get(\"power\") | 0;\n\nmsg.payload = uart - 1;\nvar msg1 = { payload: lora_ch };\nvar list = [msg, msg1];\nreturn list;",
         "outputs": 2,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
@@ -1311,8 +1368,7 @@
         "y": 500,
         "wires": [
             [
-                "b778fee422358a59",
-                "19527beb221a8b4e"
+                "d2c2d104a224696e"
             ],
             [
                 "0b996d4006aee902"
@@ -1326,36 +1382,37 @@
         "name": "switch parse",
         "func": "var list = [false, true, false, true, false, true, false, true];\n\nvar obj = msg.payload;\nvar myNode = obj.no;\nvar category = obj.ca;\nvar sensor = obj.se;\nvar value = obj.va;\n\nif (category != 3) return;\n\nif(sensor & 0x01) list[0] = true;\nelse list[0] = false;\n\nif(sensor & 0x02) list[1] = true;\nelse list[1] = false;\n\nif (sensor & 0x04) list[2] = true;\nelse list[2] = false;\n\nif (sensor & 0x08) list[3] = true;\nelse list[3] = false;\n\nif (sensor & 0x10) list[4] = true;\nelse list[4] = false;\n\nif (sensor & 0x20) list[5] = true;\nelse list[5] = false;\n\nif (sensor & 0x40) list[6] = true;\nelse list[6] = false;\n\nif (sensor & 0x80) list[7] = true;\nelse list[7] =false;\n\nmsg.payload = list[0];\nvar msg1 = { payload: list[1] };\nvar msg2 = { payload: list[2] };\nvar msg3 = { payload: list[3] };\nvar msg4 = { payload: list[4] };\nvar msg5 = { payload: list[5] };\nvar msg6 = { payload: list[6] };\nvar msg7 = { payload: list[7] };\n\nlist = [msg, msg1, msg2, msg3, msg4, msg5, msg6, msg7];\nreturn list;\n",
         "outputs": 8,
+        "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 150,
-        "y": 640,
+        "x": 110,
+        "y": 280,
         "wires": [
             [
-                "7d8f98290a970d84"
+                "95401a2c89180896"
             ],
             [
-                "54766f31589268ea"
+                "55527eb70b7c8228"
             ],
             [
-                "09d5e6085ec083d5"
+                "e392a5a677d8562b"
             ],
             [
-                "d0035b37ec493ea6"
+                "823d2125aa8b76a1"
             ],
             [
-                "651561a0ad1a51de"
+                "1a732778edf72c5a"
             ],
             [
-                "9fa822a6f49da5cc"
+                "d8397717f7302089"
             ],
             [
-                "5495510407ce0204"
+                "2a8ffad6597f85bb"
             ],
             [
-                "12e5e304e8a8b860"
+                "0795889f4391ace5"
             ]
         ]
     },
@@ -1366,11 +1423,12 @@
         "name": "set relay",
         "func": "var se = Number(msg.topic);\nvar va = 0;\nif(msg.payload) va = 1;\n\nmsg.payload = {\"no\":1,\"ca\":13,\"se\":se,\"va\":va,\"crc\":12};\n\nreturn msg;",
         "outputs": 1,
+        "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 720,
+        "x": 580,
         "y": 700,
         "wires": [
             [
@@ -1379,182 +1437,10 @@
         ]
     },
     {
-        "id": "7d8f98290a970d84",
-        "type": "function",
-        "z": "9dc7d6ae6b54526f",
-        "name": "relay1",
-        "func": "var r1 = flow.get(\"r1\") | 0 ;\nif(msg.payload == r1) return;\nflow.set(\"r1\", msg.payload);\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 330,
-        "y": 540,
-        "wires": [
-            [
-                "95401a2c89180896"
-            ]
-        ]
-    },
-    {
-        "id": "54766f31589268ea",
-        "type": "function",
-        "z": "9dc7d6ae6b54526f",
-        "name": "relay2",
-        "func": "var r2 = flow.get(\"r2\") | 0;\nif (msg.payload == r2) return;\nflow.set(\"r2\", msg.payload);\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 330,
-        "y": 580,
-        "wires": [
-            [
-                "55527eb70b7c8228"
-            ]
-        ]
-    },
-    {
-        "id": "09d5e6085ec083d5",
-        "type": "function",
-        "z": "9dc7d6ae6b54526f",
-        "name": "relay3",
-        "func": "var r3 = flow.get(\"r3\") | 0;\nif (msg.payload == r3) return;\nflow.set(\"r3\", msg.payload);\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 330,
-        "y": 620,
-        "wires": [
-            [
-                "e392a5a677d8562b"
-            ]
-        ]
-    },
-    {
-        "id": "d0035b37ec493ea6",
-        "type": "function",
-        "z": "9dc7d6ae6b54526f",
-        "name": "relay4",
-        "func": "var r4 = flow.get(\"r4\") | 0;\nif (msg.payload == r4) return;\nflow.set(\"r4\", msg.payload);\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 330,
-        "y": 660,
-        "wires": [
-            [
-                "823d2125aa8b76a1"
-            ]
-        ]
-    },
-    {
-        "id": "651561a0ad1a51de",
-        "type": "function",
-        "z": "9dc7d6ae6b54526f",
-        "name": "relay5",
-        "func": "var r5 = flow.get(\"r5\") | 0;\nif (msg.payload == r5) return;\nflow.set(\"r5\", msg.payload);\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 330,
-        "y": 700,
-        "wires": [
-            [
-                "1a732778edf72c5a"
-            ]
-        ]
-    },
-    {
-        "id": "9fa822a6f49da5cc",
-        "type": "function",
-        "z": "9dc7d6ae6b54526f",
-        "name": "relay6",
-        "func": "var r6 = flow.get(\"r6\") | 0;\nif (msg.payload == r6) return;\nflow.set(\"r6\", msg.payload);\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 330,
-        "y": 740,
-        "wires": [
-            [
-                "d8397717f7302089"
-            ]
-        ]
-    },
-    {
-        "id": "5495510407ce0204",
-        "type": "function",
-        "z": "9dc7d6ae6b54526f",
-        "name": "relay7",
-        "func": "var r7 = flow.get(\"r7\") | 0;\nif (msg.payload == r7) return;\nflow.set(\"r7\", msg.payload);\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 330,
-        "y": 780,
-        "wires": [
-            [
-                "2a8ffad6597f85bb"
-            ]
-        ]
-    },
-    {
-        "id": "12e5e304e8a8b860",
-        "type": "function",
-        "z": "9dc7d6ae6b54526f",
-        "name": "relay8",
-        "func": "var r8 = flow.get(\"r8\") | 0;\nif (msg.payload == r8) return;\nflow.set(\"r8\", msg.payload);\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 330,
-        "y": 820,
-        "wires": [
-            [
-                "0795889f4391ace5"
-            ]
-        ]
-    },
-    {
-        "id": "b778fee422358a59",
-        "type": "ui_text",
-        "z": "9dc7d6ae6b54526f",
-        "group": "461a06597ab3daf5",
-        "order": 1,
-        "width": 0,
-        "height": 0,
-        "name": "",
-        "label": "UART: ",
-        "format": "{{msg.payload}}",
-        "layout": "row-spread",
-        "className": "",
-        "style": false,
-        "font": "",
-        "fontSize": 16,
-        "color": "#000000",
-        "x": 790,
-        "y": 600,
-        "wires": []
-    },
-    {
         "id": "f044b6e7b8fba745",
         "type": "serial-port",
-        "serialport": "COM5",
+        "name": "",
+        "serialport": "/dev/tty.usbserial-005E0EA3",
         "serialbaud": "115200",
         "databits": "8",
         "parity": "none",
