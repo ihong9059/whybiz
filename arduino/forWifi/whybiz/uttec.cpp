@@ -43,8 +43,8 @@ void initPort(void){
   pinMode(PWR_CTL, OUTPUT);
   pinMode(LORA_RST, OUTPUT);
   pinMode(SIGNAL_LED, OUTPUT);
-  digitalWrite(LORA_RST, 1);
 
+  digitalWrite(LORA_RST, 1);
   setUartChannel(ETHERNET_CHANNEL);
   digitalWrite(RS485_EN, 0); //for read 
 
@@ -163,8 +163,8 @@ void dispUartChannel(void){
       Serial.printf("rs485 channel\r\n");
       digitalWrite(SEL2, 0);  digitalWrite(SEL1, 1);
     break;
-    case 2://rs485
-      Serial.printf("rs485 channel\r\n");
+    case 2://lora
+      Serial.printf("lora channel\r\n");
       digitalWrite(SEL2, 1);  digitalWrite(SEL1, 0);
     break;
     case 3://T.B.D
@@ -236,8 +236,8 @@ void sendJsonForStatus(void){
         dispUartChannel();
         digitalWrite(RS485_EN, 1); //for read 
         // delay(1);
-        Serial2.printf("{\"no\":%d,\"ca\":%d,\"se\":%d,\"va\":%d,\"crc\":%d}\r\n",
-        pFrame->node, pFrame->category, pFrame->sensor, pFrame->value, pFrame->crc);
+        // Serial2.printf("{\"no\":%d,\"ca\":%d,\"se\":%d,\"va\":%d,\"crc\":%d}\r\n",
+        // pFrame->node, pFrame->category, pFrame->sensor, pFrame->value, pFrame->crc);
         delay(4);
         digitalWrite(RS485_EN, 0); //for read 
 
@@ -262,4 +262,68 @@ whybizFrame_t* getWhybizFrame(void){
     return &myWhybizFrame;
 }
 
+#include <ArduinoJson.h>
+
+#include "myJson.h"
+
+void parseLoraInfo(uint8_t cmd, uint8_t value){
+  uint8_t count = 0;
+  uint8_t flag0 = 0;
+  uint8_t flag1 = 0;
+  uttecJson_t ctr;
+  char temp[MAX_DOC] = {0, };
+  switch(cmd){
+    case LORA_CHANNEL_INFO:
+      // Serial.printf("LORA_CHANNEL_INFO\r\n");
+      Serial2.printf("at=7%d", value);
+    break;
+    case LORA_POWER_INFO:
+      Serial2.printf("at=p%d", value);
+    break;
+    case LORA_RSSI_INFO:
+      Serial2.printf("at=i");
+    break;
+    default:
+      Serial.printf("Lora Error cmd: %d\r\n", cmd);
+      return;
+  }
+
+  delay(3);
+  bool finish = true;
+  while((Serial2.available() > 0)&&finish){
+    // read the incoming byte:
+    char test = Serial2.read();
+    Serial.printf("%c", test);
+    if(test == '{'){
+      flag0++;
+      count = 0;
+      temp[count++] = test;
+    } 
+    else if(test == '}'){
+      temp[count++] = test;
+      finish = false;
+    }
+    else{
+      temp[count++] = test;
+    } 
+    if(count > MAX_DOC){
+      Serial.printf("<------- MAX over ---------->\r\n");
+      return;
+    } 
+  }
+
+  StaticJsonDocument<MAX_DOC> doc;
+  DeserializationError error = deserializeJson(doc, temp);
+  if (error) {
+    // Serial.print(F("deserializeJson() failed: "));
+    // Serial.println(error.f_str());
+    Serial.printf("json error ---------%s\r\n", temp);
+    return;
+  }    
+  ctr.ca = doc["ca"];
+  ctr.se = doc["se"];
+  ctr.va = doc["va"];
+  Serial.printf("---> ca: %d, se: %d, va: %d\r\n", 
+    ctr.ca, ctr.se, ctr.va);
+}
 

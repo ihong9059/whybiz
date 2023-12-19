@@ -34,6 +34,11 @@
 #define SET_CHANNEL         26
 // end
 
+// for lora category
+#define LORA_CHANNEL_INFO   30
+#define LORA_POWER_INFO     31
+#define LORA_RSSI_INFO      32
+
 #define SEL1            32 //SCL(32) 
 #define SEL2            33 //SDA(33)
 #define SX_RESET        17
@@ -104,5 +109,6 @@ connectFlag_t* getConnectFlag(void);
 void sendToBle(void);
 void saveFactorToFlash(void);
 
+void parseLoraInfo(uint8_t cmd, uint8_t value);
 #endif 
 

@@ -40,7 +40,7 @@ void loop() {
   loop_uttec();
   // Serial.printf("relay: %x, sw: %x\r\n", pFactor->relay, pFactor->sw);
   parseReceiveJson();
-  delay(600);
+  delay(3000);
   // testRelay();
   // testSwitch();
   signal();
@@ -58,6 +58,20 @@ void loop() {
   uint8_t temp = readSxSw();
   // Serial.printf("switch: %x\r\n", temp);
   readAdc();
-  
+  if(pFactor->channel == 2){
+    static uint32_t count = 0;
+    switch(count++ % 3){
+      case 0:
+        parseLoraInfo((count % 3) + LORA_CHANNEL_INFO, 20);
+      break;
+      case 1:
+        parseLoraInfo((count % 3) + LORA_CHANNEL_INFO, 12);
+      break;
+      case 2:
+        parseLoraInfo((count % 3) + LORA_CHANNEL_INFO, 0);
+      break;
+    }
+
+  }
   count++;
 }
