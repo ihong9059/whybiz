@@ -46,6 +46,8 @@ void initPort(void){
   digitalWrite(LORA_RST, 1);
 
   setUartChannel(ETHERNET_CHANNEL);
+  digitalWrite(RS485_EN, 0); //for read 
+
 }
 
 void dispFactor(void){
@@ -132,16 +134,16 @@ void signal(void){
 
 void setUartChannel(uint8_t channel){
   switch(channel){
-    case 0:
+    case 0://Ethernet
       digitalWrite(SEL2, 0);  digitalWrite(SEL1, 0);
     break;
-    case 1:
+    case 1://rs485
       digitalWrite(SEL2, 0);  digitalWrite(SEL1, 1);
     break;
-    case 2:
+    case 2://lora
       digitalWrite(SEL2, 1);  digitalWrite(SEL1, 0);
     break;
-    case 3:
+    case 3://T.B.D
       digitalWrite(SEL2, 1);  digitalWrite(SEL1, 1);
     break;
     default:
@@ -150,6 +152,28 @@ void setUartChannel(uint8_t channel){
   Serial.printf("uart channel: %d\r\n", channel);
 }
 
+void dispUartChannel(void){
+  whybiz_t* pFactor = getWhybizFactor();
+  switch(pFactor->channel){
+    case 0://Ethernet
+      Serial.printf("Ethernet channel\r\n");
+      digitalWrite(SEL2, 0);  digitalWrite(SEL1, 0);
+    break;
+    case 1://rs485
+      Serial.printf("rs485 channel\r\n");
+      digitalWrite(SEL2, 0);  digitalWrite(SEL1, 1);
+    break;
+    case 2://rs485
+      Serial.printf("rs485 channel\r\n");
+      digitalWrite(SEL2, 1);  digitalWrite(SEL1, 0);
+    break;
+    case 3://T.B.D
+      Serial.printf("T.B.D channel\r\n");
+      digitalWrite(SEL2, 1);  digitalWrite(SEL1, 1);
+    break;
+    
+  }
+}
 
 void testEeprom(void){
   EEPROM.readBytes(0, &myWhybiz, sizeof(whybiz_t));
@@ -174,7 +198,7 @@ void sendJsonForStatus(void){
     // if(pFlags->ble) printf("Ble connected---->\r\n");
     // else return;
 
-    if(!(count++ % 2)){
+    if(!(count++ % 4)){
         static uint32_t sendCount = 0;
         uint8_t who = (sendCount++ % MAX_CATEGORY);
         pFrame->node = pFactor->node;
@@ -209,8 +233,14 @@ void sendJsonForStatus(void){
         pFrame->crc = pFrame->node + pFrame->category + pFrame->sensor + pFrame->value;  
         
 //for server through selected uart channel. printf. 2023.12.15
+        dispUartChannel();
+        digitalWrite(RS485_EN, 1); //for read 
+        // delay(1);
         Serial2.printf("{\"no\":%d,\"ca\":%d,\"se\":%d,\"va\":%d,\"crc\":%d}\r\n",
         pFrame->node, pFrame->category, pFrame->sensor, pFrame->value, pFrame->crc);
+        delay(4);
+        digitalWrite(RS485_EN, 0); //for read 
+
     }
 }
 
