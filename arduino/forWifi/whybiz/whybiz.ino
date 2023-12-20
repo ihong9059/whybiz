@@ -39,7 +39,7 @@ void loop() {
 #endif  
   loop_uttec();
   // Serial.printf("relay: %x, sw: %x\r\n", pFactor->relay, pFactor->sw);
-  parseReceiveJson();
+  // parseReceiveJson();
   delay(3000);
   // testRelay();
   // testSwitch();
@@ -58,20 +58,28 @@ void loop() {
   uint8_t temp = readSxSw();
   // Serial.printf("switch: %x\r\n", temp);
   readAdc();
+  dispUartChannel();
   if(pFactor->channel == 2){
-    static uint32_t count = 0;
-    switch(count++ % 3){
+    static uint32_t testCount = 0;
+    uint8_t cmd = testCount % 5;
+    switch(cmd){
       case 0:
-        parseLoraInfo((count % 3) + LORA_CHANNEL_INFO, 20);
+        parseLoraInfo(cmd + LORA_CHANNEL_INFO, 20);
       break;
       case 1:
-        parseLoraInfo((count % 3) + LORA_CHANNEL_INFO, 12);
+        parseLoraInfo(cmd + LORA_CHANNEL_INFO, 12);
       break;
       case 2:
-        parseLoraInfo((count % 3) + LORA_CHANNEL_INFO, 0);
+        parseLoraInfo(cmd + LORA_CHANNEL_INFO, 0);
+      break;
+      case 3:
+        parseLoraInfo(cmd + LORA_CHANNEL_INFO, 0);
+      break;
+      case 4:
+        parseLoraInfo(cmd + LORA_CHANNEL_INFO, 0);
       break;
     }
-
+    testCount++;
   }
   count++;
 }

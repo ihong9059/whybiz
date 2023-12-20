@@ -10,6 +10,12 @@
 #define VERSION     1
 #define EEPROM_MAX  1024
 
+// for uart channel
+#define ETHERNET_CHANNEL  0
+#define RS485_CHANNEL     1
+#define LORA_CHANNEL      2
+#define BLANK_CHANNEL     3    
+
 // for status
 #define ADC_DEVICE		    1
 #define SWITCH_DEVICE 	    2
@@ -38,6 +44,8 @@
 #define LORA_CHANNEL_INFO   30
 #define LORA_POWER_INFO     31
 #define LORA_RSSI_INFO      32
+#define LORA_TEST_UART      33
+#define LORA_ORG_INFO      34
 
 #define SEL1            32 //SCL(32) 
 #define SEL2            33 //SDA(33)
@@ -110,5 +118,6 @@ void sendToBle(void);
 void saveFactorToFlash(void);
 
 void parseLoraInfo(uint8_t cmd, uint8_t value);
+void dispUartChannel(void);
 #endif 
 

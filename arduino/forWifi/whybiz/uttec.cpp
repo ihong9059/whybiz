@@ -8,10 +8,6 @@
 #define PIN_A0 34     // some analog input sensor
 #define PIN_A1 35     // some analog input sensor
 
-#define ETHERNET_CHANNEL  0
-#define RS485_CHANNEL     1
-#define LORA_CHANNEL      2
-#define BLANK_CHANNEL     3    
 
 whybiz_t myWhybiz = {0, };
 sx1509_t beforeSx1509 = {0, };
@@ -34,7 +30,7 @@ void loop_uttec(void){
   printf(".");
   sendJsonForStatus();
 }
-
+//test__0 
 void initPort(void){
   pinMode(SEL1, OUTPUT);
   pinMode(SEL2, OUTPUT);
@@ -44,10 +40,12 @@ void initPort(void){
   pinMode(LORA_RST, OUTPUT);
   pinMode(SIGNAL_LED, OUTPUT);
 
+  digitalWrite(LORA_RST, 0);
+  delay(300);
   digitalWrite(LORA_RST, 1);
-  setUartChannel(ETHERNET_CHANNEL);
+  // setUartChannel(ETHERNET_CHANNEL); // basic channel
+  setUartChannel(LORA_CHANNEL); //for lora test. 2023.12.20
   digitalWrite(RS485_EN, 0); //for read 
-
 }
 
 void dispFactor(void){
@@ -133,6 +131,8 @@ void signal(void){
 }
 
 void setUartChannel(uint8_t channel){
+  whybiz_t* pFactor = getWhybizFactor();
+  pFactor->channel = channel;
   switch(channel){
     case 0://Ethernet
       digitalWrite(SEL2, 0);  digitalWrite(SEL1, 0);
@@ -270,25 +270,45 @@ void parseLoraInfo(uint8_t cmd, uint8_t value){
   uint8_t count = 0;
   uint8_t flag0 = 0;
   uint8_t flag1 = 0;
+  uint8_t digit1, digit2;
+  digit1 = value/10;
+  digit2 = value%10;
   uttecJson_t ctr;
   char temp[MAX_DOC] = {0, };
   switch(cmd){
     case LORA_CHANNEL_INFO:
       // Serial.printf("LORA_CHANNEL_INFO\r\n");
-      Serial2.printf("at=7%d", value);
+      Serial.printf("at=7%-2d\r\n", value);
+      Serial2.printf("at=7%-2d", value);
     break;
     case LORA_POWER_INFO:
-      Serial2.printf("at=p%d", value);
+      // Serial.printf("LORA_POWER_INFO\r\n");
+      Serial.printf("at=p%-2d\r\n", value);
+      Serial2.printf("at=p%-2d", value);
     break;
     case LORA_RSSI_INFO:
-      Serial2.printf("at=i");
+      // Serial.printf("LORA_RSSI_INFO\r\n");
+      Serial.printf("at=m%-2d", value);
+      Serial2.printf("AT=m");
+    break;
+    case LORA_TEST_UART:
+      Serial.printf("-----------> LORA_RSSI_INFO\r\n");
+      Serial.printf("at=u{\"ca\":%d,\"se\":%d,\"va\":%d}\r\n",
+      value, value+1, value+2);
+      Serial2.printf("at=u{\"ca\":%d,\"se\":%d,\"va\":%d}\r",
+      value, value+1, value+2);
+    break;
+    case LORA_ORG_INFO:
+      Serial.printf("-----------> LORA_ORG_INFO\r\n");
+      // Serial.printf("at=u{\"ca\":%d,\"se\":%d,\"va\":%d}\r\n",
+      // value, value+1, value+2);
+      Serial2.printf("at=9");
     break;
     default:
       Serial.printf("Lora Error cmd: %d\r\n", cmd);
       return;
   }
 
-  delay(3);
   bool finish = true;
   while((Serial2.available() > 0)&&finish){
     // read the incoming byte:
@@ -317,9 +337,9 @@ void parseLoraInfo(uint8_t cmd, uint8_t value){
   if (error) {
     // Serial.print(F("deserializeJson() failed: "));
     // Serial.println(error.f_str());
-    Serial.printf("json error ---------%s\r\n", temp);
+    Serial.printf("json error: %d ---------%s\r\n", count, temp);
     return;
-  }    
+  }
   ctr.ca = doc["ca"];
   ctr.se = doc["se"];
   ctr.va = doc["va"];
