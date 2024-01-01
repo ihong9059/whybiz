@@ -41,7 +41,8 @@ int main(void)
 		static uint32_t count = 0;
 		static bool toggle = false;
 
-		k_sleep(K_MSEC(RUN_LED_BLINK_INTERVAL));
+		// k_sleep(K_MSEC(RUN_LED_BLINK_INTERVAL));
+		delay(500);
 		// testJsonOut();
 		jsonFrame_t* pFrame = getJsonFrame();
 		if(pFrame->flag){

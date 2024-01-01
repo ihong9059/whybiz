@@ -70,9 +70,9 @@ class MyCallbacks: public BLECharacteristicCallbacks {
 
 void initBle(void){
   // Create the BLE Device
-  char temp[11] = {0, };
+  char temp[30] = {0, };
   whybiz_t* pFactor = getWhybizFactor();
-  sprintf(temp, "whybiz_%d", pFactor->ble);
+  sprintf(temp, "whybiz_esp_%d", pFactor->ble);
   // BLEDevice::init("whybiz for esp32");
   BLEDevice::init(temp);
 

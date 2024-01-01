@@ -1,6 +1,7 @@
 #ifndef UTTEC_WIFI_H
 #define UTTEC_WIFI_H
 
+
 void initWifi(void);
 void loop_wifi(void);
 

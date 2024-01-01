@@ -43,8 +43,8 @@ void initPort(void){
   digitalWrite(LORA_RST, 0);
   delay(300);
   digitalWrite(LORA_RST, 1);
-  // setUartChannel(ETHERNET_CHANNEL); // basic channel
-  setUartChannel(LORA_CHANNEL); //for lora test. 2023.12.20
+  setUartChannel(ETHERNET_CHANNEL); // basic channel
+  // setUartChannel(LORA_CHANNEL); //for lora test. 2023.12.20
   digitalWrite(RS485_EN, 0); //for read 
 }
 
@@ -198,7 +198,7 @@ void sendJsonForStatus(void){
     // if(pFlags->ble) printf("Ble connected---->\r\n");
     // else return;
 
-    if(!(count++ % 4)){
+    if(!(count++ % 2)){
         static uint32_t sendCount = 0;
         uint8_t who = (sendCount++ % MAX_CATEGORY);
         pFrame->node = pFactor->node;
@@ -235,9 +235,13 @@ void sendJsonForStatus(void){
 //for server through selected uart channel. printf. 2023.12.15
         dispUartChannel();
         digitalWrite(RS485_EN, 1); //for read 
+        Serial.printf("sendJsonForStatus---->\r\n");
+        if(pFactor->channel == LORA_CHANNEL){
+          Serial2.printf("at=u");
+        }
         // delay(1);
-        // Serial2.printf("{\"no\":%d,\"ca\":%d,\"se\":%d,\"va\":%d,\"crc\":%d}\r\n",
-        // pFrame->node, pFrame->category, pFrame->sensor, pFrame->value, pFrame->crc);
+        Serial2.printf("{\"no\":%d,\"ca\":%d,\"se\":%d,\"va\":%d,\"crc\":%d}\r\n",
+        pFrame->node, pFrame->category, pFrame->sensor, pFrame->value, pFrame->crc);
         delay(4);
         digitalWrite(RS485_EN, 0); //for read 
 
@@ -267,14 +271,13 @@ whybizFrame_t* getWhybizFrame(void){
 #include "myJson.h"
 
 void parseLoraInfo(uint8_t cmd, uint8_t value){
+  static uint32_t testCount = 0;
   uint8_t count = 0;
   uint8_t flag0 = 0;
   uint8_t flag1 = 0;
-  uint8_t digit1, digit2;
-  digit1 = value/10;
-  digit2 = value%10;
   uttecJson_t ctr;
   char temp[MAX_DOC] = {0, };
+
   switch(cmd){
     case LORA_CHANNEL_INFO:
       // Serial.printf("LORA_CHANNEL_INFO\r\n");
@@ -289,20 +292,20 @@ void parseLoraInfo(uint8_t cmd, uint8_t value){
     case LORA_RSSI_INFO:
       // Serial.printf("LORA_RSSI_INFO\r\n");
       Serial.printf("at=m%-2d", value);
-      Serial2.printf("AT=m");
+      Serial2.printf("AT=i");
     break;
     case LORA_TEST_UART:
-      Serial.printf("-----------> LORA_RSSI_INFO\r\n");
+      Serial.printf("-----------> LORA_TEST_UART\r\n");
       Serial.printf("at=u{\"ca\":%d,\"se\":%d,\"va\":%d}\r\n",
-      value, value+1, value+2);
+      testCount, testCount+1, testCount+2);
       Serial2.printf("at=u{\"ca\":%d,\"se\":%d,\"va\":%d}\r",
-      value, value+1, value+2);
+      testCount++, testCount+1, testCount+2);
+      delay(500);
+      // Serial.printf("-----------> after LORA_TEST_UART\r\n");
     break;
-    case LORA_ORG_INFO:
-      Serial.printf("-----------> LORA_ORG_INFO\r\n");
-      // Serial.printf("at=u{\"ca\":%d,\"se\":%d,\"va\":%d}\r\n",
-      // value, value+1, value+2);
-      Serial2.printf("at=9");
+    case LORA_TEST_INFO:
+      Serial.printf("-----------> LORA_TEST_INFO\r\n");
+      // Serial2.printf("at=9");
     break;
     default:
       Serial.printf("Lora Error cmd: %d\r\n", cmd);
@@ -311,7 +314,6 @@ void parseLoraInfo(uint8_t cmd, uint8_t value){
 
   bool finish = true;
   while((Serial2.available() > 0)&&finish){
-    // read the incoming byte:
     char test = Serial2.read();
     Serial.printf("%c", test);
     if(test == '{'){
@@ -326,9 +328,10 @@ void parseLoraInfo(uint8_t cmd, uint8_t value){
     else{
       temp[count++] = test;
     } 
+
     if(count > MAX_DOC){
       Serial.printf("<------- MAX over ---------->\r\n");
-      return;
+      count = 0;
     } 
   }
 

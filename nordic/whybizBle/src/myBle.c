@@ -35,8 +35,8 @@ LOG_MODULE_REGISTER(LOG_MODULE_NAME);
 #define STACKSIZE CONFIG_BT_NUS_THREAD_STACK_SIZE
 #define PRIORITY 7
 
-#define DEVICE_NAME CONFIG_BT_DEVICE_NAME
-#define DEVICE_NAME_LEN	(sizeof(DEVICE_NAME) - 1)
+// #define DEVICE_NAME CONFIG_BT_DEVICE_NAME
+// #define DEVICE_NAME_LEN	(sizeof(DEVICE_NAME) - 1)
 
 // #define RUN_STATUS_LED DK_LED1
 // #define RUN_LED_BLINK_INTERVAL 3000
@@ -47,7 +47,8 @@ LOG_MODULE_REGISTER(LOG_MODULE_NAME);
 #define KEY_PASSKEY_REJECT DK_BTN2_MSK
 
 // #define UART_BUF_SIZE CONFIG_BT_NUS_UART_BUFFER_SIZE
-#define UART_BUF_SIZE 200
+#define UART_BUF_SIZE 100
+// #define UART_BUF_SIZE 200
 #define UART_WAIT_FOR_BUF_DELAY K_MSEC(50)
 #define UART_WAIT_FOR_RX CONFIG_BT_NUS_UART_RX_WAIT_TIME
 
@@ -69,16 +70,14 @@ struct uart_data_t {
 static K_FIFO_DEFINE(fifo_uart_tx_data);
 static K_FIFO_DEFINE(fifo_uart_rx_data);
 
-static const struct bt_data ad[] = {
-	BT_DATA_BYTES(BT_DATA_FLAGS, (BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR)),
-	BT_DATA(BT_DATA_NAME_COMPLETE, DEVICE_NAME, DEVICE_NAME_LEN),
-};
+// static const struct bt_data ad[] = {
+// 	BT_DATA_BYTES(BT_DATA_FLAGS, (BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR)),
+// 	BT_DATA(BT_DATA_NAME_COMPLETE, DEVICE_NAME, DEVICE_NAME_LEN),
+// };
 
 static const struct bt_data sd[] = {
 	BT_DATA_BYTES(BT_DATA_UUID128_ALL, BT_UUID_NUS_VAL),
 };
-
-
 
 #if CONFIG_BT_NUS_UART_ASYNC_ADAPTER
 UART_ASYNC_ADAPTER_INST_DEFINE(async_adapter);
@@ -490,6 +489,16 @@ static struct bt_nus_cb nus_cb = {
 	.received = bt_receive_cb,
 };
 
+
+#define DEVICE_NAME "wbiz_nrf_123"
+#define DEVICE_NAME_LEN	(sizeof(DEVICE_NAME) - 1)
+
+// static const struct bt_data ad[] = {
+// 	BT_DATA_BYTES(BT_DATA_FLAGS, (BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR)),
+// 	// BT_DATA(BT_DATA_NAME_COMPLETE, adTemp, 20),
+// 	BT_DATA(BT_DATA_NAME_COMPLETE, DEVICE_NAME, DEVICE_NAME_LEN),
+// };
+
 void initBle(void){
 	int err = 0;
 	err = uart_init();
@@ -523,7 +532,18 @@ void initBle(void){
 		LOG_ERR("Failed to initialize UART service (err: %d)", err);
 	}
 
-	err = bt_le_adv_start(BT_LE_ADV_CONN, ad, ARRAY_SIZE(ad), sd,
+	whybiz_t* pFactor = getWhybizFactor();
+
+	uint8_t test[20] = {0, }; 
+	printk("ble: %d\r\n", pFactor->ble);
+	sprintf(test, "wbiz_nrf_%d", pFactor->ble);
+struct bt_data ad_hong[] = {
+	BT_DATA_BYTES(BT_DATA_FLAGS, (BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR)),
+	// BT_DATA(BT_DATA_NAME_COMPLETE, adTemp, 20),
+	BT_DATA(BT_DATA_NAME_COMPLETE, test, DEVICE_NAME_LEN),
+};
+
+	err = bt_le_adv_start(BT_LE_ADV_CONN, ad_hong, ARRAY_SIZE(ad_hong), sd,
 			      ARRAY_SIZE(sd));
 	if (err) {
 		LOG_ERR("Advertising failed to start (err %d)", err);
@@ -572,6 +592,7 @@ void procChannel(void){
 	sendToMobile(buf, sizeof(buf));
 }
 
+#include "adc.h"
 void procAdcTxBle(void){
 	printk("procAdcTxBle\r\n");
 	readAdcValue();

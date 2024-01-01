@@ -18,7 +18,7 @@
 void setup() {
   Serial.begin(115200);
   Serial2.begin(115200, SERIAL_8N1, RXD2, TXD2);
-  Serial.printf("Now start Whybiz project. 2023.12.03\r\n");
+  Serial.printf("Now start Whybiz project. 2023.12.23 23:30\r\n");
   initUttec();
   
 #ifdef BLE_PROGRAM  
@@ -39,8 +39,8 @@ void loop() {
 #endif  
   loop_uttec();
   // Serial.printf("relay: %x, sw: %x\r\n", pFactor->relay, pFactor->sw);
-  // parseReceiveJson();
-  delay(3000);
+  parseReceiveJson();
+  delay(500);
   // testRelay();
   // testSwitch();
   signal();
@@ -60,26 +60,26 @@ void loop() {
   readAdc();
   dispUartChannel();
   if(pFactor->channel == 2){
-    static uint32_t testCount = 0;
-    uint8_t cmd = testCount % 5;
-    switch(cmd){
-      case 0:
-        parseLoraInfo(cmd + LORA_CHANNEL_INFO, 20);
-      break;
-      case 1:
-        parseLoraInfo(cmd + LORA_CHANNEL_INFO, 12);
-      break;
-      case 2:
-        parseLoraInfo(cmd + LORA_CHANNEL_INFO, 0);
-      break;
-      case 3:
-        parseLoraInfo(cmd + LORA_CHANNEL_INFO, 0);
-      break;
-      case 4:
-        parseLoraInfo(cmd + LORA_CHANNEL_INFO, 0);
-      break;
-    }
-    testCount++;
+    // static uint32_t testCount = 0;
+    // uint8_t cmd = testCount % 5;
+    // switch(cmd){
+    //   case 0:
+    //     parseLoraInfo(cmd + LORA_CHANNEL_INFO, 20);
+    //   break;
+    //   case 1:
+    //     parseLoraInfo(cmd + LORA_CHANNEL_INFO, 12);
+    //   break;
+    //   case 2:
+    //     parseLoraInfo(cmd + LORA_CHANNEL_INFO, 0);
+    //   break;
+    //   case 3:
+    //     parseLoraInfo(cmd + LORA_CHANNEL_INFO, 0);
+    //   break;
+    //   case 4:
+    //     parseLoraInfo(cmd + LORA_CHANNEL_INFO, 0);
+    //   break;
+    // }
+    // testCount++;
   }
   count++;
 }

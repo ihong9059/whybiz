@@ -81,6 +81,7 @@ void parseReceiveJson(void){
   uint8_t flag0 = 0;
   uint8_t flag1 = 0;
   // send data only when you receive data:
+  // Serial.printf("!!!");
   while(Serial2.available() > 0){
     // read the incoming byte:
     char test = Serial2.read();
@@ -149,6 +150,11 @@ void parseReceiveJson(void){
         break;
         default: Serial.printf("error category: %d\r\n", ctr.ca); break;
       }
+      // whybiz_t* pFactor = getWhybizFactor();
+      // if(pFactor->channel == ETHERNET_CHANNEL){
+      //   sendJsonForStatus();
+      //   Serial.printf("send status by ethernet\r\n");
+      // }
     // } 
     // else{
     //   Serial.printf("error in crc: %d, %d\r\n", totalCrc, myJason.crc);

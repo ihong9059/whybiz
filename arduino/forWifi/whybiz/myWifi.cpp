@@ -9,9 +9,9 @@
 
 #ifndef BLE_PROGRAM
 
+// #define USE_INTRANET
+// #define MYHOME 1
 
-#define USE_INTRANET
-#define MYHOME 1
 
 #ifdef MYHOME
 #define LOCAL_SSID "ihong"

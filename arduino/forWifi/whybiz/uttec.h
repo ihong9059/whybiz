@@ -45,7 +45,7 @@
 #define LORA_POWER_INFO     31
 #define LORA_RSSI_INFO      32
 #define LORA_TEST_UART      33
-#define LORA_ORG_INFO      34
+#define LORA_TEST_INFO      34
 
 #define SEL1            32 //SCL(32) 
 #define SEL2            33 //SDA(33)

@@ -59,6 +59,7 @@ void initPort(void){
     gpio_pin_set_dt(&loraRst, 0);//set high
     gpio_pin_set_dt(&pwrCtl, 1);//set low
     gpio_pin_set_dt(&rs485_en, 1);//set low
+
     setUartChannel(pWhybiz->channel);
     // setUartChannel(1); // for server test. 2023.12.12. 15:50
 }
@@ -214,14 +215,6 @@ void sendJsonForStatus(void){
 
     connectFlag_t* pFlags = getConnectFlag();
 
-    // if(!pFlags->first){
-    //     sendFactorAtConnection();
-    //     pFlags->first = true;
-    //     return;
-    // }
-    // if(pFlags->ble) printk("Ble connected---->\r\n");
-    // else return;
-
     if(!(count++ % 2)){
         static uint32_t sendCount = 0;
         uint8_t who = (sendCount++ % MAX_CATEGORY);
@@ -261,9 +254,21 @@ void sendJsonForStatus(void){
             break;
         }
         pFrame->crc = pFrame->node + pFrame->category + pFrame->sensor + pFrame->value;  
-
+        
+        gpio_pin_set_dt(&rs485_en, 0);//set high, for tx
+        delay(1);
+        if(pFactor->channel == LORA_CHANNEL) printf("at=u");
+        // printf("{\"ca\":%d,\"se\":%d,\"va\":%d}\r\n",
+        // pFrame->category, pFrame->sensor, pFrame->value);
+        
         printf("{\"no\":%d,\"ca\":%d,\"se\":%d,\"va\":%d,\"crc\":%d}\r\n",
         pFrame->node, pFrame->category, pFrame->sensor, pFrame->value, pFrame->crc);
+        delay(5);
+        // printk("{\"no\":%d,\"ca\":%d,\"se\":%d,\"va\":%d,\"crc\":%d}\r\n",
+        // pFrame->node, pFrame->category, pFrame->sensor, pFrame->value, pFrame->crc);
+        
+        gpio_pin_set_dt(&rs485_en, 1);//set low, for rx
+
     }
 }
 
@@ -277,5 +282,8 @@ void dispChannel(void){
     }
 }
 
+void delay(uint16_t msec){
+    k_sleep(K_MSEC(msec));
+}
 
 

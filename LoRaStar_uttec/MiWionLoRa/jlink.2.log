@@ -1,0 +1,358 @@
+T5368 16372:648.078   SEGGER J-Link V7.52a Log File
+T5368 16372:648.194   DLL Compiled: Jul 28 2021 11:08:12
+T5368 16372:648.232   Logging started @ 2023-12-20 15:29
+T5368 16372:648.267 - 58.158ms
+T5368 16372:648.311 JLINK_ExecCommand("device = ATSAMR35J18B", ...). 
+T5368 16372:648.916   Device "ATSAMR35J18" selected.
+T5368 16372:649.920 - 1.608ms returns 0x00
+T5368 16372:650.581 JLINK_GetHWStatus(...)
+T5368 16372:651.239 - 0.702ms returns 0
+T5368 16372:651.323 JLINK_ClrRESET()
+T5368 16372:852.697   RESET (pin 15) high, but should be low. Please check target hardware.
+T5368 16372:854.064 - 202.771ms
+T5368 16372:859.025 JLINK_SetRESET()
+T5368 16372:859.216 - 0.206ms
+T5368 16372:864.375 JLINK_ClrRESET()
+T5368 16373:064.901   RESET (pin 15) high, but should be low. Please check target hardware.
+T5368 16373:066.142 - 201.773ms
+T5368 16373:071.351 JLINK_ClrTCK()
+T5368 16373:071.464 - 0.118ms returns 0
+T5368 16373:076.387 JLINK_SetRESET()
+T5368 16373:076.542 - 0.161ms
+T5368 16373:081.570 JLINK_Clock()
+T5368 16373:081.867 - 0.313ms returns 1
+T5368 16373:086.967 JLINK_TIF_Select(JLINKARM_TIF_SWD)
+T5368 16373:088.285 - 1.333ms returns 0x00
+T5368 16373:088.310 JLINK_SetSpeed(50)
+T5368 16373:088.399 - 0.094ms
+T5368 16373:088.411 JLINK_CORESIGHT_Configure()
+T5368 16373:098.031 - 9.662ms returns 0
+T5368 16373:098.155 JLINK_CORESIGHT_WriteAPDPReg(DP reg 0x02, 0x00000000)
+T5368 16373:100.062 - 1.948ms returns 0
+T5368 16373:100.114 JLINK_CORESIGHT_WriteAPDPReg(AP reg 0x00, 0x23000040)
+T5368 16373:101.985 - 1.886ms returns 0
+T5368 16373:102.008 JLINK_CORESIGHT_WriteAPDPReg(AP reg 0x01, 0x41002101)
+T5368 16373:105.313 - 3.314ms returns 0
+T5368 16373:105.331 JLINK_CORESIGHT_ReadAPDPReg(AP reg 0x03)
+T5368 16373:111.904   Value=0x00000000
+T5368 16373:111.950 - 6.623ms returns 0
+T5368 16373:112.266 JLINK_Halt()
+T5368 16373:112.759   InitTarget() start
+T5368 16373:112.976    J-Link Script File: Executing InitTarget()
+T5368 16373:113.244   InitTarget()
+T5368 16373:137.091   InitTarget() end
+T5368 16373:143.490   Found SW-DP with ID 0x0BC11477
+T5368 16373:160.796   Old FW that does not support reading DPIDR via DAP jobs
+T5368 16373:177.303   DPv0 detected
+T5368 16373:177.392   Scanning AP map to find all available APs
+T5368 16373:187.984   AP[1]: Stopped AP scan as end of AP map has been reached
+T5368 16373:188.033   AP[0]: AHB-AP (IDR: 0x04770031)
+T5368 16373:188.054   Iterating through AP map to find AHB-AP to use
+T5368 16373:207.048   AP[0]: Core found
+T5368 16373:207.234   AP[0]: AHB-AP ROM base: 0x41003000
+T5368 16373:216.637   CPUID register: 0x410CC601. Implementer code: 0x41 (ARM)
+T5368 16373:216.686   Found Cortex-M0 r0p1, Little endian.
+T5368 16373:317.841   -- Max. mem block: 0x00002408
+T5368 16373:318.054   CPU_ReadMem(4 bytes @ 0xE000EDF0)
+T5368 16373:324.248   CPU_WriteMem(4 bytes @ 0xE000EDF0)
+T5368 16373:330.616   CPU_ReadMem(4 bytes @ 0xE0002000)
+T5368 16373:336.937   FPUnit: 4 code (BP) slots and 0 literal slots
+T5368 16373:336.979   CPU_ReadMem(4 bytes @ 0xE000EDFC)
+T5368 16373:343.057   CPU_WriteMem(4 bytes @ 0xE000EDFC)
+T5368 16373:349.388   CPU_ReadMem(4 bytes @ 0xE0001000)
+T5368 16373:355.589   CPU_WriteMem(4 bytes @ 0xE0001000)
+T5368 16373:362.518   CoreSight components:
+T5368 16373:362.578   ROMTbl[0] @ 41003000
+T5368 16373:362.598   CPU_ReadMem(64 bytes @ 0x41003000)
+T5368 16373:382.869   CPU_ReadMem(32 bytes @ 0xE00FFFE0)
+T5368 16373:395.816   ROMTbl[0][0]: E00FF000, CID: B105100D, PID: 000BB4C0 ROM Table
+T5368 16373:395.904   ROMTbl[1] @ E00FF000
+T5368 16373:395.927   CPU_ReadMem(64 bytes @ 0xE00FF000)
+T5368 16373:416.362   CPU_ReadMem(32 bytes @ 0xE000EFE0)
+T5368 16373:429.122   ROMTbl[1][0]: E000E000, CID: B105E00D, PID: 000BB008 SCS
+T5368 16373:429.172   CPU_ReadMem(32 bytes @ 0xE0001FE0)
+T5368 16373:441.828   ROMTbl[1][1]: E0001000, CID: B105E00D, PID: 000BB00A DWT
+T5368 16373:441.950   CPU_ReadMem(32 bytes @ 0xE0002FE0)
+T5368 16373:454.557   ROMTbl[1][2]: E0002000, CID: B105E00D, PID: 000BB00B FPB
+T5368 16373:454.613   CPU_ReadMem(32 bytes @ 0x41006FE0)
+T5368 16373:467.537   ROMTbl[0][1]: 41006000, CID: B105900D, PID: 001BB932 MTB-M0+
+T5368 16373:534.610 - 422.389ms returns 0x00
+T5368 16373:534.678 JLINK_EraseChip()
+T5368 16373:535.103   Old firmware which does not support pausing periodic actions during flash download
+T5368 16373:535.151   CPU_ReadMem(4 bytes @ 0x41006004)
+T5368 16373:541.330   CPU_ReadMem(4 bytes @ 0xE000ED90)
+T5368 16373:547.964    -- --------------------------------------
+T5368 16373:548.014    -- Start of determining dirty areas
+T5368 16373:548.084    -- End of determining dirty areas
+T5368 16373:548.098    -- Start of preparing flash programming
+T5368 16373:548.114    -- Calculating RAM usage
+T5368 16373:553.559    -- RAM usage = 10020 Bytes
+T5368 16373:553.640    -- Preserving CPU registers
+T5368 16373:553.920    -- Preparing memory
+T5368 16373:553.973    -- Preparing target
+T5368 16373:554.014    -- Downloading RAMCode
+T5368 16374:262.069    -- Preparing RAMCode
+T5368 16374:422.590    -- Checking target RAM
+T5368 16374:447.924    -- End of preparing flash programming
+T5368 16374:448.391   Looking for J-Link GUI Server exe at: C:\Program Files (x86)\Atmel\Studio\7.0\atbackend\JLinkGUIServer.exe
+T5368 16374:448.687   Looking for J-Link GUI Server exe at: C:\Program Files\SEGGER\JLink\JLinkGUIServer.exe
+T5368 16374:448.756   Forking J-Link GUI Server: C:\Program Files\SEGGER\JLink\JLinkGUIServer.exe
+T5368 16374:634.067   J-Link GUI Server info: "J-Link GUI server V7.88j "
+T5368 16374:651.498    -- CPU speed could not be measured.
+T5368 16374:651.557    -- Start of erasing sectors
+T5368 16374:651.576    -- Erasing range 0x00000000 - 0x00007FFF (128 Sectors, 32 KB)
+T5368 16374:855.695    -- Erasing range 0x00008000 - 0x0000FFFF (128 Sectors, 32 KB)
+T5368 16375:004.967    -- Erasing range 0x00010000 - 0x00017FFF (128 Sectors, 32 KB)
+T5368 16375:150.421    -- Erasing range 0x00018000 - 0x0001FFFF (128 Sectors, 32 KB)
+T5368 16375:295.483    -- Erasing range 0x00020000 - 0x00027FFF (128 Sectors, 32 KB)
+T5368 16375:440.215    -- Erasing range 0x00028000 - 0x0002FFFF (128 Sectors, 32 KB)
+T5368 16375:587.621    -- Erasing range 0x00030000 - 0x00037FFF (128 Sectors, 32 KB)
+T5368 16375:734.138    -- Erasing range 0x00038000 - 0x0003FFFF (128 Sectors, 32 KB)
+T5368 16375:879.935    -- End of erasing sectors
+T5368 16375:880.012    -- Start of restoring
+T5368 16375:880.040    -- Restoring RAMCode
+T5368 16375:971.988    -- Restore target
+T5368 16375:972.072    -- Restore memory
+T5368 16375:972.103    -- Restoring CPU registers
+T5368 16375:972.149    -- End of restoring
+T5368 16375:972.257    -- Total time needed: 2.424s (Prepare: 1.103s, Compare: 0.000s, Erase: 1.228s, Program: 0.000s, Verify: 0.000s, Restore: 0.092s)
+T5368 16375:984.289    -- --------------------------------------
+T5368 16375:984.343    -- Start of determining dirty areas
+T5368 16375:984.376    -- End of determining dirty areas
+T5368 16375:984.413    -- Start of preparing flash programming
+T5368 16375:984.457    -- Calculating RAM usage
+T5368 16375:984.484    -- RAM usage = 2644 Bytes
+T5368 16375:984.503    -- Preserving CPU registers
+T5368 16375:984.539    -- Preparing memory
+T5368 16375:984.639    -- Preparing target
+T5368 16375:984.666    -- Downloading RAMCode
+T5368 16376:593.868    -- Preparing RAMCode
+T5368 16376:784.700    -- Checking target RAM
+T5368 16376:810.122    -- End of preparing flash programming
+T5368 16376:812.945    -- CPU speed could not be measured.
+T5368 16376:813.051    -- Start of erasing sectors
+T5368 16376:813.086    -- Erasing range 0x00400000 - 0x00401FFF ( 32 Sectors, 8 KB)
+T5368 16376:889.021    -- End of erasing sectors
+T5368 16376:889.189    -- Start of restoring
+T5368 16376:889.205    -- Restoring RAMCode
+T5368 16376:981.054    -- Restore target
+T5368 16376:981.109    -- Restore memory
+T5368 16376:981.124    -- Restoring CPU registers
+T5368 16376:981.147    -- End of restoring
+T5368 16376:981.215    -- Total time needed: 0.996s (Prepare: 0.828s, Compare: 0.000s, Erase: 0.076s, Program: 0.000s, Verify: 0.000s, Restore: 0.091s)
+T5368 16376:989.375    -- --------------------------------------
+T5368 16376:989.529    -- Start of determining dirty areas
+T5368 16376:989.560    -- End of determining dirty areas
+T5368 16376:989.576    -- Start of preparing flash programming
+T5368 16376:989.595    -- Calculating RAM usage
+T5368 16376:989.760    -- RAM usage = 2852 Bytes
+T5368 16376:989.786    -- Preserving CPU registers
+T5368 16376:989.857    -- Preparing memory
+T5368 16376:989.879    -- Preparing target
+T5368 16376:989.899    -- Downloading RAMCode
+T5368 16377:656.111    -- Preparing RAMCode
+T5368 16377:846.626    -- Checking target RAM
+T5368 16377:872.399    -- End of preparing flash programming
+T5368 16377:876.096    -- CPU speed could not be measured.
+T5368 16377:876.178    -- Start of erasing sectors
+T5368 16377:876.219    -- Erasing range 0x00804000 - 0x008040FF (  1 Sector, 256 Bytes)
+T5368 16377:928.227    -- End of erasing sectors
+T5368 16377:928.298    -- Start of restoring
+T5368 16377:928.319    -- Restoring RAMCode
+T5368 16378:020.741    -- Restore target
+T5368 16378:020.835    -- Restore memory
+T5368 16378:020.859    -- Restoring CPU registers
+T5368 16378:020.881    -- End of restoring
+T5368 16378:020.968    -- Total time needed: 1.031s (Prepare: 0.886s, Compare: 0.000s, Erase: 0.052s, Program: 0.000s, Verify: 0.000s, Restore: 0.092s)
+T5368 16378:033.274 - 4498.643ms returns 0
+T5368 16378:051.097 JLINK_ExecCommand("Device = ATSAMR35J18B", ...). 
+T5368 16378:051.441   Device "ATSAMR35J18" selected.
+T5368 16378:051.939 - 0.805ms returns 0x00
+T5368 16378:051.970 JLINK_TIF_Select(JLINKARM_TIF_SWD)
+T5368 16378:051.985 - 0.020ms returns 0x00
+T5368 16378:051.999 JLINK_SetSpeed(4000)
+T5368 16378:052.198 - 0.237ms
+T5368 16378:052.250 JLINK_ResetPullsRESET(OFF)
+T5368 16378:052.266 - 0.024ms
+T5368 16378:052.283 JLINK_Connect()
+T5368 16378:052.576   InitTarget() start
+T5368 16378:052.606    J-Link Script File: Executing InitTarget()
+T5368 16378:052.632   InitTarget()
+T5368 16378:059.358   InitTarget() end
+T5368 16378:060.509   Found SW-DP with ID 0x0BC11477
+T5368 16378:067.846   Old FW that does not support reading DPIDR via DAP jobs
+T5368 16378:073.782   DPv0 detected
+T5368 16378:073.867   AP map detection skipped. Manually configured AP map found.
+T5368 16378:073.898   AP[0]: AHB-AP (IDR: Not set)
+T5368 16378:081.390   AP[0]: Core found
+T5368 16378:081.565   AP[0]: AHB-AP ROM base: 0x41003000
+T5368 16378:084.624   CPUID register: 0x410CC601. Implementer code: 0x41 (ARM)
+T5368 16378:084.733   Found Cortex-M0 r0p1, Little endian.
+T5368 16378:186.119   -- Max. mem block: 0x000023F8
+T5368 16378:186.345   CPU_ReadMem(4 bytes @ 0xE000EDF0)
+T5368 16378:187.005   CPU_ReadMem(4 bytes @ 0xE0002000)
+T5368 16378:187.972   FPUnit: 4 code (BP) slots and 0 literal slots
+T5368 16378:188.044   CPU_ReadMem(4 bytes @ 0xE000EDFC)
+T5368 16378:188.625   CPU_ReadMem(4 bytes @ 0xE0001000)
+T5368 16378:189.536   CoreSight components:
+T5368 16378:189.661   ROMTbl[0] @ 41003000
+T5368 16378:189.709   CPU_ReadMem(64 bytes @ 0x41003000)
+T5368 16378:190.960   CPU_ReadMem(32 bytes @ 0xE00FFFE0)
+T5368 16378:192.124   ROMTbl[0][0]: E00FF000, CID: B105100D, PID: 000BB4C0 ROM Table
+T5368 16378:192.177   ROMTbl[1] @ E00FF000
+T5368 16378:192.195   CPU_ReadMem(64 bytes @ 0xE00FF000)
+T5368 16378:193.193   CPU_ReadMem(32 bytes @ 0xE000EFE0)
+T5368 16378:194.120   ROMTbl[1][0]: E000E000, CID: B105E00D, PID: 000BB008 SCS
+T5368 16378:194.181   CPU_WriteMem(4 bytes @ 0xE0001000)
+T5368 16378:194.774   CPU_ReadMem(32 bytes @ 0xE0001FE0)
+T5368 16378:195.651   ROMTbl[1][1]: E0001000, CID: B105E00D, PID: 000BB00A DWT
+T5368 16378:195.679   CPU_ReadMem(32 bytes @ 0xE0002FE0)
+T5368 16378:196.322   ROMTbl[1][2]: E0002000, CID: B105E00D, PID: 000BB00B FPB
+T5368 16378:196.366   CPU_ReadMem(32 bytes @ 0x41006FE0)
+T5368 16378:197.025   ROMTbl[0][1]: 41006000, CID: B105900D, PID: 001BB932 MTB-M0+
+T5368 16378:197.080 - 144.807ms returns 0x00
+T5368 16378:197.176 JLINK_Halt()
+T5368 16378:197.610 - 0.452ms returns 0x00
+T5368 16378:209.378 JLINK_JTAG_GetDeviceID(DeviceIndex = 0)
+T5368 16378:209.438 - 0.065ms returns 0
+T5368 16378:209.468 JLINK_ReadMemU32(0x41002018, 0x1 Items)
+T5368 16378:209.526   CPU_ReadMem(4 bytes @ 0x41002018)
+T5368 16378:210.253   Data:  2B 02 81 10
+T5368 16378:210.306 - 0.842ms returns 1 (0x1)
+T27E0 16378:218.139 JLINK_IsHalted()
+T27E0 16378:218.325 - 0.196ms returns TRUE
+T27E0 16378:218.353 JLINK_GetMOEs(...)
+T27E0 16378:218.459   CPU_ReadMem(4 bytes @ 0xE000ED30)
+T27E0 16378:219.506 - 1.184ms returns 0x01
+T27E0 16378:220.083 JLINK_ReadReg(R15 (PC))
+T27E0 16378:220.143 - 0.065ms returns 0x00005C64
+T5368 16378:269.917 JLINK_BeginDownload(Flags = 0x00000000)
+T5368 16378:269.951 - 0.039ms
+T5368 16378:269.978 JLINK_WriteMem(0x00000000, 0x1E5F4 Bytes, ...)
+T5368 16378:269.999   Data:  68 3C 00 20 0D 63 00 00 A1 63 00 00 A1 63 00 00 ...
+T5368 16378:270.315   completely In flash
+T5368 16378:270.462    -- Read from flash cache (124404 bytes @ 0x00000000)
+T5368 16378:270.489 - 0.516ms returns 0x1E5F4
+T5368 16378:270.683 JLINK_WriteMem(0x0001E5F4, 0x8 Bytes, ...)
+T5368 16378:270.699   Data:  28 8D FF 7F 01 00 00 00
+T5368 16378:270.719   completely In flash
+T5368 16378:270.733 - 0.057ms returns 0x8
+T5368 16378:270.818 JLINK_WriteMem(0x0001E5FC, 0x9E8 Bytes, ...)
+T5368 16378:270.835   Data:  40 1F 00 00 08 00 00 00 01 00 00 00 51 D2 00 00 ...
+T5368 16378:270.850   completely In flash
+T5368 16378:270.869    -- Read from flash cache (2536 bytes @ 0x0001E5FC)
+T5368 16378:270.886 - 0.072ms returns 0x9E8
+T27E0 16378:420.580 JLINK_IsHalted()
+T27E0 16378:420.634 - 0.058ms returns TRUE
+T5368 16378:421.420 JLINK_EndDownload()
+T5368 16378:421.781   Old firmware which does not support pausing periodic actions during flash download
+T5368 16378:421.818   CPU_ReadMem(4 bytes @ 0x41006004)
+T5368 16378:422.314   CPU_ReadMem(4 bytes @ 0xE000ED90)
+T5368 16378:422.999    -- --------------------------------------
+T5368 16378:423.047   Flash bank @ 0x00000000: Default: L2 verify disabled because algorithm performs L1 verify
+T5368 16378:423.060    -- Start of determining dirty areas in flash cache
+T5368 16378:423.132    -- End of determining dirty areas
+T5368 16378:423.146    -- Start of preparing flash programming
+T5368 16378:423.159    -- Calculating RAM usage
+T5368 16378:423.179    -- RAM usage = 5924 Bytes
+T5368 16378:423.193    -- Preserving CPU registers
+T5368 16378:423.218    -- Preparing memory
+T5368 16378:423.231    -- Preparing target
+T5368 16378:423.244    -- Preserving target RAM temporarily used for programming
+T5368 16378:465.104    -- Downloading RAMCode
+T5368 16378:485.974    -- Preparing RAMCode
+T5368 16378:494.921    -- Checking target RAM
+T5368 16378:499.106    -- End of preparing flash programming
+T5368 16378:501.172    -- CPU speed could not be measured.
+T5368 16378:501.230    -- Start of comparing flash
+T5368 16378:501.249    -- CRC check was estimated as fastest method
+T5368 16378:523.943    -- Comparing range 0x0000 - 0xFFFF (256 Sectors, 64 KiB), using multi-block CRC calculation
+T5368 16378:574.499    -- CRC does not match for sectors 0-255
+T5368 16378:575.084    -- Comparing range 0x10000 - 0x1EFFF (240 Sectors, 60 KiB), using multi-block CRC calculation
+T5368 16378:619.059    -- CRC does not match for sectors 0-239
+T5368 16378:619.116    -- End of comparing flash
+T5368 16378:619.133    -- Start of erasing sectors
+T5368 16378:619.146    -- End of erasing sectors
+T5368 16378:619.160    -- Start of flash programming
+T5368 16378:619.175    -- Programming range 0x00000000 - 0x00007FFF (128 Sectors, 32 KB)
+T5368 16378:886.418    -- Programming range 0x00008000 - 0x0000FFFF (128 Sectors, 32 KB)
+T5368 16379:172.999    -- Programming range 0x00010000 - 0x00017FFF (128 Sectors, 32 KB)
+T5368 16379:435.908    -- Programming range 0x00018000 - 0x0001EFFF (112 Sectors, 28 KB)
+T5368 16379:666.726    -- End of flash programming
+T5368 16379:666.782    -- 0x0000 - 0x1EFFF (496 Sectors, 124 KoB)
+T5368 16379:666.809    -- Start of restoring
+T5368 16379:666.836    -- Restoring RAMCode
+T5368 16379:695.686    -- Restoring target memory
+T5368 16379:730.945    -- Restore target
+T5368 16379:731.046    -- Restore memory
+T5368 16379:731.084    -- Restoring CPU registers
+T5368 16379:731.156    -- End of restoring
+T5368 16379:731.367    -- Bank 0 @ 0x00000000: 1 range affected (126976 bytes)
+T5368 16379:731.441    -- Total: 1.308s (Prepare: 0.078s, Compare: 0.117s, Erase: 0.000s, Program & Verify: 1.072s, Restore: 0.039s)
+T5368 16379:731.493    -- Program & Verify speed: 115 KiB/s
+T5368 16379:741.015 - 1319.623ms returns 126976 (0x1F000)
+T5368 16379:741.524 JLINK_ResetPullsRESET(ON)
+T5368 16379:741.550 - 0.032ms
+T5368 16379:741.565 JLINK_ResetNoHalt()
+T5368 16379:741.847   InitTarget() start
+T5368 16379:741.874    J-Link Script File: Executing InitTarget()
+T5368 16379:741.901   InitTarget()
+T5368 16379:748.348   InitTarget() end
+T5368 16379:750.504   Found SW-DP with ID 0x0BC11477
+T5368 16379:758.999   Old FW that does not support reading DPIDR via DAP jobs
+T5368 16379:763.862   DPv0 detected
+T5368 16379:763.930   AP map detection skipped. Manually configured AP map found.
+T5368 16379:764.003   AP[0]: AHB-AP (IDR: Not set)
+T5368 16379:770.234   AP[0]: Core found
+T5368 16379:770.291   AP[0]: AHB-AP ROM base: 0x41003000
+T5368 16379:772.889   CPUID register: 0x410CC601. Implementer code: 0x41 (ARM)
+T5368 16379:772.932   Found Cortex-M0 r0p1, Little endian.
+T5368 16379:873.789   -- Max. mem block: 0x000023F8
+T5368 16379:873.928   CPU_ReadMem(4 bytes @ 0xE000EDF0)
+T5368 16379:874.602   CPU_ReadMem(4 bytes @ 0xE0002000)
+T5368 16379:875.552   FPUnit: 4 code (BP) slots and 0 literal slots
+T5368 16379:875.590   CPU_ReadMem(4 bytes @ 0xE000EDFC)
+T5368 16379:876.248   CPU_ReadMem(4 bytes @ 0xE0001000)
+T5368 16379:877.103   CoreSight components:
+T5368 16379:877.137   ROMTbl[0] @ 41003000
+T5368 16379:877.166   CPU_ReadMem(64 bytes @ 0x41003000)
+T5368 16379:878.290   CPU_ReadMem(32 bytes @ 0xE00FFFE0)
+T5368 16379:879.523   ROMTbl[0][0]: E00FF000, CID: B105100D, PID: 000BB4C0 ROM Table
+T5368 16379:879.586   ROMTbl[1] @ E00FF000
+T5368 16379:879.615   CPU_ReadMem(64 bytes @ 0xE00FF000)
+T5368 16379:880.819   CPU_ReadMem(32 bytes @ 0xE000EFE0)
+T5368 16379:881.702   ROMTbl[1][0]: E000E000, CID: B105E00D, PID: 000BB008 SCS
+T5368 16379:881.786   CPU_WriteMem(4 bytes @ 0xE0001000)
+T5368 16379:882.361   CPU_ReadMem(32 bytes @ 0xE0001FE0)
+T5368 16379:883.318   ROMTbl[1][1]: E0001000, CID: B105E00D, PID: 000BB00A DWT
+T5368 16379:883.374   CPU_ReadMem(32 bytes @ 0xE0002FE0)
+T5368 16379:884.091   ROMTbl[1][2]: E0002000, CID: B105E00D, PID: 000BB00B FPB
+T5368 16379:884.124   CPU_ReadMem(32 bytes @ 0x41006FE0)
+T5368 16379:884.892   ROMTbl[0][1]: 41006000, CID: B105900D, PID: 001BB932 MTB-M0+
+T5368 16379:884.952   JLINK_Reset()
+T5368 16379:885.004     CPU_ReadMem(4 bytes @ 0x20000000)
+T5368 16379:885.661     CPU_WriteMem(4 bytes @ 0x20000000)
+T5368 16379:886.447     ResetTarget() start
+T5368 16379:886.489      J-Link Script File: Executing ResetTarget()
+T5368 16379:886.948     CPU_ReadMem(4 bytes @ 0xE000EDFC)
+T5368 16379:887.579     CPU_WriteMem(4 bytes @ 0xE000EDFC)
+T5368 16379:888.072     CPU_WriteMem(4 bytes @ 0xE000ED0C)
+T5368 16379:890.679     CPU_ReadMem(4 bytes @ 0xE000EDF0)
+T5368 16379:891.335     CPU_ReadMem(4 bytes @ 0x41002100)
+T5368 16379:891.897     CPU_WriteMem(4 bytes @ 0xE000EDFC)
+T5368 16379:892.493     ResetTarget() end
+T5368 16379:895.044     CPU_WriteMem(4 bytes @ 0xE0002000)
+T5368 16379:895.677     CPU_ReadMem(4 bytes @ 0xE000EDFC)
+T5368 16379:896.344     CPU_ReadMem(4 bytes @ 0xE0001000)
+T5368 16379:896.910     CPU_WriteMem(4 bytes @ 0xE0001000)
+T5368 16379:897.688   - 12.756ms
+T5368 16379:897.720   JLINK_Go()
+T5368 16379:897.743     CPU_ReadMem(4 bytes @ 0xE0001000)
+T5368 16379:898.277     CPU_WriteMem(4 bytes @ 0xE0001000)
+T5368 16379:898.800     CPU_WriteMem(4 bytes @ 0xE0001004)
+T5368 16379:899.865   - 2.168ms
+T5368 16379:899.894 - 158.333ms
+T5368 16379:909.697 JLINK_Close()
+T5368 16379:937.367 - 27.729ms
+T5368 16379:937.435   
+T5368 16379:937.460   Closed

@@ -4,6 +4,12 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+// for uart channel
+#define ETHERNET_CHANNEL  0
+#define RS485_CHANNEL     1
+#define LORA_CHANNEL      2
+#define BLANK_CHANNEL     3    
+
 // for status
 #define ADC_DEVICE		    1
 #define SWITCH_DEVICE 	    2
@@ -108,6 +114,7 @@ void sendJsonForStatus(void);
 
 void dispChannel(void);
 
+void delay(uint16_t msec);
 
 #endif 
 
